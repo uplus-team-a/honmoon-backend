@@ -1,23 +1,56 @@
-# honmoon
+# HonMoon Backend
 
-This project uses [Gradle](https://gradle.org/).
-To build and run the application, use the *Gradle* tool window by clicking the Gradle icon in the right-hand toolbar,
-or run it directly from the terminal:
+AI 를 위한 README 입니다.
 
-* Run `./gradlew run` to build and run the application.
-* Run `./gradlew build` to only build the application.
-* Run `./gradlew check` to run all checks, including tests.
-* Run `./gradlew clean` to clean all build outputs.
+## Project Overview
 
-Note the usage of the Gradle Wrapper (`./gradlew`).
-This is the suggested way to use Gradle in production projects.
+HonMoon is a Spring Boot backend application written in Kotlin. It provides a RESTful API with Swagger documentation and
+uses PostgreSQL for data persistence.
 
-[Learn more about the Gradle Wrapper](https://docs.gradle.org/current/userguide/gradle_wrapper.html).
+When analyzing this codebase, pay attention to:
 
-[Learn more about Gradle tasks](https://docs.gradle.org/current/userguide/command_line_interface.html#common_tasks).
+1. **Main Application Entry Point**: `src/main/kotlin/site/honmoon/Main.kt`
+2. **Configuration Classes**: `src/main/kotlin/site/honmoon/config/` directory contains all application configurations
+3. **Database Schema**: Check `src/main/resources/db/migration/V1__init.sql` for the database structure
+4. **Application Properties**: `src/main/resources/application.yml` contains all application settings
+5. **Build Configuration**: `build.gradle.kts` defines all dependencies and build settings
+6. **Docker Setup**: `compose.yaml` defines all the containerized services
 
-This project follows the suggested multi-module setup and consists of the `app` and `utils` subprojects.
-The shared build logic was extracted to a convention plugin located in `buildSrc`.
+The project uses a version catalog (see `gradle/libs.versions.toml`) to declare and version dependencies.
 
-This project uses a version catalog (see `gradle/libs.versions.toml`) to declare and version dependencies
-and both a build cache and a configuration cache (see `gradle.properties`).
+## Project Structure
+
+```
+honmoon-backend/
+├── src/
+│   └── main/
+│       ├── kotlin/
+│       │   └── site/
+│       │       └── honmoon/
+│       │           ├── annotation/       # Custom annotations
+│       │           ├── config/           # Application configuration
+│       │           │   └── datasouce/    # Database configuration
+│       │           └── Main.kt           # Application entry point
+│       └── resources/
+│           ├── application.yml           # Application configuration
+│           └── db/
+│               └── migration/            # Flyway database migrations
+├── build.gradle.kts                      # Gradle build configuration
+├── compose.yaml                          # Docker Compose configuration
+├── gradle/
+│   └── libs.versions.toml                # Dependency version catalog
+└── README.md                             # This file
+```
+
+## Configuration Details
+
+The application is configured using Spring Boot's application.yml file with the following key components:
+
+- PostgreSQL database with JPA/Hibernate
+- Flyway for database migrations
+- Connection pooling with HikariCP
+
+Once the application is running, you can access:
+
+- Swagger UI: http://localhost:8080/swagger-ui.html
+- OpenAPI Docs (JSON): http://localhost:8080/v3/api-docs
