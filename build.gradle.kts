@@ -56,6 +56,9 @@ dependencies {
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.reactor)
 
+    // Prometheus
+    implementation(libs.micrometer.registry.prometheus)
+
     // Querydsl
     implementation("com.querydsl:querydsl-jpa:${libs.versions.querydsl.get()}:jakarta")
     kapt(libs.querydsl.apt)
@@ -111,7 +114,7 @@ tasks.withType<Test> {
     useJUnitPlatform()
 }
 springBoot {
-    mainClass.set("com.testword.TestWordApplicationKt")
+    mainClass.set("site.honmoon.MainKt")
 }
 sourceSets {
     main {

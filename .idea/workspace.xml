@@ -4,8 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f86bfc05-9f47-4816-8d3e-77130fcec7d5" name="Changes" comment="save">
-      <change afterPath="$PROJECT_DIR$/gradle/libs.versions.toml" afterDir="false" />
+    <list default="true" id="f86bfc05-9f47-4816-8d3e-77130fcec7d5" name="Changes" comment="build: 서버 배포">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle.kts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -41,7 +41,11 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
+        <option value="Kotlin Annotation" />
         <option value="Kotlin Class" />
+        <option value="Kotlin JUnit5 Test Class" />
+        <option value="Class" />
+        <option value="kotest_class" />
       </list>
     </option>
   </component>
@@ -52,7 +56,7 @@
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
-    <option name="RESET_MODE" value="HARD" />
+    <option name="RESET_MODE" value="SOFT" />
   </component>
   <component name="GitHubPullRequestSearchHistory">{
   &quot;lastFilter&quot;: {
@@ -60,12 +64,26 @@
     &quot;assignee&quot;: &quot;JiwonDev&quot;
   }
 }</component>
+  <component name="GitRewordedCommitMessages">
+    <option name="commitMessagesMapping">
+      <RewordedCommitMessageMapping>
+        <option name="originalMessage" value="save" />
+        <option name="rewordedMessage" value="build: project init" />
+      </RewordedCommitMessageMapping>
+    </option>
+    <option name="onto" value="b695df4ad64a89ba311bb1c13492c35e58d59676" />
+  </component>
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
     &quot;url&quot;: &quot;https://github.com/uplus-team-a/honmoon-backend.git&quot;,
     &quot;accountId&quot;: &quot;bc123798-e2a4-4db5-8e2d-7e79930af972&quot;
   }
 }</component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.flywaydb/flyway-core/10.20.1/6ec65b7db740bef5177b3bf1c29d5e8a427173af/flyway-core-10.20.1-sources.jar!/org/flywaydb/core/api/ErrorCode.java" root0="SKIP_INSPECTION" />
+    <setting file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.springframework/spring-context/6.2.6/e729906a7b5422f96e4f3c4273950d60117ab08e/spring-context-6.2.6-sources.jar!/org/springframework/context/annotation/PropertySource.java" root0="SKIP_INSPECTION" />
+    <setting file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.springframework/spring-webmvc/6.2.6/de3c23f55a21428a2603892cf3246db5722337d1/spring-webmvc-6.2.6-sources.jar!/org/springframework/web/servlet/mvc/method/annotation/ResponseEntityExceptionHandler.java" root0="SKIP_INSPECTION" />
+  </component>
   <component name="KubernetesApiPersistence">{}</component>
   <component name="KubernetesApiProvider">{
   &quot;isMigrated&quot;: true
@@ -89,7 +107,14 @@
     "Docker.compose.yaml: Compose Deployment.executor": "Run",
     "Gradle.Build honmoon-backend.executor": "Run",
     "Gradle.Download Sources.executor": "Run",
+    "Gradle.honmoon-backend [artifactTransforms].executor": "Run",
+    "Gradle.honmoon-backend [bootJar].executor": "Run",
     "Gradle.honmoon-backend [clean build].executor": "Run",
+    "Kotest.PropertyConfigTest: 환경변수 출력 테스트 (1).executor": "Run",
+    "Kotest.PropertyConfigTest: 환경변수 출력 테스트 (2).executor": "Run",
+    "Kotest.PropertyConfigTest: 환경변수 출력 테스트 (3).executor": "Run",
+    "Kotest.PropertyConfigTest: 환경변수 출력 테스트 (4).executor": "Run",
+    "Kotest.PropertyConfigTest: 환경변수 출력 테스트.executor": "Run",
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RequestMappingsPanelOrder0": "0",
     "RequestMappingsPanelOrder1": "1",
@@ -97,10 +122,14 @@
     "RequestMappingsPanelWidth1": "75",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "Spring Boot.HonMoonApplication.executor": "Run",
+    "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary": "Kotest",
+    "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5": "",
+    "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.Kotest": "io.kotest.core.spec.style.FreeSpec",
     "git-widget-placeholder": "main",
     "junie.onboarding.icon.badge.shown": "true",
-    "last_opened_file_path": "/Users/jiwon/IdeaProjects/honmoon-backend",
+    "last_opened_file_path": "/Users/jiwon/IdeaProjects/honmoon-backend/src/test/kotlin/site/honmoon/config",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -109,7 +138,7 @@
     "project.structure.last.edited": "Project",
     "project.structure.proportion": "0.15",
     "project.structure.side.proportion": "0.15930021",
-    "settings.editor.selected.configurable": "reference.settingsdialog.project.gradle",
+    "settings.editor.selected.configurable": "preferences.pluginManager",
     "vue.rearranger.settings.migration": "true"
   },
   "keyToStringList": {
@@ -120,30 +149,40 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/test/kotlin/site/honmoon/config" />
+      <recent name="$PROJECT_DIR$/src/main/kotlin/site/honmoon/common" />
+      <recent name="$PROJECT_DIR$/src/main/kotlin/site/honmoon/config" />
       <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/src/main/kotlin/site/honmoon" />
-      <recent name="$PROJECT_DIR$/app/src/main/kotlin" />
-      <recent name="$PROJECT_DIR$/buildSrc/src/main/kotlin/site/honmoon/service" />
-      <recent name="$PROJECT_DIR$/buildSrc/src/main/kotlin/site/honmoon/repository" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/app/src/main/resources/properteis" />
     </key>
+    <key name="CreateTestDialog.Recents.Supers">
+      <recent name="io.kotest.core.spec.style.FreeSpec" />
+      <recent name="" />
+    </key>
+    <key name="CreateTestDialog.RecentsKey">
+      <recent name="site.honmoon.config" />
+    </key>
     <key name="CopyKotlinDeclarationDialog.RECENTS_KEY">
       <recent name="" />
     </key>
     <key name="K2MoveDeclarationsDialog.RECENT_PACKAGE_KEY">
+      <recent name="site.honmoon.common" />
       <recent name="site.app.site.honmoon" />
     </key>
   </component>
   <component name="RunAnythingCache">
     <option name="myCommands">
+      <command value="gradle artifactTransforms" />
       <command value="gradle clean build" />
+      <command value="gradle bootJar" />
     </option>
   </component>
-  <component name="RunManager" selected="Gradle.honmoon-backend [clean build]">
-    <configuration name="honmoon-backend [clean build]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+  <component name="RunManager" selected="Gradle.honmoon-backend [bootJar]">
+    <configuration name="honmoon-backend [bootJar]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
@@ -154,8 +193,7 @@
         </option>
         <option name="taskNames">
           <list>
-            <option value="clean" />
-            <option value="build" />
+            <option value="bootJar" />
           </list>
         </option>
         <option name="vmOptions" />
@@ -215,8 +253,19 @@
       <method v="2" />
     </configuration>
     <configuration name="HonMoonApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <option name="ACTIVE_PROFILES" value="local" />
       <module name="honmoon.main" />
       <option name="SPRING_BOOT_MAIN_CLASS" value="site.honmoon.HonMoonApplication" />
+      <extension name="net.ashald.envfile">
+        <option name="IS_ENABLED" value="false" />
+        <option name="IS_SUBST" value="false" />
+        <option name="IS_PATH_MACRO_SUPPORTED" value="false" />
+        <option name="IS_IGNORE_MISSING_FILES" value="false" />
+        <option name="IS_ENABLE_EXPERIMENTAL_INTEGRATIONS" value="false" />
+        <ENTRIES>
+          <ENTRY IS_ENABLED="true" PARSER="runconfig" IS_EXECUTABLE="false" />
+        </ENTRIES>
+      </extension>
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -247,32 +296,82 @@
       </deployment>
       <method v="2" />
     </configuration>
-    <configuration name="compose.yaml: Compose Deployment" type="docker-deploy" factoryName="docker-compose.yml" temporary="true" server-name="Docker">
-      <deployment type="docker-compose.yml">
-        <settings>
-          <option name="sourceFilePath" value="compose.yaml" />
-        </settings>
-      </deployment>
-      <method v="2" />
+    <configuration name="PropertyConfigTest: 환경변수 출력 테스트 (1)" type="ioKotest" factoryName="Kotest" temporary="true" defaultName="singleModule">
+      <module name="honmoon.test" />
+      <option name="jrePath" value="" />
+      <option name="jrePathEnabled" value="false" />
+      <option name="passParentEnvs" value="true" />
+      <option name="workingDirectory" value="$MODULE_WORKING_DIR$" />
+      <option name="programParameters" value="" />
+      <option name="specName" value="site.honmoon.config.PropertyConfigTest" />
+      <option name="testPath" value="환경변수 출력 테스트" />
+      <option name="packageName" value="" />
+      <option name="vmparams" value="" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
     </configuration>
-    <configuration name="compose.yaml.spring-app: Compose Deployment" type="docker-deploy" factoryName="docker-compose.yml" temporary="true" server-name="Docker">
-      <deployment type="docker-compose.yml">
-        <settings>
-          <option name="services">
-            <list>
-              <option value="spring-app" />
-            </list>
-          </option>
-          <option name="sourceFilePath" value="compose.yaml" />
-        </settings>
-      </deployment>
-      <method v="2" />
+    <configuration name="PropertyConfigTest: 환경변수 출력 테스트 (2)" type="ioKotest" factoryName="Kotest" temporary="true" defaultName="singleModule">
+      <module name="honmoon.test" />
+      <option name="jrePath" value="" />
+      <option name="jrePathEnabled" value="false" />
+      <option name="passParentEnvs" value="true" />
+      <option name="workingDirectory" value="$MODULE_WORKING_DIR$" />
+      <option name="programParameters" value="" />
+      <option name="specName" value="site.honmoon.config.PropertyConfigTest" />
+      <option name="testPath" value="환경변수 출력 테스트" />
+      <option name="packageName" value="" />
+      <option name="vmparams" value="" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
     </configuration>
+    <configuration name="PropertyConfigTest: 환경변수 출력 테스트 (3)" type="ioKotest" factoryName="Kotest" temporary="true" defaultName="singleModule">
+      <module name="honmoon.test" />
+      <option name="jrePath" value="" />
+      <option name="jrePathEnabled" value="false" />
+      <option name="passParentEnvs" value="true" />
+      <option name="workingDirectory" value="$MODULE_WORKING_DIR$" />
+      <option name="programParameters" value="" />
+      <option name="specName" value="site.honmoon.config.PropertyConfigTest" />
+      <option name="testPath" value="환경변수 출력 테스트" />
+      <option name="packageName" value="" />
+      <option name="vmparams" value="" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="PropertyConfigTest: 환경변수 출력 테스트 (4)" type="ioKotest" factoryName="Kotest" temporary="true" defaultName="singleModule">
+      <module name="honmoon.test" />
+      <option name="jrePath" value="" />
+      <option name="jrePathEnabled" value="false" />
+      <option name="passParentEnvs" value="true" />
+      <option name="workingDirectory" value="$MODULE_WORKING_DIR$" />
+      <option name="programParameters" value="" />
+      <option name="specName" value="site.honmoon.config.PropertyConfigTest" />
+      <option name="testPath" value="환경변수 출력 테스트" />
+      <option name="packageName" value="" />
+      <option name="vmparams" value="" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <list>
+      <item itemvalue="Gradle.honmoon-backend [bootJar]" />
+      <item itemvalue="Kotest.PropertyConfigTest: 환경변수 출력 테스트 (2)" />
+      <item itemvalue="Kotest.PropertyConfigTest: 환경변수 출력 테스트 (3)" />
+      <item itemvalue="Kotest.PropertyConfigTest: 환경변수 출력 테스트 (4)" />
+      <item itemvalue="Kotest.PropertyConfigTest: 환경변수 출력 테스트 (1)" />
+      <item itemvalue="Spring Boot.HonMoonApplication" />
+      <item itemvalue="Spring Boot.HonmoonApplication" />
+    </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Docker.compose.yaml.spring-app: Compose Deployment" />
-        <item itemvalue="Docker.compose.yaml: Compose Deployment" />
-        <item itemvalue="Gradle.honmoon-backend [clean build]" />
+        <item itemvalue="Gradle.honmoon-backend [bootJar]" />
+        <item itemvalue="Kotest.PropertyConfigTest: 환경변수 출력 테스트 (2)" />
+        <item itemvalue="Kotest.PropertyConfigTest: 환경변수 출력 테스트 (4)" />
+        <item itemvalue="Kotest.PropertyConfigTest: 환경변수 출력 테스트 (3)" />
+        <item itemvalue="Kotest.PropertyConfigTest: 환경변수 출력 테스트 (1)" />
       </list>
     </recent_temporary>
   </component>
@@ -295,7 +394,9 @@
       <workItem from="1753963585517" duration="2043000" />
       <workItem from="1754204302350" duration="4808000" />
       <workItem from="1754401531722" duration="74000" />
-      <workItem from="1754401635439" duration="461000" />
+      <workItem from="1754401635439" duration="7721000" />
+      <workItem from="1754442161569" duration="1784000" />
+      <workItem from="1754444063018" duration="902000" />
     </task>
     <task id="LOCAL-00001" summary="save">
       <option name="closed" value="true" />
@@ -329,7 +430,79 @@
       <option name="project" value="LOCAL" />
       <updated>1754401780935</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="build: project init">
+      <option name="closed" value="true" />
+      <created>1754403981528</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1754403981528</updated>
+    </task>
+    <task id="LOCAL-00006" summary="save">
+      <option name="closed" value="true" />
+      <created>1754403999409</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1754403999409</updated>
+    </task>
+    <task id="LOCAL-00007" summary="build: gradle init">
+      <option name="closed" value="true" />
+      <created>1754404043160</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1754404043160</updated>
+    </task>
+    <task id="LOCAL-00008" summary="build: gradle init">
+      <option name="closed" value="true" />
+      <created>1754404064209</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1754404064209</updated>
+    </task>
+    <task id="LOCAL-00009" summary="build: gradle init">
+      <option name="closed" value="true" />
+      <created>1754404081953</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1754404081953</updated>
+    </task>
+    <task id="LOCAL-00010" summary="build: gradle init">
+      <option name="closed" value="true" />
+      <created>1754404095227</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1754404095227</updated>
+    </task>
+    <task id="LOCAL-00011" summary="feat: 가이드용 샘플코드 추가">
+      <option name="closed" value="true" />
+      <created>1754418043826</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1754418043826</updated>
+    </task>
+    <task id="LOCAL-00012" summary="feat: 가이드용 샘플코드 추가">
+      <option name="closed" value="true" />
+      <created>1754434068384</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1754434068384</updated>
+    </task>
+    <task id="LOCAL-00013" summary="build: 서버 배포">
+      <option name="closed" value="true" />
+      <created>1754444851814</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1754444851814</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -347,8 +520,12 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
+    <MESSAGE value="build: project init" />
     <MESSAGE value="save" />
-    <option name="LAST_COMMIT_MESSAGE" value="save" />
+    <MESSAGE value="build: gradle init" />
+    <MESSAGE value="feat: 가이드용 샘플코드 추가" />
+    <MESSAGE value="build: 서버 배포" />
+    <option name="LAST_COMMIT_MESSAGE" value="build: 서버 배포" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

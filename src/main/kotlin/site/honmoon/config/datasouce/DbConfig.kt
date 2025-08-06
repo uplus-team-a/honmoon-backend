@@ -37,7 +37,7 @@ class DatabaseConfig {
     ): LocalContainerEntityManagerFactoryBean {
         return builder
             .dataSource(dataSource)
-            .packages("site.honmoon.entity")
+            .packages("site.honmoon.*")
             .build()
     }
 

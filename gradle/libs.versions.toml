@@ -33,7 +33,13 @@ kotlinxCoroutines = "1.10.2"
 
 querydsl = "5.1.0"
 
+# prometheus
+micrometerPrometheus = "1.15.2"
+
 [libraries]
+# prometheus
+micrometer-registry-prometheus = { module = "io.micrometer:micrometer-registry-prometheus", version.ref = "micrometerPrometheus" }
+
 # Kotlin
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect" }
 kotlin-test-junit5 = { module = "org.jetbrains.kotlin:kotlin-test-junit5", version.ref = "kotlin" }

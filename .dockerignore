@@ -1,0 +1,49 @@
+# Git
+.git
+.gitignore
+
+# IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+
+# Build outputs
+build/
+out/
+target/
+*.class
+
+# Gradle
+.gradle/
+gradle-wrapper.jar
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Docker
+Dockerfile
+.dockerignore
+compose.yaml
+docker-compose.yml
+
+# Documentation
+README.md
+*.md
+
+# Configuration files that shouldn't be in container
+prometheus.yml
+grafana.yml
+
+# Test files
+src/test/
+
+# Temporary files
+*.tmp
+*.temp

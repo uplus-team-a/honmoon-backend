@@ -28,8 +28,8 @@ server:
     connection-timeout: 5000
     keep-alive-timeout: 65000
 
-#server.shutdown: graceful
-#spring.lifecycle.timeout-per-shutdown-phase: 60s
+server.shutdown: graceful
+spring.lifecycle.timeout-per-shutdown-phase: 30s
 
 spring:
   docker:
@@ -66,9 +66,9 @@ spring:
     enabled: false
   datasource:
     driver-class-name: org.postgresql.Driver
-    jdbc-url: jdbc:postgresql://localhost:5432/honmoon
-    username: postgres
-    password: postgres
+    jdbc-url: ${POSTGRES_URL}
+    username: ${POSTGRES_USERNAME}
+    password: ${POSTGRES_PASSWORD}
   sql:
     init:
       data-locations: classpath:db/data.sql
