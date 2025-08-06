@@ -74,3 +74,20 @@ spring:
       data-locations: classpath:db/data.sql
       schema-locations: classpath:db/schema.sql
       mode: never
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+  flyway:
+    enabled: false
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    jdbc-url: ${POSTGRES_URL}
+    username: ${POSTGRES_USERNAME}
+    password: ${POSTGRES_PASSWORD}
+  sql:
+    init:
+      data-locations: classpath:db/data.sql
+      schema-locations: classpath:db/schema.sql
+      mode: never
