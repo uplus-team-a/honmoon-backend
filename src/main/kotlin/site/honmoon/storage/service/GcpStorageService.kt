@@ -1,0 +1,178 @@
+package site.honmoon.storage.service
+
+import com.google.cloud.storage.*
+import io.github.oshai.kotlinlogging.KotlinLogging
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.stereotype.Service
+import site.honmoon.storage.dto.FileInfo
+import site.honmoon.storage.dto.FileListResponse
+import site.honmoon.storage.dto.PresignedUrlResponse
+import java.time.LocalDateTime
+import java.time.ZoneOffset
+import java.util.*
+import java.util.concurrent.TimeUnit
+
+@Service
+class GcpStorageService(
+    private val storage: Storage,
+) {
+
+    companion object {
+        private val logger = KotlinLogging.logger {}
+        private const val PRESIGNED_URL_EXPIRATION_MINUTES = 15L
+    }
+
+    @Value("\${spring.cloud.gcp.storage.bucket}")
+    private lateinit var bucketName: String
+
+    @Value("\${spring.cloud.gcp.storage.project-id}")
+    private lateinit var projectId: String
+
+    /**
+     * 파일 다운로드
+     */
+    fun downloadFile(fileName: String, folder: String = "uploads"): ByteArray {
+        val fullPath = "$folder/$fileName"
+        val blobId = BlobId.of(bucketName, fullPath)
+        val blob = storage.get(blobId) ?: throw IllegalArgumentException("파일을 찾을 수 없습니다: $fileName")
+
+        return blob.getContent()
+    }
+
+    /**
+     * 파일 리스트 조회
+     */
+    fun listFiles(folder: String = "uploads", maxResults: Int = 100): FileListResponse {
+        val prefix = if (folder.endsWith("/")) folder else "$folder/"
+        val blobs = storage.list(
+            bucketName,
+            Storage.BlobListOption.prefix(prefix),
+            Storage.BlobListOption.pageSize(maxResults.toLong())
+        )
+
+        val files = blobs.values.map { blob ->
+            val uploadedAt = blob.createTimeOffsetDateTime?.toInstant()?.let {
+                LocalDateTime.ofInstant(it, ZoneOffset.UTC)
+            } ?: run {
+                val createdMillis = blob.createTime
+                if (createdMillis != null) {
+                    LocalDateTime.ofEpochSecond(createdMillis / 1000, ((createdMillis % 1000) * 1_000_000).toInt(), ZoneOffset.UTC)
+                } else {
+                    LocalDateTime.now(ZoneOffset.UTC)
+                }
+            }
+
+            FileInfo(
+                fileName = blob.name.substringAfterLast("/"),
+                fileUrl = blob.mediaLink,
+                fileSize = blob.size,
+                contentType = blob.contentType ?: "application/octet-stream",
+                uploadedAt = uploadedAt
+            )
+        }
+
+        return FileListResponse(files = files, totalCount = files.size)
+    }
+
+    /**
+     * 파일 삭제
+     */
+    fun deleteFile(fileName: String, folder: String = "uploads"): Boolean {
+        val fullPath = "$folder/$fileName"
+        val blobId = BlobId.of(bucketName, fullPath)
+        return storage.delete(blobId)
+    }
+
+    /**
+     * Presigned URL 생성 (안전한 업로드를 위한)
+     * S3와 유사한 방식으로 GCP에서 직접 업로드 가능한 URL 제공
+     */
+    fun generatePresignedUploadUrl(
+        originalFileName: String,
+        folder: String = "uploads",
+        contentType: String? = null,
+    ): PresignedUrlResponse {
+        val fileExtension = getFileExtension(originalFileName)
+        val uniqueFileName = generateUniqueFileName(originalFileName, fileExtension)
+        val fullPath = "$folder/$uniqueFileName"
+
+        val blobId = BlobId.of(bucketName, fullPath)
+        val blobInfoBuilder = BlobInfo.newBuilder(blobId)
+            .setContentType(contentType ?: getContentType(fileExtension))
+
+        val blobInfo = blobInfoBuilder.build()
+
+        val expiresAt = LocalDateTime.now().plusMinutes(PRESIGNED_URL_EXPIRATION_MINUTES)
+
+        val url = storage.signUrl(
+            blobInfo,
+            PRESIGNED_URL_EXPIRATION_MINUTES,
+            TimeUnit.MINUTES,
+            Storage.SignUrlOption.withV4Signature(),
+            Storage.SignUrlOption.httpMethod(com.google.cloud.storage.HttpMethod.PUT)
+        )
+
+        logger.info { "Presigned URL 생성: $uniqueFileName, 만료시간: $expiresAt" }
+
+        return PresignedUrlResponse(
+            uploadUrl = url.toString(),
+            fileName = uniqueFileName,
+            expiresAt = expiresAt
+        )
+    }
+
+    /**
+     * Presigned URL 생성 (다운로드용)
+     */
+    fun generatePresignedDownloadUrl(
+        fileName: String,
+        folder: String = "uploads",
+        expirationMinutes: Long = 60,
+    ): String {
+        val fullPath = "$folder/$fileName"
+        val blobId = BlobId.of(bucketName, fullPath)
+        val blob = storage.get(blobId) ?: throw IllegalArgumentException("파일을 찾을 수 없습니다: $fileName")
+
+        return storage.signUrl(
+            blob,
+            expirationMinutes,
+            TimeUnit.MINUTES,
+            Storage.SignUrlOption.withV4Signature()
+        ).toString()
+    }
+
+    private fun getFileExtension(fileName: String): String {
+        return if (fileName.contains(".")) {
+            fileName.substringAfterLast(".")
+        } else {
+            ""
+        }
+    }
+
+    private fun generateUniqueFileName(originalFileName: String, extension: String): String {
+        val baseName = if (originalFileName.contains(".")) {
+            originalFileName.substringBeforeLast(".")
+        } else {
+            originalFileName
+        }
+
+        val timestamp = System.currentTimeMillis()
+        val uuid = UUID.randomUUID().toString().substring(0, 8)
+
+        return if (extension.isNotEmpty()) {
+            "${'$'}{baseName}_${'$'}{timestamp}_${'$'}{uuid}.${'$'}{extension}"
+        } else {
+            "${'$'}{baseName}_${'$'}{timestamp}_${'$'}{uuid}"
+        }
+    }
+
+    private fun getContentType(extension: String): String {
+        return when (extension.lowercase()) {
+            "jpg", "jpeg" -> "image/jpeg"
+            "png" -> "image/png"
+            "gif" -> "image/gif"
+            "webp" -> "image/webp"
+            else -> "application/octet-stream"
+        }
+    }
+} 

@@ -16,4 +16,13 @@ enum class ErrorCode(
     INTERNAL_SERVER_ERROR(1500, ErrorStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류입니다."),
     UNKNOWN_ERROR(9999, ErrorStatus.INTERNAL_SERVER_ERROR, "알 수 없는 오류입니다."),
 
+    RESOURCE_NOT_FOUND(1406, ErrorStatus.NOT_FOUND, "요청한 리소스를 찾을 수 없습니다: %s"),
+    USER_NOT_FOUND(1407, ErrorStatus.NOT_FOUND, "사용자를 찾을 수 없습니다: %s"),
+    MISSION_NOT_FOUND(1408, ErrorStatus.NOT_FOUND, "미션을 찾을 수 없습니다: %s"),
+    RAFFLE_NOT_FOUND(1409, ErrorStatus.NOT_FOUND, "래플을 찾을 수 없습니다: %s"),
+    ACTIVITY_NOT_FOUND(1410, ErrorStatus.NOT_FOUND, "활동 기록을 찾을 수 없습니다: %s"),
+    POINT_HISTORY_NOT_FOUND(1411, ErrorStatus.NOT_FOUND, "포인트 기록을 찾을 수 없습니다: %s"),
+    PLACE_NOT_FOUND(1412, ErrorStatus.NOT_FOUND, "장소를 찾을 수 없습니다: %s"),
+    DUPLICATE_ACTIVITY(1413, ErrorStatus.BAD_REQUEST, "이미 등록된 활동입니다."),
+
 }

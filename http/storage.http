@@ -1,0 +1,47 @@
+### 파일 업로드 URL 생성
+POST {{host}}/api/v1/files/upload-url?fileName=test.jpg&folder=images&contentType=image/jpeg&userId=2c0cd5f3-2993-4b71-a8da-5beeb79ad43c
+Accept: application/json
+
+> {%
+client.test("파일 업로드 URL 생성 - 200", () => {
+  client.assert(response.status === 200, "Status must be 200 OK");
+  client.assert(!!response.body.data.uploadUrl, "uploadUrl should exist");
+  client.assert(!!response.body.data.fileName, "fileName should exist");
+});
+%}
+
+### 파일 URL 조회
+GET {{host}}/api/v1/files/url/test.jpg
+Accept: application/json
+
+> {%
+client.test("파일 URL 조회 - 200 또는 404", () => {
+  client.assert([200, 404].includes(response.status), "Expected 200 or 404");
+  if (response.status === 200) {
+    client.assert(typeof response.body.data === 'string', "File URL should be a string");
+  }
+});
+%}
+
+### 파일 삭제 (본인 파일만 삭제 가능)
+DELETE {{host}}/api/v1/files/test.jpg?userId=2c0cd5f3-2993-4b71-a8da-5beeb79ad43c
+Accept: application/json
+
+> {%
+client.test("파일 삭제 - 200 또는 404", () => {
+  client.assert([200, 404].includes(response.status), "Expected 200 or 404");
+  if (response.status === 200) {
+    client.assert(typeof response.body.data === 'boolean', "Delete result should be boolean");
+  }
+});
+%}
+
+### 다른 사용자 파일 삭제 시도 (실패해야 함)
+DELETE {{host}}/api/v1/files/test.jpg?userId=6f8e9e91-530f-410a-9796-a20c428297c9
+Accept: application/json
+
+> {%
+client.test("다른 사용자 파일 삭제 시도 - 400 또는 404", () => {
+  client.assert([400, 404].includes(response.status), "Expected 400 or 404 - should not allow deleting other user's files");
+});
+%}
