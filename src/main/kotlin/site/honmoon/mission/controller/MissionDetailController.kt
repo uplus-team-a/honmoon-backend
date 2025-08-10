@@ -7,14 +7,20 @@ import org.springframework.web.bind.annotation.*
 import site.honmoon.auth.security.CurrentUser
 import site.honmoon.auth.security.UserPrincipal
 import site.honmoon.common.Response
+import site.honmoon.mission.dto.MissionAnswerRequest
+import site.honmoon.mission.dto.MissionAnswerResponse
 import site.honmoon.mission.dto.MissionDetailResponse
+import site.honmoon.mission.dto.MissionImageAnswerRequest
 import site.honmoon.mission.service.MissionDetailService
+import site.honmoon.mission.service.MissionAnswerService
+import java.util.*
 
 @Tag(name = "Mission Detail", description = "미션 상세 정보 관련 API")
 @RestController
 @RequestMapping("/api/missions")
 class MissionDetailController(
-    private val missionDetailService: MissionDetailService
+    private val missionDetailService: MissionDetailService,
+    private val missionAnswerService: MissionAnswerService
 ) {
     @Operation(
         summary = "미션 상세 정보 조회",
@@ -27,5 +33,37 @@ class MissionDetailController(
         @CurrentUser currentUser: UserPrincipal?
     ): Response<MissionDetailResponse> {
         return Response.success(missionDetailService.getMissionDetail(id))
+    }
+
+    @Operation(
+        summary = "미션 답변 제출",
+        description = "퀴즈 미션에 답변을 제출하고 정답 여부에 따라 포인트를 지급합니다."
+    )
+    @PostMapping("/{id}/submit-answer")
+    fun submitMissionAnswer(
+        @Parameter(description = "미션 ID", example = "1")
+        @PathVariable id: Long,
+        @RequestBody request: MissionAnswerRequest,
+        @CurrentUser currentUser: UserPrincipal
+    ): Response<MissionAnswerResponse> {
+        val userId = UUID.fromString(currentUser.subject)
+        val result = missionAnswerService.submitAnswer(id, request.answer, userId)
+        return Response.success(result)
+    }
+
+    @Operation(
+        summary = "미션 이미지 답변 제출",
+        description = "이미지 업로드 퀴즈 미션에 이미지를 제출하고 OpenAI로 텍스트 추출 후 정답 판별합니다."
+    )
+    @PostMapping("/{id}/submit-image-answer")
+    fun submitMissionImageAnswer(
+        @Parameter(description = "미션 ID", example = "1")
+        @PathVariable id: Long,
+        @RequestBody request: MissionImageAnswerRequest,
+        @CurrentUser currentUser: UserPrincipal
+    ): Response<MissionAnswerResponse> {
+        val userId = UUID.fromString(currentUser.subject)
+        val result = missionAnswerService.submitAnswerWithImage(id, request.imageUrl, userId)
+        return Response.success(result)
     }
 } 

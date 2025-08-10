@@ -7,5 +7,4 @@ enum class MissionType {
     PLACE_VISIT,
     PHOTO_UPLOAD,
     SURVEY,
-    SOCIAL_SHARE
-} 
+}

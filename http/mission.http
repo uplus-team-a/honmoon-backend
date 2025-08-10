@@ -55,6 +55,60 @@ Accept: application/json
 
 > {%
 client.test("미션 장소별 미션 목록 조회 - 200", () => {
-  client.assert(response.status === 200 || response.status === 200, "Status must be 200");
+  client.assert(response.status === 200, "Status must be 200");
+});
+%}
+
+### 미션 답변 제출 (정답)
+POST {{host}}/api/missions/1/submit-answer
+Content-Type: application/json
+Accept: application/json
+
+{
+  "answer": "서울"
+}
+
+> {%
+client.test("미션 답변 제출 - 200", () => {
+  client.assert(response.status === 200, "Status must be 200 OK");
+  client.assert(response.body.success, "Response must be successful");
+  client.assert(response.body.data.hasOwnProperty("isCorrect"), "Response must contain isCorrect");
+  client.assert(response.body.data.hasOwnProperty("pointsEarned"), "Response must contain pointsEarned");
+});
+%}
+
+### 미션 답변 제출 (오답)
+POST {{host}}/api/missions/1/submit-answer
+Content-Type: application/json
+Accept: application/json
+
+{
+  "answer": "부산"
+}
+
+> {%
+client.test("미션 답변 제출 오답 - 200", () => {
+  client.assert(response.status === 200, "Status must be 200 OK");
+  client.assert(response.body.success, "Response must be successful");
+  client.assert(response.body.data.isCorrect === false, "Answer should be incorrect");
+  client.assert(response.body.data.pointsEarned === 0, "Points earned should be 0");
+});
+%}
+
+### 미션 이미지 답변 제출
+POST {{host}}/api/missions/1/submit-image-answer
+Content-Type: application/json
+Accept: application/json
+
+{
+  "imageUrl": "https://example.com/image.jpg"
+}
+
+> {%
+client.test("미션 이미지 답변 제출 - 200", () => {
+  client.assert(response.status === 200, "Status must be 200 OK");
+  client.assert(response.body.success, "Response must be successful");
+  client.assert(response.body.data.hasOwnProperty("isCorrect"), "Response must contain isCorrect");
+  client.assert(response.body.data.hasOwnProperty("pointsEarned"), "Response must contain pointsEarned");
 });
 %} 

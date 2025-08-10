@@ -83,23 +83,6 @@ class PointHistoryController(
     }
 
     @Operation(
-        summary = "퀴즈 완료 포인트 지급",
-        description = "사용자가 퀴즈를 정답했을 때 포인트를 지급합니다."
-    )
-    @PostMapping("/earn/quiz")
-    fun earnPointsFromQuiz(
-        @Parameter(description = "사용자 UUID", example = "123e4567-e89b-12d3-a456-426614174000")
-        @RequestParam userId: UUID,
-        @Parameter(description = "퀴즈 ID", example = "1")
-        @RequestParam quizId: Long,
-        @Parameter(description = "획득 포인트", example = "100")
-        @RequestParam points: Int,
-        @CurrentUser currentUser: UserPrincipal?
-    ): Response<PointHistoryResponse> {
-        return Response.success(pointHistoryService.earnPointsFromQuiz(userId, quizId, points))
-    }
-
-    @Operation(
         summary = "래플 응모 포인트 차감",
         description = "사용자가 래플에 응모할 때 포인트를 차감합니다."
     )

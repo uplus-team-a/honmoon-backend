@@ -39,6 +39,9 @@ springCloudGcp = "1.2.8.RELEASE"
 googleCloudStorage = "2.40.0"
 protobuf = "4.28.2"
 
+springAi = "1.0.0-M5"
+googleGenai = "1.11.0"
+
 [libraries]
 # prometheus
 micrometer-registry-prometheus = { module = "io.micrometer:micrometer-registry-prometheus", version.ref = "micrometerPrometheus" }
@@ -57,6 +60,7 @@ spring-boot-configuration-processor = { module = "org.springframework.boot:sprin
 spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test" }
 spring-boot-starter-security = { module = "org.springframework.boot:spring-boot-starter-security" }
 spring-boot-starter-oauth2-client = { module = "org.springframework.boot:spring-boot-starter-oauth2-client" }
+spring-boot-starter-webflux = { module = "org.springframework.boot:spring-boot-starter-webflux" }
 
 # Spring Cloud
 spring-cloud-starter-circuitbreaker-resilience4j = { module = "org.springframework.cloud:spring-cloud-starter-circuitbreaker-resilience4j" }
@@ -111,6 +115,14 @@ guava = { module = "com.google.guava:guava", version.ref = "guava" }
 
 # Protobuf
 protobuf-java = { module = "com.google.protobuf:protobuf-java", version.ref = "protobuf" }
+
+# Spring AI
+spring-ai-bom = { module = "org.springframework.ai:spring-ai-bom", version.ref = "springAi" }
+spring-ai-openai = { module = "org.springframework.ai:spring-ai-openai-spring-boot-starter" }
+spring-ai-vertex-gemini = { module = "org.springframework.ai:spring-ai-vertex-ai-gemini-spring-boot-starter" }
+
+# Google Gen AI (Gemini)
+google-genai = { module = "com.google.genai:google-genai", version.ref = "googleGenai" }
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }

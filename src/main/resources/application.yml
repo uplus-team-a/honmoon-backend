@@ -39,6 +39,21 @@ spring:
     baseline-on-migrate: true
     enabled: true
     locations: classpath:db/migration
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY:}
+      chat:
+        options:
+          model: gpt-4o-mini
+          temperature: 0.1
+    gemini:
+      api-key: ${GEMINI_API_KEY:}
+      chat:
+        completions-path: /v1beta/models/gemini-2.5-flash:generateContent
+        base-url: https://generativelanguage.googleapis.com
+        options:
+          model: gemini-2.5-flash
+          temperature: 0.1
   cloud:
     gcp:
       storage:

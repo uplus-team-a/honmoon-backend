@@ -33,9 +33,14 @@ repositories {
         url = uri("https://plugins.gradle.org/m2/")
     }
     maven("https://jitpack.io")
+    maven {
+        url = uri("https://repo.spring.io/milestone")
+    }
+    google()
 }
 
 extra["springCloudVersion"] = libs.versions.springCloud.get()
+extra["springAiVersion"] = libs.versions.springAi.get()
 
 configurations {
     compileOnly {
@@ -91,6 +96,12 @@ dependencies {
     implementation(libs.spring.cloud.gcp.starter)
     implementation(libs.google.cloud.storage)
 
+    // Spring AI, OpenAI
+    implementation(libs.spring.ai.openai)
+    
+    // Google Gen AI (Gemini) - Spring AI ChatClient
+    implementation(libs.spring.boot.starter.webflux)
+
     developmentOnly(libs.spring.boot.docker.compose)
 
     annotationProcessor(libs.spring.boot.configuration.processor)
@@ -110,6 +121,7 @@ dependencies {
 dependencyManagement {
     imports {
         mavenBom("org.springframework.cloud:spring-cloud-dependencies:${property("springCloudVersion")}")
+        mavenBom("org.springframework.ai:spring-ai-bom:${property("springAiVersion")}")
     }
 }
 
@@ -145,4 +157,14 @@ tasks.jar {
 
 tasks.bootJar {
     enabled = true
+}
+
+tasks.test {
+    useJUnitPlatform()
+    // Kotest autoscan 비활성화로 테스트 시작 시간 단축 및 경고 제거
+    systemProperty("kotest.framework.classpath.scanning.autoscan.disable", "true")
+    testLogging {
+        events("passed", "skipped", "failed")
+        showStandardStreams = true
+    }
 }

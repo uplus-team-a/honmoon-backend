@@ -15,6 +15,7 @@ import site.honmoon.common.ErrorCode
 import site.honmoon.common.exception.EntityNotFoundException
 import site.honmoon.common.exception.DuplicateResourceException
 import java.util.*
+import site.honmoon.mission.service.FallbackAIService
 
 /**
  * 사용자 활동 기록과 미션 제출을 처리하는 서비스
@@ -27,6 +28,7 @@ class UserActivityService(
     private val userSummaryRepository: UserSummaryRepository,
     private val missionDetailRepository: MissionDetailRepository,
     private val pointHistoryService: PointHistoryService,
+    private val fallbackAIService: FallbackAIService,
 ) {
     /**
      * 사용자 활동 단건을 조회한다.
@@ -265,7 +267,10 @@ class UserActivityService(
                 textAnswer?.trim()?.equals(missionDetail.answer?.trim(), ignoreCase = true) ?: false
             }
             MissionType.QUIZ_IMAGE_UPLOAD -> {
-                false
+                val imageUrl = uploadedImageUrl ?: return false
+                val analysis = fallbackAIService.analyzeImage(imageUrl)
+                val result = fallbackAIService.checkImageAnswer(missionDetail, analysis.extractedText)
+                result.isCorrect && result.confidence >= 0.5
             }
             else -> false
         }
