@@ -4,14 +4,17 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f86bfc05-9f47-4816-8d3e-77130fcec7d5" name="Changes" comment="build: 서버 배포">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle.kts" afterDir="false" />
-    </list>
+    <list default="true" id="f86bfc05-9f47-4816-8d3e-77130fcec7d5" name="Changes" comment="save" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ChangesViewManager">
+    <option name="groupingKeys">
+      <option value="directory" />
+      <option value="repository" />
+    </option>
   </component>
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
@@ -46,6 +49,7 @@
         <option value="Kotlin JUnit5 Test Class" />
         <option value="Class" />
         <option value="kotest_class" />
+        <option value="HTTP Public Environment File" />
       </list>
     </option>
   </component>
@@ -67,11 +71,37 @@
   <component name="GitRewordedCommitMessages">
     <option name="commitMessagesMapping">
       <RewordedCommitMessageMapping>
-        <option name="originalMessage" value="save" />
-        <option name="rewordedMessage" value="build: project init" />
+        <option name="originalMessage" value="build: 서버 배포 dev 추가" />
+        <option name="rewordedMessage" value="save" />
       </RewordedCommitMessageMapping>
     </option>
-    <option name="onto" value="b695df4ad64a89ba311bb1c13492c35e58d59676" />
+    <option name="currentCommit" value="1" />
+    <option name="onto" value="4ae194f49320bc16cba954d32e9df5a534f0c366" />
+  </component>
+  <component name="GitToolBoxStore">
+    <option name="recentBranches">
+      <RecentBranches>
+        <option name="branchesForRepo">
+          <list>
+            <RecentBranchesForRepo>
+              <option name="branches">
+                <list>
+                  <RecentBranch>
+                    <option name="branchName" value="feat/devloper" />
+                    <option name="lastUsedInstant" value="1754463356" />
+                  </RecentBranch>
+                  <RecentBranch>
+                    <option name="branchName" value="main" />
+                    <option name="lastUsedInstant" value="1754463355" />
+                  </RecentBranch>
+                </list>
+              </option>
+              <option name="repositoryRootUrl" value="file://$PROJECT_DIR$" />
+            </RecentBranchesForRepo>
+          </list>
+        </option>
+      </RecentBranches>
+    </option>
   </component>
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
@@ -80,16 +110,22 @@
   }
 }</component>
   <component name="HighlightingSettingsPerFile">
+    <setting file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.cloud/google-cloud-storage/1.113.6/c61ca61d0c6fafeaabf747d2aff933e56269230a/google-cloud-storage-1.113.6-sources.jar!/com/google/cloud/storage/Storage.java" root0="SKIP_INSPECTION" />
     <setting file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.flywaydb/flyway-core/10.20.1/6ec65b7db740bef5177b3bf1c29d5e8a427173af/flyway-core-10.20.1-sources.jar!/org/flywaydb/core/api/ErrorCode.java" root0="SKIP_INSPECTION" />
     <setting file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.springframework/spring-context/6.2.6/e729906a7b5422f96e4f3c4273950d60117ab08e/spring-context-6.2.6-sources.jar!/org/springframework/context/annotation/PropertySource.java" root0="SKIP_INSPECTION" />
     <setting file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.springframework/spring-webmvc/6.2.6/de3c23f55a21428a2603892cf3246db5722337d1/spring-webmvc-6.2.6-sources.jar!/org/springframework/web/servlet/mvc/method/annotation/ResponseEntityExceptionHandler.java" root0="SKIP_INSPECTION" />
+  </component>
+  <component name="HttpClientSelectedEnvironments">
+    <file url="file://$PROJECT_DIR$/http/activity.http" environment="local" />
+    <file url="file://$PROJECT_DIR$/http/mission.http" environment="local" />
+    <file url="file://$PROJECT_DIR$/http/login.http" environment="local" />
   </component>
   <component name="KubernetesApiPersistence">{}</component>
   <component name="KubernetesApiProvider">{
   &quot;isMigrated&quot;: true
 }</component>
   <component name="ProblemsViewState">
-    <option name="selectedTabId" value="Security Analysis" />
+    <option name="selectedTabId" value="DEPENDENCY_CHECKER_PROBLEMS_TAB" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 1
@@ -110,6 +146,15 @@
     "Gradle.honmoon-backend [artifactTransforms].executor": "Run",
     "Gradle.honmoon-backend [bootJar].executor": "Run",
     "Gradle.honmoon-backend [clean build].executor": "Run",
+    "Gradle.honmoon-backend [wrapper --gradle-version 8.13].executor": "Run",
+    "HTTP Request.activity | 사용자 최근 활동 조회.executor": "Run",
+    "HTTP Request.activity | 사용자 활동 내역 조회.executor": "Run",
+    "HTTP Request.activity | 장소별 활동 내역 조회.executor": "Run",
+    "HTTP Request.activity | 활동 기록 생성.executor": "Run",
+    "HTTP Request.activity | 활동 내역 상세 조회.executor": "Run",
+    "HTTP Request.login | getGoogleUrl.executor": "Run",
+    "HTTP Request.mission | 미션 상세 정보 조회.executor": "Run",
+    "HTTP Request.user | 사용자 요약 정보 조회.executor": "Run",
     "Kotest.PropertyConfigTest: 환경변수 출력 테스트 (1).executor": "Run",
     "Kotest.PropertyConfigTest: 환경변수 출력 테스트 (2).executor": "Run",
     "Kotest.PropertyConfigTest: 환경변수 출력 테스트 (3).executor": "Run",
@@ -127,35 +172,43 @@
     "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary": "Kotest",
     "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5": "",
     "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.Kotest": "io.kotest.core.spec.style.FreeSpec",
-    "git-widget-placeholder": "main",
+    "database.data.extractors.current.export.id": "SQL-Insert-Multirow.sql.groovy",
+    "database.data.extractors.current.id": "SQL Inserts",
+    "git-widget-placeholder": "feat/devloper",
     "junie.onboarding.icon.badge.shown": "true",
-    "last_opened_file_path": "/Users/jiwon/IdeaProjects/honmoon-backend/src/test/kotlin/site/honmoon/config",
+    "last_opened_file_path": "/Users/jiwon/IdeaProjects/honmoon-backend/src/main/resources/db/data",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "Project",
+    "project.structure.last.edited": "Modules",
     "project.structure.proportion": "0.15",
     "project.structure.side.proportion": "0.15930021",
+    "rest.client.default.execution.environment": "local",
     "settings.editor.selected.configurable": "preferences.pluginManager",
     "vue.rearranger.settings.migration": "true"
   },
   "keyToStringList": {
     "DatabaseDriversLRU": [
       "postgresql"
+    ],
+    "com.intellij.ide.scratch.LRUPopupBuilder$1/": [
+      "PostgreSQL"
     ]
   }
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/main/resources/db/data" />
+      <recent name="$PROJECT_DIR$/src/main/kotlin/site/honmoon/common/exception" />
       <recent name="$PROJECT_DIR$/src/test/kotlin/site/honmoon/config" />
       <recent name="$PROJECT_DIR$/src/main/kotlin/site/honmoon/common" />
       <recent name="$PROJECT_DIR$/src/main/kotlin/site/honmoon/config" />
-      <recent name="$PROJECT_DIR$" />
-      <recent name="$PROJECT_DIR$/src/main/kotlin/site/honmoon" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/main/resources/properties" />
+      <recent name="$PROJECT_DIR$/src/main/resources/db" />
       <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/app/src/main/resources/properteis" />
     </key>
@@ -170,6 +223,7 @@
       <recent name="" />
     </key>
     <key name="K2MoveDeclarationsDialog.RECENT_PACKAGE_KEY">
+      <recent name="site.honmoon.aop" />
       <recent name="site.honmoon.common" />
       <recent name="site.app.site.honmoon" />
     </key>
@@ -177,12 +231,13 @@
   <component name="RunAnythingCache">
     <option name="myCommands">
       <command value="gradle artifactTransforms" />
-      <command value="gradle clean build" />
       <command value="gradle bootJar" />
+      <command value="gradle wrapper --gradle-version 8.13" />
+      <command value="gradle clean build" />
     </option>
   </component>
-  <component name="RunManager" selected="Gradle.honmoon-backend [bootJar]">
-    <configuration name="honmoon-backend [bootJar]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+  <component name="RunManager" selected="Spring Boot.HonMoonApplication">
+    <configuration name="honmoon-backend [clean build]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
@@ -193,7 +248,8 @@
         </option>
         <option name="taskNames">
           <list>
-            <option value="bootJar" />
+            <option value="clean" />
+            <option value="build" />
           </list>
         </option>
         <option name="vmOptions" />
@@ -202,6 +258,18 @@
       <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
       <DebugAllEnabled>false</DebugAllEnabled>
       <RunAsTest>false</RunAsTest>
+      <method v="2" />
+    </configuration>
+    <configuration name="activity | 활동 내역 상세 조회" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" nameIsGenerated="true" path="$PROJECT_DIR$/http/activity.http" executionIdentifier="활동 내역 상세 조회" runType="Run single request">
+      <method v="2" />
+    </configuration>
+    <configuration name="activity | 활동 기록 생성" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" nameIsGenerated="true" path="$PROJECT_DIR$/http/activity.http" executionIdentifier="활동 기록 생성" index="4" runType="Run single request">
+      <method v="2" />
+    </configuration>
+    <configuration name="activity | 사용자 최근 활동 조회" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" nameIsGenerated="true" path="$PROJECT_DIR$/http/activity.http" executionIdentifier="사용자 최근 활동 조회" index="5" runType="Run single request">
+      <method v="2" />
+    </configuration>
+    <configuration name="login | getGoogleUrl" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" nameIsGenerated="true" path="$PROJECT_DIR$/http/login.http" executionIdentifier="getGoogleUrl" index="2" runType="Run single request">
       <method v="2" />
     </configuration>
     <configuration default="true" type="JetRunConfigurationType">
@@ -296,84 +364,29 @@
       </deployment>
       <method v="2" />
     </configuration>
-    <configuration name="PropertyConfigTest: 환경변수 출력 테스트 (1)" type="ioKotest" factoryName="Kotest" temporary="true" defaultName="singleModule">
-      <module name="honmoon.test" />
-      <option name="jrePath" value="" />
-      <option name="jrePathEnabled" value="false" />
-      <option name="passParentEnvs" value="true" />
-      <option name="workingDirectory" value="$MODULE_WORKING_DIR$" />
-      <option name="programParameters" value="" />
-      <option name="specName" value="site.honmoon.config.PropertyConfigTest" />
-      <option name="testPath" value="환경변수 출력 테스트" />
-      <option name="packageName" value="" />
-      <option name="vmparams" value="" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="PropertyConfigTest: 환경변수 출력 테스트 (2)" type="ioKotest" factoryName="Kotest" temporary="true" defaultName="singleModule">
-      <module name="honmoon.test" />
-      <option name="jrePath" value="" />
-      <option name="jrePathEnabled" value="false" />
-      <option name="passParentEnvs" value="true" />
-      <option name="workingDirectory" value="$MODULE_WORKING_DIR$" />
-      <option name="programParameters" value="" />
-      <option name="specName" value="site.honmoon.config.PropertyConfigTest" />
-      <option name="testPath" value="환경변수 출력 테스트" />
-      <option name="packageName" value="" />
-      <option name="vmparams" value="" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="PropertyConfigTest: 환경변수 출력 테스트 (3)" type="ioKotest" factoryName="Kotest" temporary="true" defaultName="singleModule">
-      <module name="honmoon.test" />
-      <option name="jrePath" value="" />
-      <option name="jrePathEnabled" value="false" />
-      <option name="passParentEnvs" value="true" />
-      <option name="workingDirectory" value="$MODULE_WORKING_DIR$" />
-      <option name="programParameters" value="" />
-      <option name="specName" value="site.honmoon.config.PropertyConfigTest" />
-      <option name="testPath" value="환경변수 출력 테스트" />
-      <option name="packageName" value="" />
-      <option name="vmparams" value="" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="PropertyConfigTest: 환경변수 출력 테스트 (4)" type="ioKotest" factoryName="Kotest" temporary="true" defaultName="singleModule">
-      <module name="honmoon.test" />
-      <option name="jrePath" value="" />
-      <option name="jrePathEnabled" value="false" />
-      <option name="passParentEnvs" value="true" />
-      <option name="workingDirectory" value="$MODULE_WORKING_DIR$" />
-      <option name="programParameters" value="" />
-      <option name="specName" value="site.honmoon.config.PropertyConfigTest" />
-      <option name="testPath" value="환경변수 출력 테스트" />
-      <option name="packageName" value="" />
-      <option name="vmparams" value="" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
     <list>
-      <item itemvalue="Gradle.honmoon-backend [bootJar]" />
-      <item itemvalue="Kotest.PropertyConfigTest: 환경변수 출력 테스트 (2)" />
-      <item itemvalue="Kotest.PropertyConfigTest: 환경변수 출력 테스트 (3)" />
-      <item itemvalue="Kotest.PropertyConfigTest: 환경변수 출력 테스트 (4)" />
-      <item itemvalue="Kotest.PropertyConfigTest: 환경변수 출력 테스트 (1)" />
+      <item itemvalue="Gradle.honmoon-backend [clean build]" />
+      <item itemvalue="HTTP Request.activity | 사용자 최근 활동 조회" />
+      <item itemvalue="HTTP Request.activity | 활동 기록 생성" />
+      <item itemvalue="HTTP Request.login | getGoogleUrl" />
       <item itemvalue="Spring Boot.HonMoonApplication" />
       <item itemvalue="Spring Boot.HonmoonApplication" />
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Gradle.honmoon-backend [bootJar]" />
-        <item itemvalue="Kotest.PropertyConfigTest: 환경변수 출력 테스트 (2)" />
-        <item itemvalue="Kotest.PropertyConfigTest: 환경변수 출력 테스트 (4)" />
-        <item itemvalue="Kotest.PropertyConfigTest: 환경변수 출력 테스트 (3)" />
-        <item itemvalue="Kotest.PropertyConfigTest: 환경변수 출력 테스트 (1)" />
+        <item itemvalue="HTTP Request.login | getGoogleUrl" />
+        <item itemvalue="Gradle.honmoon-backend [clean build]" />
+        <item itemvalue="HTTP Request.activity | 활동 기록 생성" />
+        <item itemvalue="HTTP Request.activity | 사용자 최근 활동 조회" />
       </list>
     </recent_temporary>
+  </component>
+  <component name="SQLScriptSettings">
+    <option name="matrix">
+      <map>
+        <entry key="POSTGRES.CreateComplete" value="CreateIfNotExists=1, Owner=1, Grants=1" />
+      </map>
+    </option>
   </component>
   <component name="SharedIndexes">
     <attachedChunks>
@@ -396,7 +409,10 @@
       <workItem from="1754401531722" duration="74000" />
       <workItem from="1754401635439" duration="7721000" />
       <workItem from="1754442161569" duration="1784000" />
-      <workItem from="1754444063018" duration="902000" />
+      <workItem from="1754444063018" duration="4706000" />
+      <workItem from="1754458386526" duration="3502000" />
+      <workItem from="1754575414809" duration="721000" />
+      <workItem from="1754804426205" duration="20403000" />
     </task>
     <task id="LOCAL-00001" summary="save">
       <option name="closed" value="true" />
@@ -502,18 +518,237 @@
       <option name="project" value="LOCAL" />
       <updated>1754444851814</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="build: 서버 배포">
+      <option name="closed" value="true" />
+      <created>1754445975430</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1754445975430</updated>
+    </task>
+    <task id="LOCAL-00015" summary="build: 서버 배포 dev 추가">
+      <option name="closed" value="true" />
+      <created>1754452601705</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1754452601705</updated>
+    </task>
+    <task id="LOCAL-00016" summary="build: 서버 배포 dev 추가">
+      <option name="closed" value="true" />
+      <created>1754463359957</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1754463359957</updated>
+    </task>
+    <task id="LOCAL-00017" summary="save">
+      <option name="closed" value="true" />
+      <created>1754465078021</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1754465078021</updated>
+    </task>
+    <task id="LOCAL-00018" summary="save">
+      <option name="closed" value="true" />
+      <created>1754467021689</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1754467021689</updated>
+    </task>
+    <task id="LOCAL-00019" summary="save">
+      <option name="closed" value="true" />
+      <created>1754467895773</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1754467895773</updated>
+    </task>
+    <task id="LOCAL-00020" summary="save">
+      <option name="closed" value="true" />
+      <created>1754469281561</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1754469281561</updated>
+    </task>
+    <task id="LOCAL-00021" summary="save">
+      <option name="closed" value="true" />
+      <created>1754804683214</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1754804683214</updated>
+    </task>
+    <task id="LOCAL-00022" summary="save">
+      <option name="closed" value="true" />
+      <created>1754805411173</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1754805411173</updated>
+    </task>
+    <task id="LOCAL-00023" summary="save">
+      <option name="closed" value="true" />
+      <created>1754816050518</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1754816050518</updated>
+    </task>
+    <task id="LOCAL-00024" summary="save">
+      <option name="closed" value="true" />
+      <created>1754816474750</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1754816474750</updated>
+    </task>
+    <task id="LOCAL-00025" summary="save">
+      <option name="closed" value="true" />
+      <created>1754823890282</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1754823890282</updated>
+    </task>
+    <task id="LOCAL-00026" summary="save">
+      <option name="closed" value="true" />
+      <created>1754825083438</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1754825083438</updated>
+    </task>
+    <task id="LOCAL-00027" summary="save">
+      <option name="closed" value="true" />
+      <created>1754825561931</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1754825561931</updated>
+    </task>
+    <task id="LOCAL-00028" summary="save">
+      <option name="closed" value="true" />
+      <created>1754825936451</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1754825936451</updated>
+    </task>
+    <task id="LOCAL-00029" summary="save">
+      <option name="closed" value="true" />
+      <created>1754826216665</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1754826216665</updated>
+    </task>
+    <task id="LOCAL-00030" summary="save">
+      <option name="closed" value="true" />
+      <created>1754828729001</created>
+      <option name="number" value="00030" />
+      <option name="presentableId" value="LOCAL-00030" />
+      <option name="project" value="LOCAL" />
+      <updated>1754828729001</updated>
+    </task>
+    <task id="LOCAL-00031" summary="save">
+      <option name="closed" value="true" />
+      <created>1754828731721</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1754828731721</updated>
+    </task>
+    <task id="LOCAL-00032" summary="save">
+      <option name="closed" value="true" />
+      <created>1754829771542</created>
+      <option name="number" value="00032" />
+      <option name="presentableId" value="LOCAL-00032" />
+      <option name="project" value="LOCAL" />
+      <updated>1754829771543</updated>
+    </task>
+    <task id="LOCAL-00033" summary="save">
+      <option name="closed" value="true" />
+      <created>1754830355140</created>
+      <option name="number" value="00033" />
+      <option name="presentableId" value="LOCAL-00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1754830355140</updated>
+    </task>
+    <task id="LOCAL-00034" summary="save">
+      <option name="closed" value="true" />
+      <created>1754830543830</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1754830543830</updated>
+    </task>
+    <task id="LOCAL-00035" summary="save">
+      <option name="closed" value="true" />
+      <created>1754831245383</created>
+      <option name="number" value="00035" />
+      <option name="presentableId" value="LOCAL-00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1754831245383</updated>
+    </task>
+    <task id="LOCAL-00036" summary="save">
+      <option name="closed" value="true" />
+      <created>1754834171334</created>
+      <option name="number" value="00036" />
+      <option name="presentableId" value="LOCAL-00036" />
+      <option name="project" value="LOCAL" />
+      <updated>1754834171334</updated>
+    </task>
+    <task id="LOCAL-00037" summary="save">
+      <option name="closed" value="true" />
+      <created>1754834769888</created>
+      <option name="number" value="00037" />
+      <option name="presentableId" value="LOCAL-00037" />
+      <option name="project" value="LOCAL" />
+      <updated>1754834769888</updated>
+    </task>
+    <option name="localTasksCounter" value="38" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
+    <option name="RECENT_FILTERS">
+      <map>
+        <entry key="Branch">
+          <value>
+            <list>
+              <RecentGroup>
+                <option name="FILTER_VALUES">
+                  <option value="HEAD" />
+                </option>
+              </RecentGroup>
+            </list>
+          </value>
+        </entry>
+      </map>
+    </option>
     <option name="TAB_STATES">
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="HEAD" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
           </value>
         </entry>
       </map>
@@ -521,11 +756,13 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="build: project init" />
-    <MESSAGE value="save" />
     <MESSAGE value="build: gradle init" />
     <MESSAGE value="feat: 가이드용 샘플코드 추가" />
     <MESSAGE value="build: 서버 배포" />
-    <option name="LAST_COMMIT_MESSAGE" value="build: 서버 배포" />
+    <MESSAGE value="build: 서버 배포 dev 추가" />
+    <MESSAGE value="feat: controller mock 작성" />
+    <MESSAGE value="save" />
+    <option name="LAST_COMMIT_MESSAGE" value="save" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

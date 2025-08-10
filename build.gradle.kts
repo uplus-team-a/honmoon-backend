@@ -41,6 +41,12 @@ configurations {
     compileOnly {
         extendsFrom(configurations.annotationProcessor.get())
     }
+    all {
+        resolutionStrategy {
+            force(libs.guava)
+            force(libs.protobuf.java)
+        }
+    }
 }
 
 dependencies {
@@ -55,6 +61,10 @@ dependencies {
     implementation(libs.kotlin.logging.jvm)
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.reactor)
+
+    // Security
+    implementation(libs.spring.boot.starter.security)
+    implementation(libs.spring.boot.starter.oauth2.client)
 
     // Prometheus
     implementation(libs.micrometer.registry.prometheus)
@@ -77,6 +87,10 @@ dependencies {
     implementation(libs.commons.lang3)
     runtimeOnly(libs.h2)
 
+    // Spring Cloud GCP
+    implementation(libs.spring.cloud.gcp.starter)
+    implementation(libs.google.cloud.storage)
+
     developmentOnly(libs.spring.boot.docker.compose)
 
     annotationProcessor(libs.spring.boot.configuration.processor)
@@ -88,6 +102,9 @@ dependencies {
     testImplementation(libs.kotest.extensions.spring)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.mockk)
+
+    // JWT
+    // implementation(libs.auth0.java.jwt)
 }
 
 dependencyManagement {
@@ -110,12 +127,10 @@ allOpen {
     annotation("site.honmoon.annotation.NoArgsConstructor")
 }
 
-tasks.withType<Test> {
-    useJUnitPlatform()
-}
 springBoot {
     mainClass.set("site.honmoon.MainKt")
 }
+
 sourceSets {
     main {
         java {
@@ -123,6 +138,7 @@ sourceSets {
         }
     }
 }
+
 tasks.jar {
     enabled = false
 }

@@ -1,0 +1,80 @@
+
+### 활동 내역 상세 조회
+GET {{host}}/api/user-activities/1
+Accept: application/json
+
+> {%
+    client.test("활동 내역 상세 조회 - 200 또는 404", () => {
+        client.assert([200, 404].includes(response.status), "Expected 200 or 404");
+    });
+%}
+
+### 사용자 활동 내역 조회
+GET {{host}}/api/user-activities/user/{{userId}}
+Accept: application/json
+
+> {%
+    client.test("사용자 활동 내역 조회 - 200", () => {
+        client.assert(response.status === 200, "Status must be 200 OK");
+    });
+%}
+
+### 장소별 활동 내역 조회
+GET {{host}}/api/user-activities/place/{{placeId}}
+Accept: application/json
+
+> {%
+    client.test("장소별 활동 내역 조회 - 200", () => {
+        client.assert(response.status === 200, "Status must be 200 OK");
+    });
+%}
+
+### 활동 기록 생성
+POST {{host}}/api/user-activities?userId={{userId}}&placeId={{placeId}}&description=한강공원에서%20산책
+Accept: application/json
+
+> {%
+    client.test("활동 기록 생성 - 200", () => {
+        client.assert(response.status === 200, "Status must be 200 OK");
+    });
+%}
+
+### 사용자 최근 활동 조회
+GET {{host}}/api/user-activities/user/{{userId}}/recent?limit=10
+Accept: application/json
+
+> {%
+    client.test("사용자 최근 활동 조회 - 200", () => {
+        client.assert(response.status === 200, "Status must be 200 OK");
+    });
+%}
+
+### 내 활동 내역 조회
+GET {{host}}/api/user-activities/me
+Accept: application/json
+
+> {%
+    client.test("내 활동 내역 조회 - 200", () => {
+        client.assert(response.status === 200, "Status must be 200 OK");
+    });
+%}
+
+### 내 최근 활동 조회
+GET {{host}}/api/user-activities/me/recent?limit=10
+Accept: application/json
+
+> {%
+    client.test("내 최근 활동 조회 - 200", () => {
+        client.assert(response.status === 200, "Status must be 200 OK");
+    });
+%}
+
+### 내 퀴즈 답변 제출
+POST {{host}}/api/user-activities/missions/1/submit-quiz/me?textAnswer=정답
+Accept: application/json
+
+> {%
+    client.test("내 퀴즈 답변 제출 - 200", () => {
+        client.assert(response.status === 200, "Status must be 200 OK");
+    });
+%} 

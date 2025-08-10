@@ -1,0 +1,87 @@
+### 구글 인증 URL 발급
+GET {{host}}/api/auth/google/url?scope=openid%20email%20profile&redirectAfter=%2F
+Accept: application/json
+
+> {%
+    client.test("구글 인증 URL 발급 - 200", () => {
+        client.assert(response.status === 200, "Status must be 200 OK");
+        client.assert(!!response.body.data.authorizationUrl, "authorizationUrl must exist");
+        client.log("STATE:", response.body.data.state)
+    });
+%}
+
+### 구글 콜백 시뮬레이션 (code/state 수동 주입 필요)
+GET {{host}}/api/auth/google/callback?code=REPLACE_CODE&state=REPLACE_STATE
+Accept: application/json
+
+> {%
+    client.test("구글 콜백 - 200 또는 400", () => {
+        client.assert([200, 400].includes(response.status), "Expected 200 or 400");
+        if (response.status === 200) {
+            client.global.set("accessToken", response.body.data.jwt.accessToken);
+            client.global.set("refreshToken", response.body.data.jwt.refreshToken);
+        }
+    });
+%}
+
+### 토큰 리프레시
+POST {{host}}/api/auth/token/refresh
+Content-Type: application/json
+
+{
+  "refreshToken": "{{refreshToken}}"
+}
+
+> {%
+    client.test("토큰 리프레시 - 200", () => {
+        client.assert(response.status === 200, "Status must be 200 OK");
+        client.global.set("accessToken", response.body.data.accessToken);
+        client.global.set("refreshToken", response.body.data.refreshToken);
+    });
+%}
+
+### 프로필(me)
+GET {{host}}/api/auth/me
+Authorization: Bearer {{accessToken}}
+Accept: application/json
+
+> {%
+    client.test("me - 200", () => {
+        client.assert(response.status === 200, "Status must be 200 OK");
+    });
+%}
+
+### 로그아웃
+POST {{host}}/api/auth/logout
+Accept: application/json
+
+> {%
+    client.test("logout - 200", () => {
+        client.assert(response.status === 200, "Status must be 200 OK");
+    });
+%}
+
+### 이메일 매직 링크 요청
+POST {{host}}/api/auth/email/magic-link
+Content-Type: application/json
+
+{
+  "email": "jiwon@example.com"
+}
+
+> {%
+    client.test("매직 링크 요청 - 200", () => {
+        client.assert(response.status === 200, "Status must be 200 OK");
+        client.assert(!!response.body.data.magicLink, "magicLink must exist");
+    });
+%}
+
+### 이메일 매직 링크 콜백 (토큰 수동 주입)
+GET {{host}}/api/auth/email/callback?token=REPLACE_TOKEN
+Accept: application/json
+
+> {%
+    client.test("매직 링크 콜백 - 200", () => {
+        client.assert(response.status === 200, "Status must be 200 OK");
+    });
+%} 

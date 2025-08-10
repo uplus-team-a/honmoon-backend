@@ -6,6 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.builder.SpringApplicationBuilder
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
+import org.springframework.cloud.openfeign.EnableFeignClients
 
 
 object HonMoonApplicationDefault {
@@ -18,6 +19,7 @@ object HonMoonApplicationDefault {
 
 @SpringBootApplication
 @ConfigurationPropertiesScan
+@EnableFeignClients
 class HonMoonApplication : SpringBootServletInitializer() {
     override fun configure(builder: SpringApplicationBuilder): SpringApplicationBuilder =
         builder
@@ -28,8 +30,8 @@ class HonMoonApplication : SpringBootServletInitializer() {
 fun main(args: Array<String>) {
     logger.info {
         """
-        Swagger UI: http://localhost:8080/swagger-ui.html
-        OpenAPI Docs (JSON): http://localhost:8080/v3/api-docs
+        Swagger UI: https://honmoon-api.site/swagger-ui.html
+        OpenAPI Docs (JSON): https://honmoon-api.site/v3/api-docs
         """.trimIndent()
     }
 

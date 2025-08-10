@@ -1,6 +1,7 @@
 logging:
   level:
     root: info
+    org.springframework.security: info
 
 management:
   endpoints:
@@ -14,7 +15,6 @@ management:
     metrics:
       export:
         enabled: true
-
 
 server:
   tomcat:
@@ -39,18 +39,39 @@ spring:
     baseline-on-migrate: true
     enabled: true
     locations: classpath:db/migration
+  cloud:
+    gcp:
+      storage:
+        project-id: ${GCP_PROJECT_ID:lexical-rock-465404-f3}
+        bucket: ${GCP_BUCKET_NAME:springboot-honmoon-access}
+
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
+            redirect-uri: ${GOOGLE_REDIRECT_URI:https://honmoon-api.site/api/auth/google/callback}
+            scope: profile,email,openid
+        provider:
+          google:
+            authorization-uri: https://accounts.google.com/o/oauth2/v2/auth
+            token-uri: https://oauth2.googleapis.com/token
+            user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
+            user-name-attribute: sub
+
   jpa:
     open-in-view: false
     show-sql: false
+    hibernate:
+      ddl-auto: none
     properties:
       hibernate:
-        ddl-auto: none
         format_sql: true
         query.in_clause_parameter_padding: true
         default_batch_fetch_size: 50
         connection.provider_disables_autocommit: true
-    hibernate:
-      ddl-auto: none
     database-platform: org.hibernate.dialect.PostgreSQLDialect
   datasource:
     auto-commit: false

@@ -8,6 +8,6 @@ import org.springframework.context.annotation.PropertySources
 @Profile("local")
 @Configuration
 @PropertySources(
-    PropertySource("classpath:properties/env.properties")
+    PropertySource(value = ["classpath:properties/env.properties"], ignoreResourceNotFound = true)
 )
 class PropertyConfig

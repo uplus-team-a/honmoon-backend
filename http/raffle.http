@@ -1,0 +1,140 @@
+
+### 래플 상품 상세 조회
+GET {{host}}/api/raffle-products/1
+Accept: application/json
+
+> {%
+client.test("래플 상품 상세 조회 - 200 또는 404", () => {
+  client.assert([200,404].includes(response.status), "Expected 200 or 404");
+});
+%}
+
+### 래플 상품 목록 조회
+GET {{host}}/api/raffle-products
+Accept: application/json
+
+> {%
+client.test("래플 상품 목록 조회 - 200", () => {
+  client.assert(response.status === 200, "Status must be 200 OK");
+});
+%}
+
+### 래플 상품 검색
+GET {{host}}/api/raffle-products/search?name=아이폰
+Accept: application/json
+
+> {%
+client.test("래플 상품 검색 - 200", () => {
+  client.assert(response.status === 200, "Status must be 200 OK");
+});
+%}
+
+### 포인트별 래플 상품 조회
+GET {{host}}/api/raffle-products/by-points?minPoints=100&maxPoints=1000
+Accept: application/json
+
+> {%
+client.test("포인트별 래플 상품 조회 - 200", () => {
+  client.assert(response.status === 200, "Status must be 200 OK");
+});
+%}
+
+### 래플 상품 응모자 수 조회
+GET {{host}}/api/raffle-products/1/applicants-count
+Accept: application/json
+
+> {%
+client.test("래플 상품 응모자 수 조회 - 200", () => {
+  client.assert(response.status === 200, "Status must be 200 OK");
+});
+%}
+
+### 래플 응모 상세 조회
+GET {{host}}/api/raffle-applications/1
+Accept: application/json
+
+> {%
+client.test("래플 응모 상세 조회 - 200 또는 404", () => {
+  client.assert([200,404].includes(response.status), "Expected 200 or 404");
+});
+%}
+
+### 사용자 래플 응모 내역 조회
+GET {{host}}/api/raffle-applications/user/{{userId}}
+Accept: application/json
+
+> {%
+client.test("사용자 래플 응모 내역 조회 - 200", () => {
+  client.assert(response.status === 200, "Status must be 200 OK");
+});
+%}
+
+### 래플 상품별 응모자 목록 조회
+GET {{host}}/api/raffle-applications/product/1
+Accept: application/json
+
+> {%
+client.test("래플 상품별 응모자 목록 조회 - 200", () => {
+  client.assert(response.status === 200, "Status must be 200 OK");
+});
+%}
+
+### 래플 응모
+POST {{host}}/api/raffle-applications?userId={{userId}}&raffleProductId=1
+Accept: application/json
+
+> {%
+client.test("래플 응모 - 200", () => {
+  client.assert(response.status === 200, "Status must be 200 OK");
+});
+%}
+
+### 래플 당첨자 선정
+POST {{host}}/api/raffle-applications/1/draw?winnerCount=1
+Accept: application/json
+
+> {%
+client.test("래플 당첨자 선정 - 200", () => {
+  client.assert(response.status === 200, "Status must be 200 OK");
+});
+%}
+
+### 사용자 응모 상태 조회
+GET {{host}}/api/raffle-applications/user/{{userId}}/product/1
+Accept: application/json
+
+> {%
+client.test("사용자 응모 상태 조회 - 200", () => {
+  client.assert([200,200].includes(response.status), "Status must be 200");
+});
+%}
+
+### 내 래플 응모 내역 조회
+GET {{host}}/api/raffle-applications/me
+Accept: application/json
+
+> {%
+client.test("내 래플 응모 내역 조회 - 200", () => {
+  client.assert(response.status === 200, "Status must be 200 OK");
+});
+%}
+
+### 내 래플 응모
+POST {{host}}/api/raffle-applications/me?raffleProductId=1
+Accept: application/json
+
+> {%
+client.test("내 래플 응모 - 200", () => {
+  client.assert(response.status === 200, "Status must be 200 OK");
+});
+%}
+
+### 내 응모 상태 조회
+GET {{host}}/api/raffle-applications/me/product/1
+Accept: application/json
+
+> {%
+client.test("내 응모 상태 조회 - 200", () => {
+  client.assert([200,200].includes(response.status), "Status must be 200");
+});
+%} 

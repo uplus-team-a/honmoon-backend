@@ -1,0 +1,70 @@
+
+### 포인트 내역 상세 조회
+GET {{host}}/api/point-history/1
+Accept: application/json
+
+> {%
+client.test("포인트 내역 상세 조회 - 200 또는 404", () => {
+  client.assert([200,404].includes(response.status), "Expected 200 or 404");
+});
+%}
+
+### 사용자 포인트 내역 조회
+GET {{host}}/api/point-history/user/{{userId}}
+Accept: application/json
+
+> {%
+client.test("사용자 포인트 내역 조회 - 200", () => {
+  client.assert(response.status === 200, "Status must be 200 OK");
+});
+%}
+
+### 사용자 포인트 획득 내역 조회
+GET {{host}}/api/point-history/user/{{userId}}/earned
+Accept: application/json
+
+> {%
+client.test("사용자 포인트 획득 내역 조회 - 200", () => {
+  client.assert(response.status === 200, "Status must be 200 OK");
+});
+%}
+
+### 사용자 포인트 사용 내역 조회
+GET {{host}}/api/point-history/user/{{userId}}/used
+Accept: application/json
+
+> {%
+client.test("사용자 포인트 사용 내역 조회 - 200", () => {
+  client.assert(response.status === 200, "Status must be 200 OK");
+});
+%}
+
+### 퀴즈 완료 포인트 지급
+POST {{host}}/api/point-history/earn/quiz?userId={{userId}}&quizId=1&points=100
+Accept: application/json
+
+> {%
+client.test("퀴즈 완료 포인트 지급 - 200", () => {
+  client.assert(response.status === 200, "Status must be 200 OK");
+});
+%}
+
+### 래플 응모 포인트 차감
+POST {{host}}/api/point-history/use/raffle?userId={{userId}}&raffleProductId=1
+Accept: application/json
+
+> {%
+client.test("래플 응모 포인트 차감 - 200", () => {
+  client.assert(response.status === 200, "Status must be 200 OK");
+});
+%} 
+
+### 내 포인트 내역 조회
+GET {{host}}/api/point-history/me
+Accept: application/json
+
+> {%
+client.test("내 포인트 내역 조회 - 200", () => {
+  client.assert(response.status === 200, "Status must be 200 OK");
+});
+%} 

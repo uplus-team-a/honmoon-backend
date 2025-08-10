@@ -9,7 +9,6 @@ springCloud = "2024.0.1"
 springdocOpenapi = "2.8.8"
 
 # Database
-querydslJpa = "5.1.0:jakarta"
 hibernateTypes60 = "2.21.1"
 
 # Logging
@@ -24,8 +23,6 @@ kotestExtensionsSpring = "1.3.0"
 mockk = "1.14.0"
 
 # Utils
-icu4j = "77.1"
-openKoreanText = "2.1.0"
 commonsLang3 = "3.18.0"
 
 # Coroutines
@@ -35,6 +32,12 @@ querydsl = "5.1.0"
 
 # prometheus
 micrometerPrometheus = "1.15.2"
+
+auth0-java-jwt = "4.5.0"
+guava = "32.0.1-jre"
+springCloudGcp = "1.2.8.RELEASE"
+googleCloudStorage = "2.40.0"
+protobuf = "4.28.2"
 
 [libraries]
 # prometheus
@@ -52,10 +55,16 @@ spring-boot-starter-web = { module = "org.springframework.boot:spring-boot-start
 spring-boot-docker-compose = { module = "org.springframework.boot:spring-boot-docker-compose" }
 spring-boot-configuration-processor = { module = "org.springframework.boot:spring-boot-configuration-processor" }
 spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test" }
+spring-boot-starter-security = { module = "org.springframework.boot:spring-boot-starter-security" }
+spring-boot-starter-oauth2-client = { module = "org.springframework.boot:spring-boot-starter-oauth2-client" }
 
 # Spring Cloud
 spring-cloud-starter-circuitbreaker-resilience4j = { module = "org.springframework.cloud:spring-cloud-starter-circuitbreaker-resilience4j" }
 spring-cloud-starter-openfeign = { module = "org.springframework.cloud:spring-cloud-starter-openfeign" }
+spring-cloud-gcp-starter = { module = "org.springframework.cloud:spring-cloud-gcp-starter", version.ref = "springCloudGcp" }
+
+# Google Cloud Storage
+google-cloud-storage = { module = "com.google.cloud:google-cloud-storage", version.ref = "googleCloudStorage" }
 
 # Spring REST Docs
 spring-restdocs-mockmvc = { module = "org.springframework.restdocs:spring-restdocs-mockmvc" }
@@ -73,7 +82,7 @@ kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-t
 
 # QueryDSL
 querydsl-apt = { module = "com.querydsl:querydsl-apt", version.ref = "querydsl" }
-hibernateTypes60 = { module = "com.vladmihalcea:hibernate-types-60", version = "2.21.1" }
+hibernateTypes60 = { module = "com.vladmihalcea:hibernate-types-60", version.ref = "hibernateTypes60" }
 
 # Flyway
 flyway-core = { module = "org.flywaydb:flyway-core" }
@@ -95,6 +104,13 @@ kotest-assertions-core = { module = "io.kotest:kotest-assertions-core", version.
 kotest-runner-junit5 = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotestAssertionsCore" }
 kotest-extensions-spring = { module = "io.kotest.extensions:kotest-extensions-spring", version.ref = "kotestExtensionsSpring" }
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
+auth0-java-jwt = { module = "com.auth0:java-jwt", version.ref = "auth0-java-jwt" }
+
+# Guava
+guava = { module = "com.google.guava:guava", version.ref = "guava" }
+
+# Protobuf
+protobuf-java = { module = "com.google.protobuf:protobuf-java", version.ref = "protobuf" }
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
