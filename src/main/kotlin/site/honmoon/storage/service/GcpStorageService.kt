@@ -115,19 +115,13 @@ class GcpStorageService(
     }
 
     private fun generateUniqueFileName(originalFileName: String, extension: String): String {
-        val baseName = if (originalFileName.contains(".")) {
-            originalFileName.substringBeforeLast(".")
-        } else {
-            originalFileName
-        }
-
         val timestamp = System.currentTimeMillis()
-        val uuid = UUID.randomUUID().toString().substring(0, 8)
+        val uuid = UUID.randomUUID().toString().replace("-", "")
 
         return if (extension.isNotEmpty()) {
-            "${'$'}{baseName}_${'$'}{timestamp}_${'$'}{uuid}.${'$'}{extension}"
+            "${'$'}{uuid}_${'$'}{timestamp}.${'$'}{extension}"
         } else {
-            "${'$'}{baseName}_${'$'}{timestamp}_${'$'}{uuid}"
+            "${'$'}{uuid}_${'$'}{timestamp}"
         }
     }
 

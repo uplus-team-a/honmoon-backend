@@ -8,6 +8,8 @@ data class MissionPlaceResponse(
     val description: String?,
     val location: String?,
     val image: String?,
+    val latitude: Double?,
+    val longitude: Double?,
     val createdAt: Instant,
     val modifiedAt: Instant
 ) 

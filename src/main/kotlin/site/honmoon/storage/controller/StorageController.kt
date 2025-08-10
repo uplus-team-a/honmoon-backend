@@ -13,6 +13,11 @@ import site.honmoon.storage.service.GcpStorageService
 import site.honmoon.storage.service.UploadRateLimitService
 import java.util.*
 
+enum class UploadType(val folderName: String) {
+    MISSION("missions"),
+    PROFILE("profiles")
+}
+
 @Tag(name = "File", description = "File Upload/Download API")
 @RestController
 @RequestMapping("/api/v1/files")
@@ -30,10 +35,7 @@ class StorageController(
     @PostMapping("/upload-url")
     fun createUploadUrl(
         @Parameter(description = "원본 파일명") @RequestParam("fileName") fileName: String,
-        @Parameter(description = "저장할 폴더명 (기본값: images)") @RequestParam(
-            "folder",
-            defaultValue = "images"
-        ) folder: String,
+        @Parameter(description = "업로드 타입 (MISSION 또는 PROFILE)") @RequestParam("uploadType") uploadType: UploadType,
         @Parameter(description = "Content-Type (선택사항)") @RequestParam(
             "contentType",
             required = false
@@ -41,13 +43,14 @@ class StorageController(
         @site.honmoon.auth.security.CurrentUser currentUser: site.honmoon.auth.security.UserPrincipal?,
         @Parameter(description = "사용자 ID") @RequestParam("userId") userId: UUID,
     ): Response<PresignedUrlResponse> {
-        logger.info { "파일 업로드 URL 생성 요청: $fileName by $userId" }
+        logger.info { "파일 업로드 URL 생성 요청: $fileName (${uploadType.folderName}) by $userId" }
 
         if (!uploadRateLimitService.canUpload(userId.toString())) {
             logger.warn { "사용자 업로드 제한 초과: $userId" }
             return Response.error("업로드 제한에 도달했습니다. 잠시 후 다시 시도해주세요.")
         }
 
+        val folder = uploadType.folderName
         val result = gcpStorageService.generatePresignedUploadUrl(fileName, folder, contentType)
         uploadRateLimitService.recordUpload(userId.toString())
         
@@ -64,7 +67,7 @@ class StorageController(
         )
         fileMetadataRepository.save(fileMetadata)
         
-        logger.info { "파일 업로드 URL 생성 완료: ${result.fileName} by $userId" }
+        logger.info { "파일 업로드 URL 생성 완료: ${result.fileName} (원본: $fileName) by $userId" }
         return Response.success(result)
     }
 

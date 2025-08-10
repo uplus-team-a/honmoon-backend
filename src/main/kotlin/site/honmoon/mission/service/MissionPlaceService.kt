@@ -26,6 +26,8 @@ class MissionPlaceService(
             description = missionPlace.description,
             location = missionPlace.location,
             image = missionPlace.image,
+            latitude = missionPlace.latitude,
+            longitude = missionPlace.longitude,
             createdAt = missionPlace.createdAt,
             modifiedAt = missionPlace.modifiedAt
         )
@@ -39,6 +41,8 @@ class MissionPlaceService(
                 description = missionPlace.description,
                 location = missionPlace.location,
                 image = missionPlace.image,
+                latitude = missionPlace.latitude,
+                longitude = missionPlace.longitude,
                 createdAt = missionPlace.createdAt,
                 modifiedAt = missionPlace.modifiedAt
             )
@@ -53,6 +57,8 @@ class MissionPlaceService(
                 description = missionPlace.description,
                 location = missionPlace.location,
                 image = missionPlace.image,
+                latitude = missionPlace.latitude,
+                longitude = missionPlace.longitude,
                 createdAt = missionPlace.createdAt,
                 modifiedAt = missionPlace.modifiedAt
             )
@@ -74,6 +80,8 @@ class MissionPlaceService(
                 description = missionPlace.description,
                 location = missionPlace.location,
                 image = missionPlace.image,
+                latitude = missionPlace.latitude,
+                longitude = missionPlace.longitude,
                 createdAt = missionPlace.createdAt,
                 modifiedAt = missionPlace.modifiedAt
             )

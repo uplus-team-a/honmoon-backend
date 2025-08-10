@@ -25,6 +25,7 @@ class RaffleProductService(
             name = raffleProduct.name,
             description = raffleProduct.description,
             imageUrl = raffleProduct.imageUrl,
+            pointCost = raffleProduct.pointCost,
             createdAt = raffleProduct.createdAt,
             modifiedAt = raffleProduct.modifiedAt
         )
@@ -37,6 +38,7 @@ class RaffleProductService(
                 name = raffleProduct.name,
                 description = raffleProduct.description,
                 imageUrl = raffleProduct.imageUrl,
+                pointCost = raffleProduct.pointCost,
                 createdAt = raffleProduct.createdAt,
                 modifiedAt = raffleProduct.modifiedAt
             )
@@ -50,6 +52,7 @@ class RaffleProductService(
                 name = raffleProduct.name,
                 description = raffleProduct.description,
                 imageUrl = raffleProduct.imageUrl,
+                pointCost = raffleProduct.pointCost,
                 createdAt = raffleProduct.createdAt,
                 modifiedAt = raffleProduct.modifiedAt
             )
@@ -64,6 +67,7 @@ class RaffleProductService(
                 name = raffleProduct.name,
                 description = raffleProduct.description,
                 imageUrl = raffleProduct.imageUrl,
+                pointCost = raffleProduct.pointCost,
                 createdAt = raffleProduct.createdAt,
                 modifiedAt = raffleProduct.modifiedAt
             )

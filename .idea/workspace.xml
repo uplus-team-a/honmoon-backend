@@ -4,7 +4,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f86bfc05-9f47-4816-8d3e-77130fcec7d5" name="Changes" comment="save" />
+    <list default="true" id="f86bfc05-9f47-4816-8d3e-77130fcec7d5" name="Changes" comment="fix: gcp storage 수정">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/site/honmoon/mission/dto/MissionPlaceDto.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/site/honmoon/mission/dto/MissionPlaceDto.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/site/honmoon/mission/service/MissionPlaceService.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/site/honmoon/mission/service/MissionPlaceService.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/site/honmoon/raffle/dto/RaffleProductDto.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/site/honmoon/raffle/dto/RaffleProductDto.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/site/honmoon/raffle/service/RaffleProductService.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/site/honmoon/raffle/service/RaffleProductService.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/site/honmoon/storage/controller/StorageController.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/site/honmoon/storage/controller/StorageController.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/site/honmoon/storage/service/GcpStorageService.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/site/honmoon/storage/service/GcpStorageService.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/data.sql" beforeDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -137,67 +146,68 @@
   <component name="ProjectViewState">
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Docker.compose.yaml.spring-app: Compose Deployment.executor": "Run",
-    "Docker.compose.yaml: Compose Deployment.executor": "Run",
-    "Gradle.Build honmoon-backend.executor": "Run",
-    "Gradle.Download Sources.executor": "Run",
-    "Gradle.honmoon-backend [artifactTransforms].executor": "Run",
-    "Gradle.honmoon-backend [bootJar].executor": "Run",
-    "Gradle.honmoon-backend [clean build].executor": "Run",
-    "Gradle.honmoon-backend [wrapper --gradle-version 8.13].executor": "Run",
-    "HTTP Request.activity | 사용자 최근 활동 조회.executor": "Run",
-    "HTTP Request.activity | 사용자 활동 내역 조회.executor": "Run",
-    "HTTP Request.activity | 장소별 활동 내역 조회.executor": "Run",
-    "HTTP Request.activity | 활동 기록 생성.executor": "Run",
-    "HTTP Request.activity | 활동 내역 상세 조회.executor": "Run",
-    "HTTP Request.login | getGoogleUrl.executor": "Run",
-    "HTTP Request.mission | 미션 상세 정보 조회.executor": "Run",
-    "HTTP Request.user | 사용자 요약 정보 조회.executor": "Run",
-    "Kotest.PropertyConfigTest: 환경변수 출력 테스트 (1).executor": "Run",
-    "Kotest.PropertyConfigTest: 환경변수 출력 테스트 (2).executor": "Run",
-    "Kotest.PropertyConfigTest: 환경변수 출력 테스트 (3).executor": "Run",
-    "Kotest.PropertyConfigTest: 환경변수 출력 테스트 (4).executor": "Run",
-    "Kotest.PropertyConfigTest: 환경변수 출력 테스트.executor": "Run",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RequestMappingsPanelOrder0": "0",
-    "RequestMappingsPanelOrder1": "1",
-    "RequestMappingsPanelWidth0": "75",
-    "RequestMappingsPanelWidth1": "75",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "Spring Boot.HonMoonApplication.executor": "Run",
-    "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary": "Kotest",
-    "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5": "",
-    "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.Kotest": "io.kotest.core.spec.style.FreeSpec",
-    "database.data.extractors.current.export.id": "SQL-Insert-Multirow.sql.groovy",
-    "database.data.extractors.current.id": "SQL Inserts",
-    "git-widget-placeholder": "main",
-    "junie.onboarding.icon.badge.shown": "true",
-    "last_opened_file_path": "/Users/jiwon/IdeaProjects/honmoon-backend/src/main/resources/db/data",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "Modules",
-    "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.15930021",
-    "rest.client.default.execution.environment": "local",
-    "settings.editor.selected.configurable": "preferences.pluginManager",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Docker.compose.yaml.spring-app: Compose Deployment.executor&quot;: &quot;Run&quot;,
+    &quot;Docker.compose.yaml: Compose Deployment.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.AuthIntegrationTest.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.Build honmoon-backend.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.Download Sources.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.honmoon-backend [artifactTransforms].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.honmoon-backend [bootJar].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.honmoon-backend [clean build].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.honmoon-backend [wrapper --gradle-version 8.13].executor&quot;: &quot;Run&quot;,
+    &quot;HTTP Request.activity | 사용자 최근 활동 조회.executor&quot;: &quot;Run&quot;,
+    &quot;HTTP Request.activity | 사용자 활동 내역 조회.executor&quot;: &quot;Run&quot;,
+    &quot;HTTP Request.activity | 장소별 활동 내역 조회.executor&quot;: &quot;Run&quot;,
+    &quot;HTTP Request.activity | 활동 기록 생성.executor&quot;: &quot;Run&quot;,
+    &quot;HTTP Request.activity | 활동 내역 상세 조회.executor&quot;: &quot;Run&quot;,
+    &quot;HTTP Request.login | getGoogleUrl.executor&quot;: &quot;Run&quot;,
+    &quot;HTTP Request.mission | 미션 상세 정보 조회.executor&quot;: &quot;Run&quot;,
+    &quot;HTTP Request.user | 사용자 요약 정보 조회.executor&quot;: &quot;Run&quot;,
+    &quot;Kotest.PropertyConfigTest: 환경변수 출력 테스트 (1).executor&quot;: &quot;Run&quot;,
+    &quot;Kotest.PropertyConfigTest: 환경변수 출력 테스트 (2).executor&quot;: &quot;Run&quot;,
+    &quot;Kotest.PropertyConfigTest: 환경변수 출력 테스트 (3).executor&quot;: &quot;Run&quot;,
+    &quot;Kotest.PropertyConfigTest: 환경변수 출력 테스트 (4).executor&quot;: &quot;Run&quot;,
+    &quot;Kotest.PropertyConfigTest: 환경변수 출력 테스트.executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
+    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
+    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
+    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;Spring Boot.HonMoonApplication.executor&quot;: &quot;Run&quot;,
+    &quot;com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary&quot;: &quot;Kotest&quot;,
+    &quot;com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5&quot;: &quot;&quot;,
+    &quot;com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.Kotest&quot;: &quot;io.kotest.core.spec.style.FreeSpec&quot;,
+    &quot;database.data.extractors.current.export.id&quot;: &quot;SQL-Insert-Multirow.sql.groovy&quot;,
+    &quot;database.data.extractors.current.id&quot;: &quot;SQL Inserts&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/jiwon/IdeaProjects/honmoon-backend/src/main/resources/db/data&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.15930021&quot;,
+    &quot;rest.client.default.execution.environment&quot;: &quot;local&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
-  "keyToStringList": {
-    "DatabaseDriversLRU": [
-      "postgresql"
+  &quot;keyToStringList&quot;: {
+    &quot;DatabaseDriversLRU&quot;: [
+      &quot;postgresql&quot;
     ],
-    "com.intellij.ide.scratch.LRUPopupBuilder$1/": [
-      "PostgreSQL"
+    &quot;com.intellij.ide.scratch.LRUPopupBuilder$1/&quot;: [
+      &quot;PostgreSQL&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/src/main/resources/db/data" />
@@ -237,6 +247,30 @@
     </option>
   </component>
   <component name="RunManager" selected="Spring Boot.HonMoonApplication">
+    <configuration name="AuthIntegrationTest" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value=":test" />
+            <option value="--tests" />
+            <option value="&quot;site.honmoon.auth.AuthIntegrationTest&quot;" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <RunAsTest>true</RunAsTest>
+      <method v="2" />
+    </configuration>
     <configuration name="honmoon-backend [clean build]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
@@ -260,13 +294,13 @@
       <RunAsTest>false</RunAsTest>
       <method v="2" />
     </configuration>
-    <configuration name="activity | 사용자 최근 활동 조회" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" nameIsGenerated="true" path="$PROJECT_DIR$/http/activity.http" executionIdentifier="사용자 최근 활동 조회" index="5" runType="Run single request">
+    <configuration name="activity | 활동 내역 상세 조회" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" nameIsGenerated="true" path="$PROJECT_DIR$/http/activity.http" executionIdentifier="활동 내역 상세 조회" runType="Run single request">
       <method v="2" />
     </configuration>
     <configuration name="activity | 활동 기록 생성" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" nameIsGenerated="true" path="$PROJECT_DIR$/http/activity.http" executionIdentifier="활동 기록 생성" index="4" runType="Run single request">
       <method v="2" />
     </configuration>
-    <configuration name="activity | 활동 내역 상세 조회" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" nameIsGenerated="true" path="$PROJECT_DIR$/http/activity.http" executionIdentifier="활동 내역 상세 조회" runType="Run single request">
+    <configuration name="activity | 사용자 최근 활동 조회" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" nameIsGenerated="true" path="$PROJECT_DIR$/http/activity.http" executionIdentifier="사용자 최근 활동 조회" index="5" runType="Run single request">
       <method v="2" />
     </configuration>
     <configuration name="login | getGoogleUrl" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" nameIsGenerated="true" path="$PROJECT_DIR$/http/login.http" executionIdentifier="getGoogleUrl" index="2" runType="Run single request">
@@ -365,8 +399,9 @@
       <method v="2" />
     </configuration>
     <list>
+      <item itemvalue="Gradle.AuthIntegrationTest" />
       <item itemvalue="Gradle.honmoon-backend [clean build]" />
-      <item itemvalue="HTTP Request.activity | 활동 내역 상세 조회" />
+      <item itemvalue="HTTP Request.activity | 사용자 최근 활동 조회" />
       <item itemvalue="HTTP Request.activity | 활동 기록 생성" />
       <item itemvalue="HTTP Request.login | getGoogleUrl" />
       <item itemvalue="Spring Boot.HonMoonApplication" />
@@ -374,6 +409,7 @@
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Gradle.AuthIntegrationTest" />
         <item itemvalue="HTTP Request.login | getGoogleUrl" />
         <item itemvalue="Gradle.honmoon-backend [clean build]" />
         <item itemvalue="HTTP Request.activity | 활동 기록 생성" />
@@ -412,6 +448,7 @@
       <workItem from="1754458386526" duration="3502000" />
       <workItem from="1754575414809" duration="721000" />
       <workItem from="1754804426205" duration="20403000" />
+      <workItem from="1754836776872" duration="5068000" />
     </task>
     <task id="LOCAL-00001" summary="save">
       <option name="closed" value="true" />
@@ -709,7 +746,15 @@
       <option name="project" value="LOCAL" />
       <updated>1754834769888</updated>
     </task>
-    <option name="localTasksCounter" value="38" />
+    <task id="LOCAL-00038" summary="fix: gcp storage 수정">
+      <option name="closed" value="true" />
+      <created>1754835188961</created>
+      <option name="number" value="00038" />
+      <option name="presentableId" value="LOCAL-00038" />
+      <option name="project" value="LOCAL" />
+      <updated>1754835188961</updated>
+    </task>
+    <option name="localTasksCounter" value="39" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -761,7 +806,8 @@
     <MESSAGE value="build: 서버 배포 dev 추가" />
     <MESSAGE value="feat: controller mock 작성" />
     <MESSAGE value="save" />
-    <option name="LAST_COMMIT_MESSAGE" value="save" />
+    <MESSAGE value="fix: gcp storage 수정" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix: gcp storage 수정" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

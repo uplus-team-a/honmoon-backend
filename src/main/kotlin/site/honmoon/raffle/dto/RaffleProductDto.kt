@@ -7,6 +7,7 @@ data class RaffleProductResponse(
     val name: String,
     val description: String?,
     val imageUrl: String?,
+    val pointCost: Int,
     val createdAt: Instant,
     val modifiedAt: Instant
 ) 
