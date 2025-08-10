@@ -1,14 +1,14 @@
 package site.honmoon.storage.service
 
-import com.google.cloud.storage.*
+import com.google.cloud.storage.BlobId
+import com.google.cloud.storage.BlobInfo
+import com.google.cloud.storage.HttpMethod
+import com.google.cloud.storage.Storage
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
-import site.honmoon.storage.dto.FileInfo
-import site.honmoon.storage.dto.FileListResponse
 import site.honmoon.storage.dto.PresignedUrlResponse
 import java.time.LocalDateTime
-import java.time.ZoneOffset
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -37,41 +37,6 @@ class GcpStorageService(
         val blob = storage.get(blobId) ?: throw IllegalArgumentException("파일을 찾을 수 없습니다: $fileName")
 
         return blob.getContent()
-    }
-
-    /**
-     * 파일 리스트 조회
-     */
-    fun listFiles(folder: String = "uploads", maxResults: Int = 100): FileListResponse {
-        val prefix = if (folder.endsWith("/")) folder else "$folder/"
-        val blobs = storage.list(
-            bucketName,
-            Storage.BlobListOption.prefix(prefix),
-            Storage.BlobListOption.pageSize(maxResults.toLong())
-        )
-
-        val files = blobs.values.map { blob ->
-            val uploadedAt = blob.createTimeOffsetDateTime?.toInstant()?.let {
-                LocalDateTime.ofInstant(it, ZoneOffset.UTC)
-            } ?: run {
-                val createdMillis = blob.createTime
-                if (createdMillis != null) {
-                    LocalDateTime.ofEpochSecond(createdMillis / 1000, ((createdMillis % 1000) * 1_000_000).toInt(), ZoneOffset.UTC)
-                } else {
-                    LocalDateTime.now(ZoneOffset.UTC)
-                }
-            }
-
-            FileInfo(
-                fileName = blob.name.substringAfterLast("/"),
-                fileUrl = blob.mediaLink,
-                fileSize = blob.size,
-                contentType = blob.contentType ?: "application/octet-stream",
-                uploadedAt = uploadedAt
-            )
-        }
-
-        return FileListResponse(files = files, totalCount = files.size)
     }
 
     /**
@@ -109,7 +74,7 @@ class GcpStorageService(
             PRESIGNED_URL_EXPIRATION_MINUTES,
             TimeUnit.MINUTES,
             Storage.SignUrlOption.withV4Signature(),
-            Storage.SignUrlOption.httpMethod(com.google.cloud.storage.HttpMethod.PUT)
+            Storage.SignUrlOption.httpMethod(HttpMethod.PUT)
         )
 
         logger.info { "Presigned URL 생성: $uniqueFileName, 만료시간: $expiresAt" }

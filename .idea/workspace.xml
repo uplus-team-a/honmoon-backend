@@ -174,7 +174,7 @@
     "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.Kotest": "io.kotest.core.spec.style.FreeSpec",
     "database.data.extractors.current.export.id": "SQL-Insert-Multirow.sql.groovy",
     "database.data.extractors.current.id": "SQL Inserts",
-    "git-widget-placeholder": "feat/devloper",
+    "git-widget-placeholder": "main",
     "junie.onboarding.icon.badge.shown": "true",
     "last_opened_file_path": "/Users/jiwon/IdeaProjects/honmoon-backend/src/main/resources/db/data",
     "node.js.detected.package.eslint": "true",
@@ -260,13 +260,13 @@
       <RunAsTest>false</RunAsTest>
       <method v="2" />
     </configuration>
-    <configuration name="activity | 활동 내역 상세 조회" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" nameIsGenerated="true" path="$PROJECT_DIR$/http/activity.http" executionIdentifier="활동 내역 상세 조회" runType="Run single request">
+    <configuration name="activity | 사용자 최근 활동 조회" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" nameIsGenerated="true" path="$PROJECT_DIR$/http/activity.http" executionIdentifier="사용자 최근 활동 조회" index="5" runType="Run single request">
       <method v="2" />
     </configuration>
     <configuration name="activity | 활동 기록 생성" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" nameIsGenerated="true" path="$PROJECT_DIR$/http/activity.http" executionIdentifier="활동 기록 생성" index="4" runType="Run single request">
       <method v="2" />
     </configuration>
-    <configuration name="activity | 사용자 최근 활동 조회" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" nameIsGenerated="true" path="$PROJECT_DIR$/http/activity.http" executionIdentifier="사용자 최근 활동 조회" index="5" runType="Run single request">
+    <configuration name="activity | 활동 내역 상세 조회" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" nameIsGenerated="true" path="$PROJECT_DIR$/http/activity.http" executionIdentifier="활동 내역 상세 조회" runType="Run single request">
       <method v="2" />
     </configuration>
     <configuration name="login | getGoogleUrl" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" nameIsGenerated="true" path="$PROJECT_DIR$/http/login.http" executionIdentifier="getGoogleUrl" index="2" runType="Run single request">
@@ -366,7 +366,7 @@
     </configuration>
     <list>
       <item itemvalue="Gradle.honmoon-backend [clean build]" />
-      <item itemvalue="HTTP Request.activity | 사용자 최근 활동 조회" />
+      <item itemvalue="HTTP Request.activity | 활동 내역 상세 조회" />
       <item itemvalue="HTTP Request.activity | 활동 기록 생성" />
       <item itemvalue="HTTP Request.login | getGoogleUrl" />
       <item itemvalue="Spring Boot.HonMoonApplication" />
@@ -377,7 +377,6 @@
         <item itemvalue="HTTP Request.login | getGoogleUrl" />
         <item itemvalue="Gradle.honmoon-backend [clean build]" />
         <item itemvalue="HTTP Request.activity | 활동 기록 생성" />
-        <item itemvalue="HTTP Request.activity | 사용자 최근 활동 조회" />
       </list>
     </recent_temporary>
   </component>
