@@ -1,9 +1,36 @@
 ### 0) 변수 설정(필요 시)
-@signupEmail=jiwon@example.com
+@signupEmail=sylvester7412@gmail.com
 @signupName=지원
 @userId={{userId}}
+@basicAuth={{basicToken}}
 
-### 1) 회원가입: 이메일 매직 링크 발급
+### 1) Basic 인증으로 테스트용 세션 토큰 발급
+POST {{host}}/api/auth/test-token
+Accept: application/json
+Authorization: {{basicToken}}
+
+> {%
+    client.test("Basic 테스트 토큰 발급 - 200", () => {
+        client.assert(response.status === 200, "Status must be 200 OK");
+        client.assert(!!response.body.data.token, "token must exist");
+    });
+    const tok = response.body.data.token;
+    client.global.set("token", `Bearer ${tok}`);
+%}
+
+### 1-1) 현재 사용자 프로필 확인(테스트 토큰)
+GET {{host}}/api/auth/me
+Accept: application/json
+Authorization: {{token}}
+
+> {%
+    client.test("현재 사용자 프로필(테스트 토큰) - 200", () => {
+        client.assert(response.status === 200, "Status must be 200 OK");
+        client.assert(!!response.body.data.sub, "sub must exist");
+    });
+%}
+
+### 2) 회원가입: 이메일 매직 링크 발급
 POST {{host}}/api/auth/signup/email
 Content-Type: application/json
 
@@ -13,49 +40,49 @@ Content-Type: application/json
 }
 
 > {%
-  client.test("회원가입 매직 링크 요청 - 200", () => {
-    client.assert(response.status === 200, "Status must be 200 OK");
-    client.assert(!!response.body.data.magicLink, "magicLink must exist");
-  });
-  const magic = response.body.data.magicLink;
-  client.global.set("signupMagicLink", magic);
-  const m = magic.match(/[?&]token=([^&]+)/);
-  if (m && m[1]) {
-    client.global.set("signupToken", m[1]);
-  }
+    client.test("회원가입 매직 링크 요청 - 200", () => {
+        client.assert(response.status === 200, "Status must be 200 OK");
+        client.assert(!!response.body.data.magicLink, "magicLink must exist");
+    });
+    const magic = response.body.data.magicLink;
+    client.global.set("signupMagicLink", magic);
+    const m = magic.match(/[?&]token=([^&]+)/);
+    if (m && m[1]) {
+        client.global.set("signupToken", m[1]);
+    }
 %}
 
-### 2) 회원가입: 백엔드 콜백 검증 → 세션 토큰 발급(302 Location 해시)
+### 3) 회원가입: 백엔드 콜백 검증 → 세션 토큰 발급(302 Location 해시)
 GET {{host}}/api/auth/email/callback?token={{signupToken}}&purpose=signup
 Accept: application/json
 
 > {%
-  client.test("백엔드 콜백 검증 - 302", () => {
-    client.assert([302, 400].includes(response.status), "Expected 302 or 400");
-  });
-  if (response.status === 302) {
-    const loc = response.headers.valueOf('Location');
-    const m = loc && loc.match(/#token=([^&]+)/);
-    if (m && m[1]) {
-      client.global.set("sessionToken", m[1]);
-      client.global.set("token", `Bearer ${m[1]}`);
+    client.test("백엔드 콜백 검증 - 302", () => {
+        client.assert([302, 400].includes(response.status), "Expected 302 or 400");
+    });
+    if (response.status === 302) {
+        const loc = response.headers.valueOf('Location');
+        const m = loc && loc.match(/#token=([^&]+)/);
+        if (m && m[1]) {
+            client.global.set("sessionToken", m[1]);
+            client.global.set("token", `Bearer ${m[1]}`);
+        }
     }
-  }
 %}
 
-### 3) 회원가입 직후: 현재 사용자 프로필 확인
+### 4) 회원가입 직후: 현재 사용자 프로필 확인
 GET {{host}}/api/auth/me
 Accept: application/json
 Authorization: {{token}}
 
 > {%
-  client.test("현재 사용자 프로필 - 200", () => {
-    client.assert(response.status === 200, "Status must be 200 OK");
-    client.assert(!!response.body.data.sub, "sub must exist");
-  });
+    client.test("현재 사용자 프로필 - 200", () => {
+        client.assert(response.status === 200, "Status must be 200 OK");
+        client.assert(!!response.body.data.sub, "sub must exist");
+    });
 %}
 
-### 4) 로그인: 사용자ID로 매직 링크 발급(사전 확보된 userId 필요)
+### 5) 로그인: 사용자ID로 매직 링크 발급(사전 확보된 userId 필요)
 POST {{host}}/api/auth/login/email/by-user
 Content-Type: application/json
 
@@ -64,56 +91,56 @@ Content-Type: application/json
 }
 
 > {%
-  client.test("로그인 매직 링크 요청(by-user) - 200", () => {
-    client.assert(response.status === 200, "Status must be 200 OK");
-    client.assert(!!response.body.data.magicLink, "magicLink must exist");
-  });
-  const magic = response.body.data.magicLink;
-  client.global.set("loginMagicLink", magic);
-  const m = magic.match(/[?&]token=([^&]+)/);
-  if (m && m[1]) {
-    client.global.set("loginToken", m[1]);
-  }
+    client.test("로그인 매직 링크 요청(by-user) - 200", () => {
+        client.assert(response.status === 200, "Status must be 200 OK");
+        client.assert(!!response.body.data.magicLink, "magicLink must exist");
+    });
+    const magic = response.body.data.magicLink;
+    client.global.set("loginMagicLink", magic);
+    const m = magic.match(/[?&]token=([^&]+)/);
+    if (m && m[1]) {
+        client.global.set("loginToken", m[1]);
+    }
 %}
 
-### 5) 로그인: 백엔드 콜백 검증 → 새 세션 토큰 발급
+### 6) 로그인: 백엔드 콜백 검증 → 새 세션 토큰 발급
 GET {{host}}/api/auth/email/callback?token={{loginToken}}&purpose=login
 Accept: application/json
 
 > {%
-  client.test("백엔드 콜백 검증(로그인) - 302", () => {
-    client.assert([302, 400].includes(response.status), "Expected 302 or 400");
-  });
-  if (response.status === 302) {
-    const loc = response.headers.valueOf('Location');
-    const m = loc && loc.match(/#token=([^&]+)/);
-    if (m && m[1]) {
-      client.global.set("sessionToken", m[1]);
-      client.global.set("token", `Bearer ${m[1]}`);
+    client.test("백엔드 콜백 검증(로그인) - 302", () => {
+        client.assert([302, 400].includes(response.status), "Expected 302 or 400");
+    });
+    if (response.status === 302) {
+        const loc = response.headers.valueOf('Location');
+        const m = loc && loc.match(/#token=([^&]+)/);
+        if (m && m[1]) {
+            client.global.set("sessionToken", m[1]);
+            client.global.set("token", `Bearer ${m[1]}`);
+        }
     }
-  }
 %}
 
-### 6) 현재 사용자 프로필 확인(로그인 후)
+### 7) 현재 사용자 프로필 확인(로그인 후)
 GET {{host}}/api/auth/me
 Accept: application/json
 Authorization: {{token}}
 
 > {%
-  client.test("현재 사용자 프로필(로그인 후) - 200", () => {
-    client.assert(response.status === 200, "Status must be 200 OK");
-  });
+    client.test("현재 사용자 프로필(로그인 후) - 200", () => {
+        client.assert(response.status === 200, "Status must be 200 OK");
+    });
 %}
 
-### 7) 로그아웃
+### 8) 로그아웃
 POST {{host}}/api/auth/logout
 Accept: application/json
 Authorization: {{token}}
 
 > {%
-  client.test("logout - 200", () => {
-    client.assert(response.status === 200, "Status must be 200 OK");
-  });
+    client.test("logout - 200", () => {
+        client.assert(response.status === 200, "Status must be 200 OK");
+    });
 %}
 
 ### (선택) Google OAuth URL 발급

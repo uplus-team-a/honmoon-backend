@@ -7,6 +7,7 @@ import site.honmoon.common.Constant
 import site.honmoon.common.ErrorCode
 import site.honmoon.common.exception.EntityNotFoundException
 import site.honmoon.point.entity.PointHistory
+import site.honmoon.common.exception.InvalidRequestException
 import site.honmoon.point.repository.PointHistoryRepository
 import site.honmoon.user.dto.UserResponse
 import site.honmoon.user.entity.Users
@@ -36,7 +37,7 @@ class UserService(
         val user = getByIdOrThrow(userId)
         val email = user.email?.trim()
         if (email.isNullOrBlank()) {
-            throw IllegalArgumentException("이 사용자에 등록된 이메일이 없습니다.")
+            throw InvalidRequestException(ErrorCode.USER_EMAIL_NOT_FOUND)
         }
         return email
     }

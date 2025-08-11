@@ -7,6 +7,11 @@ import site.honmoon.auth.dto.*
 import site.honmoon.auth.security.SessionAuthService
 import site.honmoon.auth.security.UserPrincipal
 import java.time.LocalDateTime
+import site.honmoon.common.ErrorCode
+import site.honmoon.common.exception.AuthException
+import site.honmoon.common.exception.InvalidRequestException
+import java.time.Instant
+import java.util.UUID
 
 @Service
 class AuthService(
@@ -26,7 +31,9 @@ class AuthService(
     }
 
     fun handleGoogleCallback(code: String, state: String): AuthLoginResponse {
-        require(googleOAuthService.verifyState(state)) { "invalid state" }
+        if (!googleOAuthService.verifyState(state)) {
+            throw InvalidRequestException(ErrorCode.INVALID_STATE)
+        }
         val tokenRes = googleOAuthService.exchangeCodeForTokens(code)
         val userInfoRes = googleOAuthService.fetchUserInfo(tokenRes.accessToken)
         val googleUser = GoogleUserInfo(
@@ -73,7 +80,7 @@ class AuthService(
 
     fun sendSignupMagicLink(body: EmailSignUpRequest): EmailMagicLinkResponse {
         val token = magicLinkService.issue(body.email, 15)
-        val magicLink = "https://honmoon.site/auth/email/callback?token=$token&purpose=signup"
+        val magicLink = "https://honmoon.site/api/auth/email/callback?token=$token&purpose=signup"
         val expiresAt = LocalDateTime.now().plusMinutes(15)
         emailService.sendMagicLinkHtml(body.email, magicLink, purpose = "회원가입", name=body.name)
         return EmailMagicLinkResponse(body.email, magicLink, expiresAt)
@@ -83,7 +90,7 @@ class AuthService(
     fun sendLoginMagicLinkByUserId(request: EmailLoginByUserRequest): EmailMagicLinkResponse {
         val email = userService.getEmailByUserId(request.userId)
         val token = magicLinkService.issue(email, 15)
-        val magicLink = "https://honmoon.site/auth/email/callback?token=$token&purpose=login"
+        val magicLink = "https://honmoon.site/api/auth/email/callback?token=$token&purpose=login"
         val expiresAt = LocalDateTime.now().plusMinutes(15)
         emailService.sendMagicLinkHtml(email, magicLink, purpose = "로그인")
         return EmailMagicLinkResponse(email, magicLink, expiresAt)
@@ -91,7 +98,9 @@ class AuthService(
 
     fun handleMagicLinkCallback(token: String, purpose: String?): ResponseEntity<Void> {
         val email = magicLinkService.verify(token)
-        require(email != null) { "invalid or expired token" }
+        if (email == null) {
+            throw AuthException(ErrorCode.INVALID_OR_EXPIRED_TOKEN)
+        }
         val sessionToken = sessionAuthService.createSession(
             UserPrincipal(
                 subject = email,
@@ -103,12 +112,14 @@ class AuthService(
             )
         )
         val redirectUrl =
-            "https://honmoon.site/auth/email/callback#token=$sessionToken&email=$email&purpose=${purpose ?: "login"}"
+            "https://honmoon.site/api/auth/email/callback#token=$sessionToken&email=$email&purpose=${purpose ?: "login"}"
         return ResponseEntity.status(302).header(HttpHeaders.LOCATION, redirectUrl).build()
     }
 
     fun buildCurrentProfile(principal: UserPrincipal?): ProfileResponse {
-        requireNotNull(principal) { "unauthorized" }
+        if (principal == null) {
+            throw AuthException(ErrorCode.UNAUTHORIZED)
+        }
         return ProfileResponse(
             sub = principal.subject,
             email = principal.email,
@@ -124,5 +135,27 @@ class AuthService(
             sessionAuthService.invalidate(token)
         }
         return LogoutResponse(true)
+    }
+
+    /**
+     * Basic 인증된 호출자에게 실제 OAuth 사용자와 동일한 세션 토큰을 발급한다.
+     * 고정 사용자: cf9f9ba7-d1fb-4240-9521-1b1e9a8d8808 (sylvester7412@gmail.com)
+     */
+    fun issueTestTokenForBasicAuth(@Suppress("UNUSED_PARAMETER") principal: UserPrincipal): BasicTokenResponse {
+        val fixedUserId = UUID.fromString("cf9f9ba7-d1fb-4240-9521-1b1e9a8d8808")
+        val user = userService.getByIdOrThrow(fixedUserId)
+
+        val oauthLikePrincipal = UserPrincipal(
+            subject = user.id.toString(),
+            email = user.email,
+            name = user.nickname ?: user.email ?: user.id.toString(),
+            picture = user.profileImageUrl,
+            provider = "google",
+            roles = setOf("ROLE_USER"),
+        )
+
+        val token = sessionAuthService.createSession(oauthLikePrincipal)
+        val expiresAt = Instant.now().plusSeconds(60L * 60L * 24L * 7L)
+        return BasicTokenResponse(token = token, expiresAt = expiresAt)
     }
 }

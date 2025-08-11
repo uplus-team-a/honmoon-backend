@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service
 import site.honmoon.mission.dto.AnswerCheckResult
 import site.honmoon.mission.dto.ImageAnalysisResult
 import site.honmoon.mission.entity.MissionDetail
+import site.honmoon.common.ErrorCode
+import site.honmoon.common.exception.InvalidRequestException
 
 @Service
 @Qualifier("gemini")
@@ -71,7 +73,7 @@ class GeminiService(
         val jsonEnd = responseText.lastIndexOf("}") + 1
 
         if (jsonStart == -1 || jsonEnd <= jsonStart) {
-            throw IllegalArgumentException("No valid JSON found in response")
+            throw InvalidRequestException(ErrorCode.JSON_NOT_FOUND_IN_RESPONSE)
         }
 
         val jsonPart = responseText.substring(jsonStart, jsonEnd)

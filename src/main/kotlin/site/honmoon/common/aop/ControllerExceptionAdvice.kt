@@ -21,6 +21,7 @@ import site.honmoon.common.ErrorCode
 import site.honmoon.common.ErrorResponse
 import site.honmoon.common.exception.CommonException
 import site.honmoon.common.exception.EntityNotFoundException
+import site.honmoon.common.exception.InvalidRequestException
 
 @Hidden
 @RestControllerAdvice
@@ -73,6 +74,18 @@ class ControllerExceptionAdvice(
                 ErrorResponse(
                     ErrorCode.ILLEGAL_REQUEST.code,
                     makeErrorMessage(e)
+                )
+            )
+    }
+
+    @ExceptionHandler(InvalidRequestException::class)
+    fun invalidRequestException(e: InvalidRequestException): ResponseEntity<ErrorResponse> {
+        return ResponseEntity
+            .status(e.status.toHttpStatus())
+            .body(
+                ErrorResponse(
+                    e.code,
+                    e.message ?: "잘못된 요청입니다."
                 )
             )
     }

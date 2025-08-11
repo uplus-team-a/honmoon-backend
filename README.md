@@ -92,19 +92,19 @@ curl -X PUT "$UPLOAD_URL" \
   - GET `/api/point-history/me`
 - 래플 응모 차감: POST `/api/point-history/use/raffle?userId={uuid}&raffleProductId={id}`
 
-### 7) 사용자 요약
+### 7) 사용자
 
-- 사용자 요약/포인트/퀴즈통계/미션통계:
-  - GET `/api/user-summary/{userId}`
-  - GET `/api/user-summary/{userId}/points`
-  - GET `/api/user-summary/{userId}/quiz-stats`
-  - GET `/api/user-summary/{userId}/mission-stats`
-- 내 요약/포인트/퀴즈통계/미션통계:
-  - GET `/api/user-summary/me`, `/api/user-summary/me/points`, `/api/user-summary/me/quiz-stats`, `/api/user-summary/me/mission-stats`
+- 사용자 프로필/포인트/퀴즈통계/미션통계:
+  - GET `/api/users/{userId}`
+  - GET `/api/users/{userId}/points`
+  - GET `/api/users/{userId}/quiz-stats`
+  - GET `/api/users/{userId}/mission-stats`
+- 내 프로필/포인트/퀴즈통계/미션통계:
+  - GET `/api/users/me`, `/api/users/me/points`, `/api/users/me/quiz-stats`, `/api/users/me/mission-stats`
 - 프로필 업데이트/이미지 업데이트:
-  - PATCH `/api/user-summary/me` body `{ "displayName": "..." }`
-  - POST `/api/user-summary/me/profile-image?imageUrl=...`
-  - POST `/api/user-summary/user/{userId}/profile-image?imageUrl=...`
+  - PATCH `/api/users/me` body `{ "nickname": "...", "profileImageUrl": "..." }`
+  - PATCH `/api/users/me/profile-image?imageUrl=...`
+  - PATCH `/api/users/{userId}/profile-image?imageUrl=...`
 
 주의사항
 
@@ -116,7 +116,7 @@ curl -X PUT "$UPLOAD_URL" \
   - `redirectAfter` (optional): 로그인 성공 후 프론트 내 이동 경로
 - Response
 
-```json
+````json
 {
   "success": true,
   "data": {
@@ -125,7 +125,25 @@ curl -X PUT "$UPLOAD_URL" \
     "state": "<state>"
   }
 }
-```
+### 테스트용 세션 토큰 발급 (Basic)
+
+- Endpoint: `POST /api/auth/test-token`
+- 인증: Basic (`BASIC_AUTH_USERNAME`/`BASIC_AUTH_PASSWORD`)
+- 응답 예시
+
+```json
+{
+  "success": true,
+  "data": {
+    "token": "<server-session-token>",
+    "expiresAt": "2025-01-01T00:00:00Z"
+  }
+}
+````
+
+받은 `token`을 `Authorization: Bearer <token>`로 설정해 다른 API를 테스트합니다.
+
+````
 
 - 프론트는 `authorizationUrl`로 리다이렉트합니다.
 
@@ -160,7 +178,7 @@ curl -X PUT "$UPLOAD_URL" \
     "jwt": null
   }
 }
-```
+````
 
 - 이후 API 호출 시 헤더 `Authorization: Bearer <appSessionToken>` 를 포함하세요.
 
@@ -313,13 +331,13 @@ curl -X PUT "$UPLOAD_URL" \
     - 차감 포인트: `raffle_product.point_cost`
   - 내 특정 상품 응모 여부: GET `/api/raffle-applications/me/product/{productId}`
 
-- 사용자 요약(User Summary)
-  - 내 요약: GET `/api/user-summary/me` → `{ totalPoints, totalActivities, ... }`
-  - 내 포인트 현황: GET `/api/user-summary/me/points`
+- 사용자
+  - 내 프로필: GET `/api/users/me` → `{ id, email, nickname, totalPoints, totalActivities, ... }`
+  - 내 포인트 현황: GET `/api/users/me/points`
     - 응답: `{ currentPoints, totalEarned, totalUsed }`
-  - 내 퀴즈 통계: GET `/api/user-summary/me/quiz-stats`
+  - 내 퀴즈 통계: GET `/api/users/me/quiz-stats`
     - 응답: `{ totalQuizzes, correctQuizzes, accuracy, totalPointsEarned }`
-  - 내 미션 통계: GET `/api/user-summary/me/mission-stats`
+  - 내 미션 통계: GET `/api/users/me/mission-stats`
     - 응답: `{ totalMissions, completedMissions, completionRate, totalPointsEarned }`
 
 ### 권장 호출 순서 예시

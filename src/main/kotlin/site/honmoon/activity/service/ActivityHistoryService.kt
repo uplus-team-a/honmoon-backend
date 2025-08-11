@@ -15,6 +15,7 @@ import site.honmoon.mission.service.FallbackAIService
 import site.honmoon.mission.type.MissionType
 import site.honmoon.point.service.PointHistoryService
 import site.honmoon.user.repository.UsersRepository
+import site.honmoon.common.exception.InvalidRequestException
 import java.util.*
 
 /**
@@ -241,20 +242,30 @@ class UserActivityService(
     ) {
         when (missionDetail.missionType) {
             MissionType.QUIZ_MULTIPLE_CHOICE -> {
-                requireNotNull(selectedChoiceIndex) { "4지선다 퀴즈는 선택지 인덱스가 필수입니다." }
-                requireNotNull(missionDetail.choices) { "4지선다 퀴즈는 선택지가 필수입니다." }
-                require(selectedChoiceIndex in 0..(missionDetail.choices?.choices?.size?.minus(1) ?: 0)) {
-                    "선택지 인덱스가 유효하지 않습니다."
+                if (selectedChoiceIndex == null) {
+                    throw InvalidRequestException(ErrorCode.REQUIRED_FIELD_MISSING, "선택지 인덱스")
+                }
+                if (missionDetail.choices == null) {
+                    throw InvalidRequestException(ErrorCode.REQUIRED_FIELD_MISSING, "선택지")
+                }
+                if (selectedChoiceIndex !in 0..(missionDetail.choices?.choices?.size?.minus(1) ?: 0)) {
+                    throw InvalidRequestException(ErrorCode.INVALID_CHOICE_INDEX)
                 }
             }
 
             MissionType.QUIZ_TEXT_INPUT -> {
-                requireNotNull(textAnswer) { "텍스트 입력 퀴즈는 텍스트 답변이 필수입니다." }
-                require(textAnswer.isNotBlank()) { "텍스트 답변이 비어있을 수 없습니다." }
+                if (textAnswer == null) {
+                    throw InvalidRequestException(ErrorCode.REQUIRED_FIELD_MISSING, "텍스트 답변")
+                }
+                if (textAnswer.isBlank()) {
+                    throw InvalidRequestException(ErrorCode.TEXT_ANSWER_EMPTY)
+                }
             }
 
             MissionType.QUIZ_IMAGE_UPLOAD -> {
-                requireNotNull(uploadedImageUrl) { "이미지 업로드 퀴즈는 업로드된 이미지 URL이 필수입니다." }
+                if (uploadedImageUrl == null) {
+                    throw InvalidRequestException(ErrorCode.REQUIRED_FIELD_MISSING, "이미지 URL")
+                }
             }
 
             else -> {
@@ -270,12 +281,12 @@ class UserActivityService(
     ): Boolean {
         return when (missionDetail.missionType) {
             MissionType.QUIZ_MULTIPLE_CHOICE -> {
-                val correctChoiceIndex = missionDetail.choices?.choices?.indexOf(missionDetail.answer)
+                val correctChoiceIndex = missionDetail.choices?.choices?.indexOf(missionDetail.answer?.answer)
                 selectedChoiceIndex == correctChoiceIndex
             }
 
             MissionType.QUIZ_TEXT_INPUT -> {
-                textAnswer?.trim()?.equals(missionDetail.answer?.trim(), ignoreCase = true) ?: false
+                textAnswer?.trim()?.equals(missionDetail.answer?.answer?.trim(), ignoreCase = true) ?: false
             }
 
             MissionType.QUIZ_IMAGE_UPLOAD -> {

@@ -11,6 +11,8 @@ import site.honmoon.storage.dto.PresignedUrlResponse
 import java.time.LocalDateTime
 import java.util.*
 import java.util.concurrent.TimeUnit
+import site.honmoon.common.ErrorCode
+import site.honmoon.common.exception.EntityNotFoundException
 
 @Service
 class GcpStorageService(
@@ -34,7 +36,7 @@ class GcpStorageService(
     fun downloadFile(fileName: String, folder: String = "uploads"): ByteArray {
         val fullPath = "$folder/$fileName"
         val blobId = BlobId.of(bucketName, fullPath)
-        val blob = storage.get(blobId) ?: throw IllegalArgumentException("파일을 찾을 수 없습니다: $fileName")
+        val blob = storage.get(blobId) ?: throw EntityNotFoundException(ErrorCode.RESOURCE_NOT_FOUND, fileName)
 
         return blob.getContent()
     }
@@ -96,7 +98,7 @@ class GcpStorageService(
     ): String {
         val fullPath = "$folder/$fileName"
         val blobId = BlobId.of(bucketName, fullPath)
-        val blob = storage.get(blobId) ?: throw IllegalArgumentException("파일을 찾을 수 없습니다: $fileName")
+        val blob = storage.get(blobId) ?: throw EntityNotFoundException(ErrorCode.RESOURCE_NOT_FOUND, fileName)
 
         return storage.signUrl(
             blob,

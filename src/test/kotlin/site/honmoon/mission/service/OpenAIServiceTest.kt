@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import site.honmoon.mission.entity.MissionDetail
 import site.honmoon.mission.type.MissionType
+import site.honmoon.mission.vo.MissionAnswerVo
 
 @OptIn(ExperimentalKotest::class)
 @Disabled
@@ -41,7 +42,7 @@ class OpenAIServiceTest : DescribeSpec() {
                         points = 100,
                         missionType = MissionType.QUIZ_TEXT_INPUT,
                         question = "다음 장소의 이름은 무엇인가요?",
-                        answer = name
+                        answer = MissionAnswerVo(name)
                     )
                     val result = openAIService.checkTextAnswer(mission, name)
                     println("[OpenAI][Text] name=$name -> ${result}")

@@ -15,12 +15,13 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import site.honmoon.auth.security.TokenAuthenticationFilter
+import site.honmoon.auth.security.SessionAuthService
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
 class SecurityConfig(
-    private val tokenAuthenticationFilter: TokenAuthenticationFilter,
+    private val sessionAuthService: SessionAuthService,
     @Value("\${BASIC_AUTH_USERNAME}") private val basicUsername: String,
     @Value("\${BASIC_AUTH_PASSWORD}") private val basicPassword: String,
     @Value("\${BASIC_AUTH_ROLE:ADMIN}") private val basicRole: String,
@@ -41,6 +42,7 @@ class SecurityConfig(
 
     @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
+        val roleUpper = basicRole.uppercase()
         http
             .csrf { it.disable() }
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
@@ -56,10 +58,14 @@ class SecurityConfig(
                         "/swagger-ui/**",
                         "/actuator/health"
                     ).permitAll()
-                    .anyRequest().authenticated()
+                    .requestMatchers("/api/auth/test-token").hasRole(roleUpper)
+                    .anyRequest().hasRole("USER")
             }
             .httpBasic { }
-            .addFilterBefore(tokenAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
+            .addFilterBefore(
+                TokenAuthenticationFilter(sessionAuthService),
+                UsernamePasswordAuthenticationFilter::class.java
+            )
         return http.build()
     }
 } 

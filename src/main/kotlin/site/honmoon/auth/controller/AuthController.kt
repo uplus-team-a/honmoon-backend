@@ -13,8 +13,9 @@ import site.honmoon.auth.dto.*
 import site.honmoon.auth.security.UserPrincipal
 import site.honmoon.auth.service.AuthService
 import site.honmoon.common.Response
+import site.honmoon.auth.security.CurrentUser
 
-@Tag(name = "Auth", description = "Google OAuth + Basic/Security 세션 인증 API")
+@Tag(name = "Auth", description = "Google OAuth + DB 세션 인증 API")
 @RestController
 @RequestMapping("/api/auth")
 class AuthController(
@@ -45,7 +46,7 @@ class AuthController(
 
     @Operation(
         summary = "Google OAuth 콜백",
-        description = "구글에서 전달한 code/state로 토큰을 교환하고 사용자 정보를 조회한 뒤, 서버 메모리 세션 토큰을 발급합니다.",
+        description = "구글에서 전달한 code/state로 토큰을 교환하고 사용자 정보를 조회한 뒤, 서버 DB 세션 토큰을 발급합니다.",
         responses = [
             ApiResponse(
                 responseCode = "200",
@@ -76,19 +77,29 @@ class AuthController(
         )]
     )
     @GetMapping("/me")
-    fun me(@site.honmoon.auth.security.CurrentUser principal: UserPrincipal?): Response<ProfileResponse> {
+    fun me(@CurrentUser principal: UserPrincipal?): Response<ProfileResponse> {
         val res = authService.buildCurrentProfile(principal)
         return Response.success(res)
     }
 
     @Operation(
         summary = "로그아웃",
-        description = "서버 메모리 세션을 무효화합니다.",
+        description = "서버 DB 세션을 무효화합니다.",
         responses = [ApiResponse(responseCode = "200", description = "성공")]
     )
     @PostMapping("/logout")
     fun logout(@RequestHeader(HttpHeaders.AUTHORIZATION) authorization: String?): Response<LogoutResponse> {
         val res = authService.logout(authorization)
+        return Response.success(res)
+    }
+
+    @Operation(
+        summary = "테스트용 세션 토큰 발급 (Basic Auth)",
+        description = "Basic 인증으로 호출 시 서버 세션 토큰(Bearer)을 발급합니다."
+    )
+    @PostMapping("/test-token")
+    fun issueTestToken(@CurrentUser principal: UserPrincipal): Response<BasicTokenResponse> {
+        val res = authService.issueTestTokenForBasicAuth(principal)
         return Response.success(res)
     }
 

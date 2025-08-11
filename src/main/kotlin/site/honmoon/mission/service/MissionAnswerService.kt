@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service
 import org.springframework.data.repository.findByIdOrNull
 import site.honmoon.common.ErrorCode
 import site.honmoon.common.exception.EntityNotFoundException
+import site.honmoon.common.exception.InvalidRequestException
 import site.honmoon.mission.dto.AnswerCheckResult
 import site.honmoon.mission.dto.MissionAnswerResponse
 import site.honmoon.mission.repository.MissionDetailRepository
@@ -43,7 +44,7 @@ class MissionAnswerService(
             ?: throw EntityNotFoundException(ErrorCode.MISSION_NOT_FOUND, "ID: $missionId")
 
         if (mission.missionType != MissionType.QUIZ_IMAGE_UPLOAD) {
-            throw IllegalArgumentException("This mission type doesn't support image upload")
+            throw InvalidRequestException(ErrorCode.IMAGE_UPLOAD_NOT_SUPPORTED)
         }
 
         val imageAnalysis = fallbackAIService.analyzeImage(imageUrl)
@@ -69,7 +70,7 @@ class MissionAnswerService(
             isCorrect = checkResult.isCorrect,
             pointsEarned = pointsEarned,
             explanation = if (checkResult.isCorrect) {
-                mission.answerExplanation ?: checkResult.reasoning
+                mission.answer?.explanation ?: checkResult.reasoning
             } else {
                 checkResult.reasoning
             },
@@ -94,7 +95,7 @@ class MissionAnswerService(
             isCorrect = checkResult.isCorrect,
             pointsEarned = pointsEarned,
             explanation = if (checkResult.isCorrect) {
-                mission.answerExplanation ?: checkResult.reasoning
+                mission.answer?.explanation ?: checkResult.reasoning
             } else {
                 "추출된 텍스트: '${checkResult.extractedText}' - ${checkResult.reasoning}"
             },

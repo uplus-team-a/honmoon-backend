@@ -3,6 +3,8 @@ package site.honmoon.mission.service
 import org.springframework.stereotype.Component
 import java.net.URI
 import java.net.URISyntaxException
+import site.honmoon.common.ErrorCode
+import site.honmoon.common.exception.InvalidRequestException
 
 @Component
 class ImageUrlValidator {
@@ -12,31 +14,31 @@ class ImageUrlValidator {
 
     fun validateImageUrl(imageUrl: String): URI {
         if (imageUrl.isBlank()) {
-            throw IllegalArgumentException("Image URL cannot be empty")
+            throw InvalidRequestException(ErrorCode.IMAGE_URL_EMPTY)
         }
 
         val uri = try {
             URI(imageUrl)
         } catch (e: URISyntaxException) {
-            throw IllegalArgumentException("Invalid URL format: ${e.message}")
+            throw InvalidRequestException(ErrorCode.INVALID_URL_FORMAT, e.message)
         }
 
         if (uri.scheme !in allowedSchemes) {
-            throw IllegalArgumentException("Only HTTP and HTTPS URLs are allowed")
+            throw InvalidRequestException(ErrorCode.UNSUPPORTED_URL_SCHEME)
         }
 
         if (uri.host.isNullOrBlank()) {
-            throw IllegalArgumentException("URL must have a valid host")
+            throw InvalidRequestException(ErrorCode.INVALID_URL_HOST)
         }
 
         val path = uri.path?.lowercase() ?: ""
         if (path.contains("..") || path.contains("//")) {
-            throw IllegalArgumentException("Path traversal attempts are not allowed")
+            throw InvalidRequestException(ErrorCode.PATH_TRAVERSAL_DETECTED)
         }
 
         val extension = path.substringAfterLast(".", "")
         if (extension.isNotEmpty() && extension !in allowedImageExtensions) {
-            throw IllegalArgumentException("Only image files are allowed")
+            throw InvalidRequestException(ErrorCode.UNSUPPORTED_IMAGE_EXTENSION)
         }
 
         return uri

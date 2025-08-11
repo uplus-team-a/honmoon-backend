@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import site.honmoon.common.ErrorCode
 import site.honmoon.common.exception.EntityNotFoundException
+import site.honmoon.common.exception.InvalidRequestException
 import site.honmoon.point.dto.PointHistoryResponse
 import site.honmoon.point.entity.PointHistory
 import site.honmoon.point.repository.PointHistoryRepository
@@ -132,7 +133,11 @@ class PointHistoryService(
             .orElseThrow { EntityNotFoundException(ErrorCode.USER_NOT_FOUND, "User ID: $userId") }
 
         if (user.totalPoints < requiredPoints) {
-            throw IllegalArgumentException("포인트가 부족합니다. 필요: $requiredPoints, 보유: ${user.totalPoints}")
+            throw InvalidRequestException(
+                ErrorCode.INSUFFICIENT_POINTS,
+                requiredPoints,
+                user.totalPoints
+            )
         }
 
         val pointHistory = PointHistory(

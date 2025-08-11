@@ -4,16 +4,6 @@ import java.time.Instant
 import java.time.LocalDateTime
 import java.util.*
 
-// 요청 DTO
-data class EmailLoginRequest(
-    val email: String,
-)
-
-data class TokenRefreshRequest(
-    val refreshToken: String,
-)
-
-// 응답 DTO
 
 data class AuthUrlResponse(
     val provider: String,
@@ -92,4 +82,12 @@ data class ProfileResponse(
     val name: String?,
     val picture: String?,
     val provider: String,
-) 
+)
+
+/**
+ * Basic 인증 성공 시 발급되는 테스트용 세션 토큰 응답
+ */
+data class BasicTokenResponse(
+    val token: String,
+    val expiresAt: Instant,
+)

@@ -25,4 +25,21 @@ enum class ErrorCode(
     PLACE_NOT_FOUND(1412, ErrorStatus.NOT_FOUND, "장소를 찾을 수 없습니다: %s"),
     DUPLICATE_ACTIVITY(1413, ErrorStatus.BAD_REQUEST, "이미 등록된 활동입니다."),
 
+    INVALID_STATE(1414, ErrorStatus.BAD_REQUEST, "요청 상태가 올바르지 않습니다."),
+    INVALID_OR_EXPIRED_TOKEN(1415, ErrorStatus.BAD_REQUEST, "토큰이 유효하지 않거나 만료되었습니다."),
+    IMAGE_URL_EMPTY(1416, ErrorStatus.BAD_REQUEST, "이미지 URL은 비어 있을 수 없습니다."),
+    INVALID_URL_FORMAT(1417, ErrorStatus.BAD_REQUEST, "URL 형식이 올바르지 않습니다: %s"),
+    UNSUPPORTED_URL_SCHEME(1418, ErrorStatus.BAD_REQUEST, "허용되지 않은 URL 스킴입니다. HTTP/HTTPS만 허용됩니다."),
+    INVALID_URL_HOST(1419, ErrorStatus.BAD_REQUEST, "URL 호스트가 올바르지 않습니다."),
+    PATH_TRAVERSAL_DETECTED(1420, ErrorStatus.BAD_REQUEST, "경로 이동이 의심되는 요청입니다."),
+    UNSUPPORTED_IMAGE_EXTENSION(1421, ErrorStatus.BAD_REQUEST, "이미지 파일만 업로드할 수 있습니다."),
+    INSUFFICIENT_POINTS(1422, ErrorStatus.BAD_REQUEST, "포인트가 부족합니다. 필요: %s, 보유: %s"),
+    IMAGE_UPLOAD_NOT_SUPPORTED(1423, ErrorStatus.BAD_REQUEST, "해당 미션은 이미지 업로드를 지원하지 않습니다."),
+    JSON_NOT_FOUND_IN_RESPONSE(1424, ErrorStatus.BAD_REQUEST, "응답에서 유효한 JSON을 찾지 못했습니다."),
+    REQUIRED_PARAMETER_MISSING(1425, ErrorStatus.BAD_REQUEST, "필수 파라미터가 누락되었습니다: %s"),
+    INVALID_CHOICE_INDEX(1426, ErrorStatus.BAD_REQUEST, "선택지 인덱스가 유효하지 않습니다."),
+    TEXT_ANSWER_EMPTY(1427, ErrorStatus.BAD_REQUEST, "텍스트 답변은 비어 있을 수 없습니다."),
+    REQUIRED_FIELD_MISSING(1428, ErrorStatus.BAD_REQUEST, "필수 입력이 누락되었습니다: %s"),
+    USER_EMAIL_NOT_FOUND(1429, ErrorStatus.BAD_REQUEST, "해당 사용자에 등록된 이메일이 없습니다."),
+
 }

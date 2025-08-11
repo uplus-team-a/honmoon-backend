@@ -27,6 +27,10 @@ class WebMvcConfig(
     }
 }
 
+/**
+ * 컨트롤러 파라미터의 `@CurrentUser UserPrincipal`을 SecurityContext에서 주입한다.
+ * Basic 인증의 Principal도 통일된 `UserPrincipal`로 변환한다.
+ */
 class CurrentUserArgumentResolver : HandlerMethodArgumentResolver {
     override fun supportsParameter(parameter: MethodParameter): Boolean {
         return parameter.hasParameterAnnotation(CurrentUser::class.java) && parameter.parameterType == UserPrincipal::class.java

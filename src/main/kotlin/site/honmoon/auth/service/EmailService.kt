@@ -22,7 +22,7 @@ class EmailService(
         helper.setFrom(replyTo, "혼문")
         helper.setTo(email)
         helper.setReplyTo(replyTo)
-        val titleName = if (name.isNotBlank()) "[ $name ]" else "회원"
+        val titleName = if (name.isNotBlank()) "[ $name ] " else "회원"
         val subject = "${titleName}님의 혼문 $purpose 확인 링크"
         helper.setSubject(subject)
 

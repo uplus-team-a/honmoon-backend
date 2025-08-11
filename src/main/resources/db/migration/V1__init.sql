@@ -113,7 +113,7 @@ create table if not exists mission_detail
     place_id                 bigint,
     question                 text,
     answer                   text,
-    choices                  json,
+    choices                  jsonb,
     answer_explanation       text,
     correct_image_url        varchar(255),
     image_upload_instruction text,
@@ -169,4 +169,30 @@ create table if not exists users
     modified_at       timestamp with time zone default now()                          not null,
     is_active         boolean                  default true
 );
+
+
+create table if not exists app_session
+(
+
+    token      varchar(64)                            not null primary key,
+    subject    varchar(255)                           not null,
+    email      varchar(255),
+    name       varchar(255),
+    picture    varchar(500),
+    provider   varchar(50)                            not null,
+    expires_at timestamp with time zone               not null,
+    created_at timestamp with time zone default now() not null
+);
+
+create index if not exists idx_app_session_expires_at on app_session (expires_at);
+
+create table if not exists magic_link_token
+(
+    token      varchar(64)                            not null primary key,
+    email      varchar(255)                           not null,
+    expires_at timestamp with time zone               not null,
+    created_at timestamp with time zone default now() not null
+);
+
+create index if not exists idx_magic_link_token_expires_at on magic_link_token (expires_at);
 
