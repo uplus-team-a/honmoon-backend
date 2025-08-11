@@ -14,7 +14,7 @@ import site.honmoon.mission.service.MissionPlaceService
 @RestController
 @RequestMapping("/api/mission-places")
 class MissionPlaceController(
-    private val missionPlaceService: MissionPlaceService
+    private val missionPlaceService: MissionPlaceService,
 ) {
 
     @Operation(
@@ -25,7 +25,7 @@ class MissionPlaceController(
     fun getMissionPlace(
         @Parameter(description = "미션 장소 ID", example = "1")
         @PathVariable id: Long,
-        @CurrentUser currentUser: UserPrincipal?
+        @CurrentUser currentUser: UserPrincipal?,
     ): Response<MissionPlaceResponse> {
         return Response.success(missionPlaceService.getMissionPlace(id))
     }
@@ -36,7 +36,7 @@ class MissionPlaceController(
     )
     @GetMapping
     fun getMissionPlaces(
-        @CurrentUser currentUser: UserPrincipal?
+        @CurrentUser currentUser: UserPrincipal?,
     ): Response<List<MissionPlaceResponse>> {
         return Response.success(missionPlaceService.getMissionPlaces())
     }
@@ -49,7 +49,7 @@ class MissionPlaceController(
     fun searchMissionPlaces(
         @Parameter(description = "검색할 장소명", example = "한강공원")
         @RequestParam title: String,
-        @CurrentUser currentUser: UserPrincipal?
+        @CurrentUser currentUser: UserPrincipal?,
     ): Response<List<MissionPlaceResponse>> {
         return Response.success(missionPlaceService.searchMissionPlaces(title))
     }
@@ -66,7 +66,7 @@ class MissionPlaceController(
         @RequestParam lng: Double,
         @Parameter(description = "검색 반경 (미터)", example = "1000")
         @RequestParam radius: Int = 1000,
-        @CurrentUser currentUser: UserPrincipal?
+        @CurrentUser currentUser: UserPrincipal?,
     ): Response<List<MissionPlaceResponse>> {
         return Response.success(missionPlaceService.getNearbyMissionPlaces(lat, lng, radius))
     }
@@ -79,7 +79,7 @@ class MissionPlaceController(
     fun getMissionsByPlace(
         @Parameter(description = "미션 장소 ID", example = "1")
         @PathVariable id: Long,
-        @CurrentUser currentUser: UserPrincipal?
+        @CurrentUser currentUser: UserPrincipal?,
     ): Response<List<site.honmoon.mission.dto.MissionSummaryResponse>> {
         return Response.success(missionPlaceService.getMissionsByPlace(id))
     }

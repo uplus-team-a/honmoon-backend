@@ -1,6 +1,9 @@
 package site.honmoon.mission.service
 
 import org.springframework.stereotype.Service
+import org.springframework.data.repository.findByIdOrNull
+import site.honmoon.common.ErrorCode
+import site.honmoon.common.exception.EntityNotFoundException
 import site.honmoon.mission.dto.AnswerCheckResult
 import site.honmoon.mission.dto.MissionAnswerResponse
 import site.honmoon.mission.repository.MissionDetailRepository
@@ -13,15 +16,15 @@ class MissionAnswerService(
     private val missionDetailRepository: MissionDetailRepository,
     private val answerCheckers: List<AnswerChecker>,
     private val fallbackAIService: FallbackAIService,
-    private val pointHistoryService: PointHistoryService
+    private val pointHistoryService: PointHistoryService,
 ) {
-    
+
     fun checkAnswer(missionId: Long, userAnswer: String): AnswerCheckResult {
-        val mission = missionDetailRepository.findById(missionId)
-            .orElseThrow { IllegalArgumentException("Mission not found") }
+        val mission = missionDetailRepository.findByIdOrNull(missionId)
+            ?: throw EntityNotFoundException(ErrorCode.MISSION_NOT_FOUND, "ID: $missionId")
 
         val checker = answerCheckers.find { it.supports(mission.missionType) }
-        
+
         return if (checker != null) {
             val isCorrect = checker.checkAnswer(mission, userAnswer)
             AnswerCheckResult(
@@ -36,8 +39,8 @@ class MissionAnswerService(
     }
 
     fun checkAnswerWithImage(missionId: Long, imageUrl: String): AnswerCheckResult {
-        val mission = missionDetailRepository.findById(missionId)
-            .orElseThrow { IllegalArgumentException("Mission not found") }
+        val mission = missionDetailRepository.findByIdOrNull(missionId)
+            ?: throw EntityNotFoundException(ErrorCode.MISSION_NOT_FOUND, "ID: $missionId")
 
         if (mission.missionType != MissionType.QUIZ_IMAGE_UPLOAD) {
             throw IllegalArgumentException("This mission type doesn't support image upload")
@@ -45,23 +48,23 @@ class MissionAnswerService(
 
         val imageAnalysis = fallbackAIService.analyzeImage(imageUrl)
         val answerCheck = fallbackAIService.checkImageAnswer(mission, imageAnalysis.extractedText)
-        
+
         return answerCheck.copy(extractedText = imageAnalysis.extractedText)
     }
 
     fun submitAnswer(missionId: Long, userAnswer: String, userId: UUID): MissionAnswerResponse {
-        val mission = missionDetailRepository.findById(missionId)
-            .orElseThrow { IllegalArgumentException("Mission not found") }
+        val mission = missionDetailRepository.findByIdOrNull(missionId)
+            ?: throw EntityNotFoundException(ErrorCode.MISSION_NOT_FOUND, "ID: $missionId")
 
         val checkResult = checkAnswer(missionId, userAnswer)
-        
+
         val pointsEarned = if (checkResult.isCorrect && checkResult.confidence >= 0.5) {
             pointHistoryService.earnPointsFromQuiz(userId, missionId, mission.points)
             mission.points
         } else {
             0
         }
-        
+
         return MissionAnswerResponse(
             isCorrect = checkResult.isCorrect,
             pointsEarned = pointsEarned,
@@ -75,18 +78,18 @@ class MissionAnswerService(
     }
 
     fun submitAnswerWithImage(missionId: Long, imageUrl: String, userId: UUID): MissionAnswerResponse {
-        val mission = missionDetailRepository.findById(missionId)
-            .orElseThrow { IllegalArgumentException("Mission not found") }
+        val mission = missionDetailRepository.findByIdOrNull(missionId)
+            ?: throw EntityNotFoundException(ErrorCode.MISSION_NOT_FOUND, "ID: $missionId")
 
         val checkResult = checkAnswerWithImage(missionId, imageUrl)
-        
+
         val pointsEarned = if (checkResult.isCorrect && checkResult.confidence >= 0.5) {
             pointHistoryService.earnPointsFromQuiz(userId, missionId, mission.points)
             mission.points
         } else {
             0
         }
-        
+
         return MissionAnswerResponse(
             isCorrect = checkResult.isCorrect,
             pointsEarned = pointsEarned,

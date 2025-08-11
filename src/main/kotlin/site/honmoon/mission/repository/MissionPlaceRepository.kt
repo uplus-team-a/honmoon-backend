@@ -26,7 +26,7 @@ interface MissionPlaceRepository : JpaRepository<MissionPlace, Long> {
     fun findNearest(
         @Param("lat") lat: Double,
         @Param("lng") lng: Double,
-        @Param("limit") limit: Int
+        @Param("limit") limit: Int,
     ): List<MissionPlace>
 
     @Query(
@@ -42,6 +42,6 @@ interface MissionPlaceRepository : JpaRepository<MissionPlace, Long> {
     fun findNearestByVector(
         @Param("lat") lat: Double,
         @Param("lng") lng: Double,
-        @Param("limit") limit: Int
+        @Param("limit") limit: Int,
     ): List<MissionPlace>
 } 

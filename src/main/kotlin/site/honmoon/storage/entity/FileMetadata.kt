@@ -4,6 +4,7 @@ import jakarta.persistence.*
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.LastModifiedDate
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
+import org.springframework.data.relational.core.mapping.Table
 import java.time.Instant
 import java.util.*
 
@@ -51,5 +52,5 @@ data class FileMetadata(
     val modifiedAt: Instant? = null,
 
     @Column(name = "is_active", nullable = false, columnDefinition = "boolean default true")
-    val isActive: Boolean = true
+    val isActive: Boolean = true,
 )

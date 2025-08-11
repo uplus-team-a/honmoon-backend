@@ -2,6 +2,7 @@
 ### 사용자 미션 활동 상세 조회
 GET {{host}}/api/user-activities/1
 Accept: application/json
+Authorization: {{token}}
 
 > {%
 client.test("사용자 미션 활동 상세 조회 - 200 또는 404", () => {
@@ -12,6 +13,7 @@ client.test("사용자 미션 활동 상세 조회 - 200 또는 404", () => {
 ### 퀴즈 답변 제출 (텍스트)
 POST {{host}}/api/user-activities/missions/1/submit-quiz?userId={{userId}}&textAnswer=정답
 Accept: application/json
+Authorization: {{token}}
 
 > {%
 client.test("퀴즈 답변 제출(텍스트) - 200", () => {
@@ -22,6 +24,7 @@ client.test("퀴즈 답변 제출(텍스트) - 200", () => {
 ### 퀴즈 답변 제출 (선택지)
 POST {{host}}/api/user-activities/missions/1/submit-quiz?userId={{userId}}&selectedChoiceIndex=0
 Accept: application/json
+Authorization: {{token}}
 
 > {%
 client.test("퀴즈 답변 제출(선택지) - 200", () => {
@@ -32,6 +35,7 @@ client.test("퀴즈 답변 제출(선택지) - 200", () => {
 ### 퀴즈 답변 제출 (이미지)
 POST {{host}}/api/user-activities/missions/1/submit-quiz?userId={{userId}}&uploadedImageUrl=https://example.com/image.jpg
 Accept: application/json
+Authorization: {{token}}
 
 > {%
 client.test("퀴즈 답변 제출(이미지) - 200", () => {
@@ -42,6 +46,7 @@ client.test("퀴즈 답변 제출(이미지) - 200", () => {
 ### 내 퀴즈 답변 제출 (텍스트)
 POST {{host}}/api/user-activities/missions/1/submit-quiz/me?textAnswer=정답
 Accept: application/json
+Authorization: {{token}}
 
 > {%
 client.test("내 퀴즈 답변 제출(텍스트) - 200", () => {
@@ -52,6 +57,7 @@ client.test("내 퀴즈 답변 제출(텍스트) - 200", () => {
 ### 내 퀴즈 답변 제출 (선택지)
 POST {{host}}/api/user-activities/missions/1/submit-quiz/me?selectedChoiceIndex=0
 Accept: application/json
+Authorization: {{token}}
 
 > {%
 client.test("내 퀴즈 답변 제출(선택지) - 200", () => {
@@ -62,6 +68,7 @@ client.test("내 퀴즈 답변 제출(선택지) - 200", () => {
 ### 내 퀴즈 답변 제출 (이미지)
 POST {{host}}/api/user-activities/missions/1/submit-quiz/me?uploadedImageUrl=https://example.com/image.jpg
 Accept: application/json
+Authorization: {{token}}
 
 > {%
 client.test("내 퀴즈 답변 제출(이미지) - 200", () => {

@@ -8,6 +8,7 @@ import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Primary
+import org.springframework.data.jdbc.repository.config.EnableJdbcRepositories
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 import org.springframework.orm.jpa.JpaTransactionManager
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean
@@ -21,6 +22,9 @@ import javax.sql.DataSource
     basePackages = ["site.honmoon"],
     entityManagerFactoryRef = "entityManagerFactory",
     transactionManagerRef = "transactionManager"
+)
+@EnableJdbcRepositories(
+    basePackages = ["site.honmoon.jdbc.*"]
 )
 class DatabaseConfig {
 

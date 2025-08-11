@@ -2,6 +2,7 @@
 ### 포인트 내역 상세 조회
 GET {{host}}/api/point-history/1
 Accept: application/json
+Authorization: {{token}}
 
 > {%
 client.test("포인트 내역 상세 조회 - 200 또는 404", () => {
@@ -12,6 +13,7 @@ client.test("포인트 내역 상세 조회 - 200 또는 404", () => {
 ### 사용자 포인트 내역 조회
 GET {{host}}/api/point-history/user/{{userId}}
 Accept: application/json
+Authorization: {{token}}
 
 > {%
 client.test("사용자 포인트 내역 조회 - 200", () => {
@@ -22,6 +24,7 @@ client.test("사용자 포인트 내역 조회 - 200", () => {
 ### 사용자 포인트 획득 내역 조회
 GET {{host}}/api/point-history/user/{{userId}}/earned
 Accept: application/json
+Authorization: {{token}}
 
 > {%
 client.test("사용자 포인트 획득 내역 조회 - 200", () => {
@@ -32,6 +35,7 @@ client.test("사용자 포인트 획득 내역 조회 - 200", () => {
 ### 사용자 포인트 사용 내역 조회
 GET {{host}}/api/point-history/user/{{userId}}/used
 Accept: application/json
+Authorization: {{token}}
 
 > {%
 client.test("사용자 포인트 사용 내역 조회 - 200", () => {
@@ -42,6 +46,7 @@ client.test("사용자 포인트 사용 내역 조회 - 200", () => {
 ### 래플 응모 포인트 차감
 POST {{host}}/api/point-history/use/raffle?userId={{userId}}&raffleProductId=1
 Accept: application/json
+Authorization: {{token}}
 
 > {%
 client.test("래플 응모 포인트 차감 - 200", () => {
@@ -52,6 +57,7 @@ client.test("래플 응모 포인트 차감 - 200", () => {
 ### 내 포인트 내역 조회
 GET {{host}}/api/point-history/me
 Accept: application/json
+Authorization: {{token}}
 
 > {%
 client.test("내 포인트 내역 조회 - 200", () => {

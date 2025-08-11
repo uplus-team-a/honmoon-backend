@@ -95,5 +95,5 @@ data class UploadStatsDto(
     val hourlyLimit: Int,
     val dailyLimit: Int,
     val canUpload: Boolean,
-    val checkedAt: LocalDateTime
+    val checkedAt: LocalDateTime,
 ) 

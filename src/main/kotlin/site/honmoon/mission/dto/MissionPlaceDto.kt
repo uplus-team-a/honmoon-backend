@@ -11,5 +11,5 @@ data class MissionPlaceResponse(
     val latitude: Double?,
     val longitude: Double?,
     val createdAt: Instant,
-    val modifiedAt: Instant
+    val modifiedAt: Instant,
 ) 

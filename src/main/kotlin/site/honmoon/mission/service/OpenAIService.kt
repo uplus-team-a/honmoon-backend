@@ -2,7 +2,6 @@ package site.honmoon.mission.service
 
 import org.springframework.ai.chat.client.ChatClient
 import org.springframework.ai.model.Media
-import org.springframework.ai.openai.OpenAiChatModel
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.core.io.UrlResource
 import org.springframework.stereotype.Service
@@ -16,7 +15,7 @@ import site.honmoon.mission.entity.MissionDetail
 class OpenAIService(
     @Qualifier("openaiChatClient") private val chatClient: ChatClient,
     private val promptService: OpenAIPromptService,
-    private val imageUrlValidator: ImageUrlValidator
+    private val imageUrlValidator: ImageUrlValidator,
 ) : AIService {
 
     override fun analyzeImage(imageUrl: String): ImageAnalysisResult {

@@ -1,5 +1,6 @@
 package site.honmoon.mission.service
 
+import io.kotest.common.ExperimentalKotest
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.booleans.shouldBeTrue
 import io.kotest.matchers.doubles.shouldBeBetween
@@ -12,6 +13,7 @@ import org.springframework.test.context.ActiveProfiles
 import site.honmoon.mission.entity.MissionDetail
 import site.honmoon.mission.type.MissionType
 
+@OptIn(ExperimentalKotest::class)
 @Disabled
 @SpringBootTest
 @ActiveProfiles("local")

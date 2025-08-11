@@ -3,8 +3,8 @@ package site.honmoon.raffle.controller
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.media.Content
-import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.media.ExampleObject
+import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.web.bind.annotation.*
@@ -18,7 +18,7 @@ import site.honmoon.raffle.service.RaffleProductService
 @RestController
 @RequestMapping("/api/raffle-products")
 class RaffleProductController(
-    private val raffleProductService: RaffleProductService
+    private val raffleProductService: RaffleProductService,
 ) {
 
     @Operation(
@@ -41,7 +41,7 @@ class RaffleProductController(
     fun getRaffleProduct(
         @Parameter(description = "래플 상품 ID", example = "1")
         @PathVariable id: Long,
-        @CurrentUser currentUser: UserPrincipal?
+        @CurrentUser currentUser: UserPrincipal?,
     ): Response<RaffleProductResponse> {
         return Response.success(raffleProductService.getRaffleProduct(id))
     }
@@ -55,13 +55,16 @@ class RaffleProductController(
             content = [Content(
                 mediaType = "application/json",
                 schema = Schema(implementation = Array<RaffleProductResponse>::class),
-                examples = [ExampleObject(name = "success", value = "[{\\n  \\\"id\\\": 1, \\n  \\\"name\\\": \\\"아이폰 15\\\"\\n}]")]
+                examples = [ExampleObject(
+                    name = "success",
+                    value = "[{\\n  \\\"id\\\": 1, \\n  \\\"name\\\": \\\"아이폰 15\\\"\\n}]"
+                )]
             )]
         )]
     )
     @GetMapping
     fun getRaffleProducts(
-        @CurrentUser currentUser: UserPrincipal?
+        @CurrentUser currentUser: UserPrincipal?,
     ): Response<List<RaffleProductResponse>> {
         return Response.success(raffleProductService.getRaffleProducts())
     }
@@ -75,7 +78,7 @@ class RaffleProductController(
     fun searchRaffleProducts(
         @Parameter(description = "검색할 상품명", example = "아이폰")
         @RequestParam name: String,
-        @CurrentUser currentUser: UserPrincipal?
+        @CurrentUser currentUser: UserPrincipal?,
     ): Response<List<RaffleProductResponse>> {
         return Response.success(raffleProductService.searchRaffleProducts(name))
     }
@@ -91,7 +94,7 @@ class RaffleProductController(
         @RequestParam minPoints: Int,
         @Parameter(description = "최대 포인트", example = "1000")
         @RequestParam maxPoints: Int,
-        @CurrentUser currentUser: UserPrincipal?
+        @CurrentUser currentUser: UserPrincipal?,
     ): Response<List<RaffleProductResponse>> {
         return Response.success(raffleProductService.getRaffleProductsByPoints(minPoints, maxPoints))
     }
@@ -113,7 +116,7 @@ class RaffleProductController(
     fun getApplicantsCount(
         @Parameter(description = "래플 상품 ID", example = "1")
         @PathVariable id: Long,
-        @CurrentUser currentUser: UserPrincipal?
+        @CurrentUser currentUser: UserPrincipal?,
     ): Response<Map<String, Int>> {
         return Response.success(raffleProductService.getApplicantsCount(id))
     }

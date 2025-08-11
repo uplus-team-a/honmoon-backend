@@ -6,6 +6,9 @@ build/
 
 ### IntelliJ IDEA ###
 .idea/modules.xml
+.idea/gradle.xml
+.idea/misc.xml
+.idea/workspace.xml
 .idea/jarRepositories.xml
 .idea/compiler.xml
 .idea/libraries/
@@ -45,3 +48,8 @@ bin/
 .DS_Store
 
 **/env.properties
+!/.idea/misc.xml
+
+!/.idea/gradle.xml
+
+!/.idea/workspace.xml

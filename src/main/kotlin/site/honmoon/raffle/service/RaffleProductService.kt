@@ -3,23 +3,22 @@ package site.honmoon.raffle.service
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import site.honmoon.raffle.dto.RaffleProductResponse
-import site.honmoon.raffle.entity.RaffleProduct
-import site.honmoon.raffle.repository.RaffleProductRepository
-import site.honmoon.raffle.repository.RaffleUserApplicationRepository
 import site.honmoon.common.ErrorCode
 import site.honmoon.common.exception.EntityNotFoundException
+import site.honmoon.raffle.dto.RaffleProductResponse
+import site.honmoon.raffle.repository.RaffleProductRepository
+import site.honmoon.raffle.repository.RaffleUserApplicationRepository
 
 @Service
 @Transactional(readOnly = true)
 class RaffleProductService(
     private val raffleProductRepository: RaffleProductRepository,
-    private val raffleUserApplicationRepository: RaffleUserApplicationRepository
+    private val raffleUserApplicationRepository: RaffleUserApplicationRepository,
 ) {
     fun getRaffleProduct(id: Long): RaffleProductResponse {
         val raffleProduct = raffleProductRepository.findByIdOrNull(id)
             ?: throw EntityNotFoundException(ErrorCode.RAFFLE_NOT_FOUND, "ID: $id")
-        
+
         return RaffleProductResponse(
             id = raffleProduct.id,
             name = raffleProduct.name,
@@ -30,7 +29,7 @@ class RaffleProductService(
             modifiedAt = raffleProduct.modifiedAt
         )
     }
-    
+
     fun getRaffleProducts(): List<RaffleProductResponse> {
         return raffleProductRepository.findAll().map { raffleProduct ->
             RaffleProductResponse(
@@ -44,7 +43,7 @@ class RaffleProductService(
             )
         }
     }
-    
+
     fun searchRaffleProducts(name: String): List<RaffleProductResponse> {
         return raffleProductRepository.findByNameContainingIgnoreCase(name).map { raffleProduct ->
             RaffleProductResponse(
@@ -58,7 +57,7 @@ class RaffleProductService(
             )
         }
     }
-    
+
     fun getRaffleProductsByPoints(minPoints: Int, maxPoints: Int): List<RaffleProductResponse> {
         val products = raffleProductRepository.findByPointCostBetween(minPoints, maxPoints)
         return products.map { raffleProduct ->
@@ -73,7 +72,7 @@ class RaffleProductService(
             )
         }
     }
-    
+
     fun getApplicantsCount(id: Long): Map<String, Int> {
         val applications = raffleUserApplicationRepository.findByRaffleProductId(id)
         return mapOf("applicantsCount" to applications.size)

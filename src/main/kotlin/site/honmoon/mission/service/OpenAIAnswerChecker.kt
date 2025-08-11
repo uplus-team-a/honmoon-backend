@@ -6,7 +6,7 @@ import site.honmoon.mission.type.MissionType
 
 @Component
 class OpenAIAnswerChecker(
-    private val fallbackAIService: FallbackAIService
+    private val fallbackAIService: FallbackAIService,
 ) : AnswerChecker {
 
     override fun checkAnswer(mission: MissionDetail, userAnswer: String): Boolean {

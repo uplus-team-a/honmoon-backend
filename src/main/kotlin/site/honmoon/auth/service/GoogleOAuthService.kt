@@ -26,7 +26,10 @@ class GoogleOAuthService(
 
     private val oauthAuthorizeBase = "https://accounts.google.com/o/oauth2/v2/auth"
 
-    fun buildAuthorizationUrl(scopes: List<String>, statePayload: Map<String, String> = emptyMap()): Triple<String, String, Instant> {
+    fun buildAuthorizationUrl(
+        scopes: List<String>,
+        statePayload: Map<String, String> = emptyMap(),
+    ): Triple<String, String, Instant> {
         val state = signState(statePayload)
         val params = mapOf(
             "client_id" to clientId,
@@ -62,7 +65,7 @@ class GoogleOAuthService(
             val parts = state.split('.')
             if (parts.size != 3) return false
             val (payloadB64, tsB64, sigHex) = parts
-            val payloadBytes = Base64.getUrlDecoder().decode(payloadB64)
+            Base64.getUrlDecoder().decode(payloadB64)
             val ts = String(Base64.getUrlDecoder().decode(tsB64)).toLong()
             val expected = hmacSha256Hex(payloadB64 + "." + tsB64)
             val notExpired = Instant.ofEpochSecond(ts).isAfter(Instant.now().minus(Duration.ofMinutes(15)))
@@ -76,7 +79,8 @@ class GoogleOAuthService(
     private fun signState(payload: Map<String, String>): String {
         val payloadJson = payload.entries.joinToString(prefix = "{", postfix = "}") { "\"${it.key}\":\"${it.value}\"" }
         val payloadB64 = Base64.getUrlEncoder().withoutPadding().encodeToString(payloadJson.toByteArray())
-        val tsB64 = Base64.getUrlEncoder().withoutPadding().encodeToString(Instant.now().epochSecond.toString().toByteArray())
+        val tsB64 =
+            Base64.getUrlEncoder().withoutPadding().encodeToString(Instant.now().epochSecond.toString().toByteArray())
         val sig = hmacSha256Hex("$payloadB64.$tsB64")
         return "$payloadB64.$tsB64.$sig"
     }

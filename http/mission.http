@@ -2,6 +2,7 @@
 ### 미션 상세 정보 조회
 GET {{host}}/api/missions/1
 Accept: application/json
+Authorization: {{token}}
 
 > {%
 client.test("미션 상세 정보 조회 - 200 또는 404", () => {
@@ -12,6 +13,7 @@ client.test("미션 상세 정보 조회 - 200 또는 404", () => {
 ### 미션 장소 상세 조회
 GET {{host}}/api/mission-places/1
 Accept: application/json
+Authorization: {{token}}
 
 > {%
 client.test("미션 장소 상세 조회 - 200 또는 404", () => {
@@ -22,6 +24,7 @@ client.test("미션 장소 상세 조회 - 200 또는 404", () => {
 ### 미션 장소 목록 조회
 GET {{host}}/api/mission-places
 Accept: application/json
+Authorization: {{token}}
 
 > {%
 client.test("미션 장소 목록 조회 - 200", () => {
@@ -32,6 +35,7 @@ client.test("미션 장소 목록 조회 - 200", () => {
 ### 미션 장소 검색
 GET {{host}}/api/mission-places/search?title=한강
 Accept: application/json
+Authorization: {{token}}
 
 > {%
 client.test("미션 장소 검색 - 200", () => {
@@ -42,6 +46,7 @@ client.test("미션 장소 검색 - 200", () => {
 ### 근처 미션 장소 조회
 GET {{host}}/api/mission-places/nearby?lat=37.5665&lng=126.9780&radius=1000
 Accept: application/json
+Authorization: {{token}}
 
 > {%
 client.test("근처 미션 장소 조회 - 200", () => {
@@ -52,6 +57,7 @@ client.test("근처 미션 장소 조회 - 200", () => {
 ### 미션 장소별 미션 목록 조회
 GET {{host}}/api/mission-places/1/missions
 Accept: application/json
+Authorization: {{token}}
 
 > {%
 client.test("미션 장소별 미션 목록 조회 - 200", () => {
@@ -63,6 +69,7 @@ client.test("미션 장소별 미션 목록 조회 - 200", () => {
 POST {{host}}/api/missions/1/submit-answer
 Content-Type: application/json
 Accept: application/json
+Authorization: {{token}}
 
 {
   "answer": "서울"
@@ -81,6 +88,7 @@ client.test("미션 답변 제출 - 200", () => {
 POST {{host}}/api/missions/1/submit-answer
 Content-Type: application/json
 Accept: application/json
+Authorization: {{token}}
 
 {
   "answer": "부산"
@@ -95,13 +103,14 @@ client.test("미션 답변 제출 오답 - 200", () => {
 });
 %}
 
-### 미션 이미지 답변 제출
+### 미션 이미지 답변 제출 (내부 업로드 URL 사용)
 POST {{host}}/api/missions/1/submit-image-answer
 Content-Type: application/json
 Accept: application/json
+Authorization: {{token}}
 
 {
-  "imageUrl": "https://example.com/image.jpg"
+  "imageUrl": "https://storage.googleapis.com/{{bucket}}/missions/{{missionFileName}}"
 }
 
 > {%
@@ -110,5 +119,16 @@ client.test("미션 이미지 답변 제출 - 200", () => {
   client.assert(response.body.success, "Response must be successful");
   client.assert(response.body.data.hasOwnProperty("isCorrect"), "Response must contain isCorrect");
   client.assert(response.body.data.hasOwnProperty("pointsEarned"), "Response must contain pointsEarned");
+});
+%}
+
+### 미션 이미지 업로드 URL 발급
+POST {{host}}/api/missions/1/image/upload-url?fileName=mission.jpg
+Accept: application/json
+Authorization: {{token}}
+
+> {%
+client.test("미션 이미지 업로드 URL 발급 - 200", () => {
+  client.assert(response.status === 200, "Status must be 200 OK");
 });
 %} 

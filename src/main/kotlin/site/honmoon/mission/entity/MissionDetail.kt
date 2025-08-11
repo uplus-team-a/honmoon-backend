@@ -3,6 +3,7 @@ package site.honmoon.mission.entity
 import com.vladmihalcea.hibernate.type.json.JsonType
 import jakarta.persistence.*
 import org.hibernate.annotations.Type
+import org.springframework.data.relational.core.mapping.Table
 import site.honmoon.common.Constant
 import site.honmoon.common.entity.BaseEntity
 import site.honmoon.mission.type.MissionType
@@ -34,7 +35,7 @@ class MissionDetail(
     var answer: String? = null,
 
     @Type(JsonType::class)
-    @Column(name = "choices", columnDefinition = "json")
+    @Column(name = "choices", columnDefinition = "jsonb")
     var choices: MissionChoicesVo? = null,
 
     @Column(name = "answer_explanation", columnDefinition = "TEXT")

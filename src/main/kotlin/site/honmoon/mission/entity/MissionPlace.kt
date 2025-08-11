@@ -1,6 +1,7 @@
 package site.honmoon.mission.entity
 
 import jakarta.persistence.*
+import org.springframework.data.relational.core.mapping.Table
 import site.honmoon.common.Constant
 import site.honmoon.common.entity.BaseEntity
 
@@ -9,13 +10,13 @@ import site.honmoon.common.entity.BaseEntity
 class MissionPlace(
     @Column(name = "name", nullable = false)
     var name: String,
-    
+
     @Column(name = "description", columnDefinition = "TEXT")
     var description: String? = null,
-    
+
     @Column(name = "location", columnDefinition = "TEXT")
     var location: String? = null,
-    
+
     @Column(name = "image")
     var image: String? = null,
 

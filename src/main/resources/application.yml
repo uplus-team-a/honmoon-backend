@@ -60,6 +60,21 @@ spring:
         project-id: ${GCP_PROJECT_ID:lexical-rock-465404-f3}
         bucket: ${GCP_BUCKET_NAME:springboot-honmoon-access}
 
+  mail:
+    host: ${MAIL_HOST:}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          connectiontimeout: 1000
+          timeout: 4000
+          writetimeout: 4000
+          starttls:
+            enable: true
+
   security:
     oauth2:
       client:

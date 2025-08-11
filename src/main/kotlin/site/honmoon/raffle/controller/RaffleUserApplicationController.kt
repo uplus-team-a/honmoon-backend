@@ -3,8 +3,8 @@ package site.honmoon.raffle.controller
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.media.Content
-import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.media.ExampleObject
+import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.web.bind.annotation.*
@@ -42,7 +42,7 @@ class RaffleUserApplicationController(
     fun getRaffleUserApplication(
         @Parameter(description = "래플 응모 ID", example = "1")
         @PathVariable id: Long,
-        @CurrentUser currentUser: UserPrincipal?
+        @CurrentUser currentUser: UserPrincipal?,
     ): Response<RaffleUserApplicationResponse> {
         return Response.success(raffleUserApplicationService.getRaffleUserApplication(id))
     }
@@ -56,7 +56,7 @@ class RaffleUserApplicationController(
     fun getUserRaffleApplications(
         @Parameter(description = "사용자 UUID", example = "123e4567-e89b-12d3-a456-426614174000")
         @PathVariable userId: UUID,
-        @CurrentUser currentUser: UserPrincipal?
+        @CurrentUser currentUser: UserPrincipal?,
     ): Response<List<RaffleUserApplicationResponse>> {
         return Response.success(raffleUserApplicationService.getUserRaffleApplications(userId))
     }
@@ -68,7 +68,7 @@ class RaffleUserApplicationController(
     )
     @GetMapping("/me")
     fun getMyRaffleApplications(
-        @CurrentUser currentUser: UserPrincipal
+        @CurrentUser currentUser: UserPrincipal,
     ): Response<List<RaffleUserApplicationResponse>> {
         val userId = UUID.fromString(currentUser.subject)
         return Response.success(raffleUserApplicationService.getUserRaffleApplications(userId))
@@ -83,7 +83,7 @@ class RaffleUserApplicationController(
     fun getRaffleApplicationsByProduct(
         @Parameter(description = "래플 상품 ID", example = "1")
         @PathVariable productId: Long,
-        @CurrentUser currentUser: UserPrincipal?
+        @CurrentUser currentUser: UserPrincipal?,
     ): Response<List<RaffleUserApplicationResponse>> {
         return Response.success(raffleUserApplicationService.getRaffleApplicationsByProduct(productId))
     }
@@ -107,7 +107,7 @@ class RaffleUserApplicationController(
         @RequestParam userId: UUID,
         @Parameter(description = "래플 상품 ID", example = "1")
         @RequestParam raffleProductId: Long,
-        @CurrentUser currentUser: UserPrincipal?
+        @CurrentUser currentUser: UserPrincipal?,
     ): Response<RaffleUserApplicationResponse> {
         return Response.success(raffleUserApplicationService.applyRaffle(userId, raffleProductId))
     }
@@ -121,7 +121,7 @@ class RaffleUserApplicationController(
     fun applyRaffleMe(
         @Parameter(description = "래플 상품 ID", example = "1")
         @RequestParam raffleProductId: Long,
-        @CurrentUser currentUser: UserPrincipal
+        @CurrentUser currentUser: UserPrincipal,
     ): Response<RaffleUserApplicationResponse> {
         val userId = UUID.fromString(currentUser.subject)
         return Response.success(raffleUserApplicationService.applyRaffle(userId, raffleProductId))
@@ -138,7 +138,7 @@ class RaffleUserApplicationController(
         @PathVariable productId: Long,
         @Parameter(description = "당첨자 수", example = "1")
         @RequestParam winnerCount: Int = 1,
-        @CurrentUser currentUser: UserPrincipal?
+        @CurrentUser currentUser: UserPrincipal?,
     ): Response<List<RaffleUserApplicationResponse>> {
         return Response.success(raffleUserApplicationService.drawRaffleWinners(productId, winnerCount))
     }
@@ -154,7 +154,7 @@ class RaffleUserApplicationController(
         @PathVariable userId: UUID,
         @Parameter(description = "래플 상품 ID", example = "1")
         @PathVariable productId: Long,
-        @CurrentUser currentUser: UserPrincipal?
+        @CurrentUser currentUser: UserPrincipal?,
     ): Response<RaffleUserApplicationResponse?> {
         return Response.success(raffleUserApplicationService.getUserApplicationStatus(userId, productId))
     }
@@ -168,7 +168,7 @@ class RaffleUserApplicationController(
     fun getMyApplicationStatus(
         @Parameter(description = "래플 상품 ID", example = "1")
         @PathVariable productId: Long,
-        @CurrentUser currentUser: UserPrincipal
+        @CurrentUser currentUser: UserPrincipal,
     ): Response<RaffleUserApplicationResponse?> {
         val userId = UUID.fromString(currentUser.subject)
         return Response.success(raffleUserApplicationService.getUserApplicationStatus(userId, productId))

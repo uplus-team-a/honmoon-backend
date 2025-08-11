@@ -1,15 +1,16 @@
 package site.honmoon.auth.dto
 
-import java.time.LocalDateTime
 import java.time.Instant
+import java.time.LocalDateTime
+import java.util.*
 
 // 요청 DTO
 data class EmailLoginRequest(
-    val email: String
+    val email: String,
 )
 
 data class TokenRefreshRequest(
-    val refreshToken: String
+    val refreshToken: String,
 )
 
 // 응답 DTO
@@ -17,7 +18,7 @@ data class TokenRefreshRequest(
 data class AuthUrlResponse(
     val provider: String,
     val authorizationUrl: String,
-    val state: String
+    val state: String,
 )
 
 data class GoogleTokenResponse(
@@ -26,7 +27,7 @@ data class GoogleTokenResponse(
     val refreshToken: String?,
     val expiresInSeconds: Long,
     val scope: String?,
-    val tokenType: String
+    val tokenType: String,
 )
 
 data class GoogleUserInfo(
@@ -52,19 +53,37 @@ data class AuthLoginResponse(
     val google: GoogleUserInfo?,
     val googleTokens: GoogleTokenResponse?,
     val appSessionToken: String?,
-    val jwt: JwtTokenResponse? = null
+    val jwt: JwtTokenResponse? = null,
 )
 
 data class EmailMagicLinkResponse(
     val email: String,
     val magicLink: String,
-    val expiresAt: LocalDateTime
+    val expiresAt: LocalDateTime,
 )
 
 data class EmailCallbackResponse(
     val email: String,
     val isValid: Boolean,
-    val appSessionToken: String?
+    val appSessionToken: String?,
+)
+
+data class EmailSignUpRequest(
+    val email: String,
+    val name: String,
+)
+
+data class EmailLoginByUserRequest(
+    val userId: UUID,
+)
+
+data class EmailPasswordLoginRequest(
+    val email: String,
+    val password: String,
+)
+
+data class LogoutResponse(
+    val success: Boolean,
 )
 
 data class ProfileResponse(

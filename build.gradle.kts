@@ -92,6 +92,10 @@ dependencies {
     implementation(libs.commons.lang3)
     runtimeOnly(libs.h2)
 
+    // Mail
+    implementation(libs.spring.boot.starter.mail)
+    implementation(libs.spring.boot.starter.thymeleaf)
+
     // Spring Cloud GCP
     implementation(libs.spring.cloud.gcp.starter)
     implementation(libs.google.cloud.storage)

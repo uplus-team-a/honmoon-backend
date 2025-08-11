@@ -1,47 +1,40 @@
-### 파일 업로드 URL 생성
-POST {{host}}/api/v1/files/upload-url?fileName=test.jpg&folder=images&contentType=image/jpeg&userId=2c0cd5f3-2993-4b71-a8da-5beeb79ad43c
+### 프로필 이미지 업로드 URL 발급
+POST {{host}}/api/user-summary/me/profile-image/upload-url?fileName=profile.jpg
 Accept: application/json
+Authorization: {{token}}
 
 > {%
-client.test("파일 업로드 URL 생성 - 200", () => {
+client.test("프로필 이미지 업로드 URL 발급 - 200", () => {
   client.assert(response.status === 200, "Status must be 200 OK");
   client.assert(!!response.body.data.uploadUrl, "uploadUrl should exist");
   client.assert(!!response.body.data.fileName, "fileName should exist");
+  client.global.set("profileUploadUrl", response.body.data.uploadUrl);
+  client.global.set("profileFileName", response.body.data.fileName);
 });
 %}
 
-### 파일 URL 조회
-GET {{host}}/api/v1/files/url/test.jpg
+### 미션 이미지 업로드 URL 발급
+POST {{host}}/api/missions/1/image/upload-url?fileName=mission.jpg
 Accept: application/json
+Authorization: {{token}}
 
 > {%
-client.test("파일 URL 조회 - 200 또는 404", () => {
-  client.assert([200, 404].includes(response.status), "Expected 200 or 404");
-  if (response.status === 200) {
-    client.assert(typeof response.body.data === 'string', "File URL should be a string");
-  }
+client.test("미션 이미지 업로드 URL 발급 - 200", () => {
+  client.assert(response.status === 200, "Status must be 200 OK");
+  client.assert(!!response.body.data.uploadUrl, "uploadUrl should exist");
+  client.assert(!!response.body.data.fileName, "fileName should exist");
+  client.global.set("missionUploadUrl", response.body.data.uploadUrl);
+  client.global.set("missionFileName", response.body.data.fileName);
 });
 %}
 
-### 파일 삭제 (본인 파일만 삭제 가능)
-DELETE {{host}}/api/v1/files/test.jpg?userId=2c0cd5f3-2993-4b71-a8da-5beeb79ad43c
-Accept: application/json
-
-> {%
-client.test("파일 삭제 - 200 또는 404", () => {
-  client.assert([200, 404].includes(response.status), "Expected 200 or 404");
-  if (response.status === 200) {
-    client.assert(typeof response.body.data === 'boolean', "Delete result should be boolean");
-  }
-});
-%}
-
-### 다른 사용자 파일 삭제 시도 (실패해야 함)
-DELETE {{host}}/api/v1/files/test.jpg?userId=6f8e9e91-530f-410a-9796-a20c428297c9
-Accept: application/json
-
-> {%
-client.test("다른 사용자 파일 삭제 시도 - 400 또는 404", () => {
-  client.assert([400, 404].includes(response.status), "Expected 400 or 404 - should not allow deleting other user's files");
-});
-%}
+### 참고: 파일 업로드 절차(수동)
+# 1) 위에서 받은 uploadUrl 로 PUT 요청을 전송하여 실제 파일 바이트를 업로드합니다.
+#    예) IntelliJ HTTP Client
+#    PUT {{profileUploadUrl}}
+#    Content-Type: image/jpeg
+#    < /absolute/path/to/local/profile.jpg
+#
+# 2) 업로드 완료 후 퍼블릭 URL을 조립해 사용합니다. 기본 버킷은 http-client.env.json 의 bucket 변수를 사용합니다.
+#    예) https://storage.googleapis.com/{{bucket}}/profiles/{{profileFileName}}
+#        https://storage.googleapis.com/{{bucket}}/missions/{{missionFileName}}

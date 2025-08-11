@@ -6,5 +6,5 @@ data class UserPrincipal(
     val name: String?,
     val picture: String?,
     val provider: String,
-    val roles: Set<String>
+    val roles: Set<String>,
 ) 

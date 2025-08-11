@@ -7,19 +7,18 @@ import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.HttpHeaders
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import site.honmoon.auth.dto.*
-import site.honmoon.auth.security.SessionAuthService
 import site.honmoon.auth.security.UserPrincipal
-import site.honmoon.auth.service.GoogleOAuthService
+import site.honmoon.auth.service.AuthService
 import site.honmoon.common.Response
 
 @Tag(name = "Auth", description = "Google OAuth + Basic/Security 세션 인증 API")
 @RestController
 @RequestMapping("/api/auth")
 class AuthController(
-    private val googleOAuthService: GoogleOAuthService,
-    private val sessionAuthService: SessionAuthService,
+    private val authService: AuthService,
 ) {
 
     @Operation(
@@ -40,12 +39,8 @@ class AuthController(
         @Parameter(description = "인증 성공 후 프론트에서 이동할 경로", example = "/")
         @RequestParam(required = false) redirectAfter: String?,
     ): Response<AuthUrlResponse> {
-        val scopes = scope.split(' ').filter { it.isNotBlank() }
-        val (url, state, _) = googleOAuthService.buildAuthorizationUrl(
-            scopes = scopes,
-            statePayload = if (redirectAfter != null) mapOf("redirectAfter" to redirectAfter) else emptyMap()
-        )
-        return Response.success(AuthUrlResponse("google", url, state))
+        val res = authService.buildGoogleAuthUrl(scope, redirectAfter)
+        return Response.success(res)
     }
 
     @Operation(
@@ -67,55 +62,8 @@ class AuthController(
         @Parameter(description = "요청 시 생성된 state")
         @RequestParam state: String,
     ): Response<AuthLoginResponse> {
-        require(googleOAuthService.verifyState(state)) { "invalid state" }
-        val tokenRes = googleOAuthService.exchangeCodeForTokens(code)
-        val accessToken = tokenRes.accessToken
-        val idToken = tokenRes.idToken
-        val refreshToken = tokenRes.refreshToken
-        val expiresIn = tokenRes.expiresInSeconds
-        val scope = tokenRes.scope
-        val tokenType = tokenRes.tokenType
-
-        val userInfoRes = googleOAuthService.fetchUserInfo(accessToken)
-        val googleUser = GoogleUserInfo(
-            sub = userInfoRes.sub,
-            email = userInfoRes.email,
-            emailVerified = userInfoRes.emailVerified,
-            name = userInfoRes.name,
-            givenName = userInfoRes.givenName,
-            familyName = userInfoRes.familyName,
-            picture = userInfoRes.picture,
-        )
-
-        val sessionToken = sessionAuthService.createSession(
-            UserPrincipal(
-                subject = googleUser.sub,
-                email = googleUser.email,
-                name = googleUser.name,
-                picture = googleUser.picture,
-                provider = "google",
-                roles = setOf("ROLE_USER")
-            )
-        )
-
-        val tokens = GoogleTokenResponse(
-            accessToken = accessToken,
-            idToken = idToken,
-            refreshToken = refreshToken,
-            expiresInSeconds = expiresIn,
-            scope = scope,
-            tokenType = tokenType
-        )
-
-        return Response.success(
-            AuthLoginResponse(
-                provider = "google",
-                google = googleUser,
-                googleTokens = tokens,
-                appSessionToken = sessionToken,
-                jwt = null
-            )
-        )
+        val res = authService.handleGoogleCallback(code, state)
+        return Response.success(res)
     }
 
     @Operation(
@@ -129,15 +77,8 @@ class AuthController(
     )
     @GetMapping("/me")
     fun me(@site.honmoon.auth.security.CurrentUser principal: UserPrincipal?): Response<ProfileResponse> {
-        requireNotNull(principal) { "unauthorized" }
-        val profile = ProfileResponse(
-            sub = principal.subject,
-            email = principal.email,
-            name = principal.name,
-            picture = principal.picture,
-            provider = principal.provider
-        )
-        return Response.success(profile)
+        val res = authService.buildCurrentProfile(principal)
+        return Response.success(res)
     }
 
     @Operation(
@@ -146,27 +87,31 @@ class AuthController(
         responses = [ApiResponse(responseCode = "200", description = "성공")]
     )
     @PostMapping("/logout")
-    fun logout(@RequestHeader(HttpHeaders.AUTHORIZATION) authorization: String?): Response<Boolean> {
-        val token = authorization?.removePrefix("Bearer ")?.trim()
-        if (!token.isNullOrBlank()) {
-            sessionAuthService.invalidate(token)
-        }
-        return Response.success(true)
+    fun logout(@RequestHeader(HttpHeaders.AUTHORIZATION) authorization: String?): Response<LogoutResponse> {
+        val res = authService.logout(authorization)
+        return Response.success(res)
     }
 
-    @Operation(summary = "이메일 매직 링크 요청", description = "입력된 이메일로 로그인 링크를 전송합니다.")
-    @PostMapping("/email/magic-link")
-    fun requestMagicLink(@RequestBody body: EmailLoginRequest): Response<EmailMagicLinkResponse> {
-        val magicToken = java.util.UUID.randomUUID().toString().replace("-", "")
-        val magicLink = "https://honmoon.site/auth/email/callback?token=$magicToken"
-        val expiresAt = java.time.LocalDateTime.now().plusMinutes(15)
-        return Response.success(EmailMagicLinkResponse(body.email, magicLink, expiresAt))
+    @Operation(summary = "이메일 회원가입 링크 전송", description = "입력된 이메일로 회원가입 확인 링크를 전송합니다.")
+    @PostMapping("/signup/email")
+    fun signupByEmail(@RequestBody body: EmailSignUpRequest): Response<EmailMagicLinkResponse> {
+        val res = authService.sendSignupMagicLink(body)
+        return Response.success(res)
+    }
+
+    @Operation(summary = "이메일 로그인 링크 전송(사용자 ID)", description = "프론트에서 이메일을 입력하지 않고 사용자 ID로 이메일을 조회하여 매직 링크를 전송합니다.")
+    @PostMapping("/login/email/by-user")
+    fun loginByEmailByUser(@RequestBody body: EmailLoginByUserRequest): Response<EmailMagicLinkResponse> {
+        val res = authService.sendLoginMagicLinkByUserId(body)
+        return Response.success(res)
     }
 
     @Operation(summary = "이메일 매직 링크 콜백", description = "매직 토큰을 검증합니다.")
     @GetMapping("/email/callback")
-    fun magicLinkCallback(@RequestParam token: String): Response<EmailCallbackResponse> {
-        val appSessionToken: String? = null
-        return Response.success(EmailCallbackResponse("unknown@honmoon.site", true, appSessionToken))
+    fun magicLinkCallback(
+        @RequestParam token: String,
+        @RequestParam(required = false) purpose: String?,
+    ): ResponseEntity<Void> {
+        return authService.handleMagicLinkCallback(token, purpose)
     }
-} 
+}

@@ -1,6 +1,7 @@
 # HonMoon Backend Package Structure
 
-This project follows a domain-driven design approach for package organization. Each domain has its own package containing controllers, services, repositories, and entities.
+This project follows a domain-driven design approach for package organization. Each domain has its own package
+containing controllers, services, repositories, and entities.
 
 ## Package Structure
 

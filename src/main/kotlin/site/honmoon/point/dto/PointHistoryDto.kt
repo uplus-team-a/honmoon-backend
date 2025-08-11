@@ -9,5 +9,5 @@ data class PointHistoryResponse(
     val points: Int,
     val description: String,
     val createdAt: Instant,
-    val modifiedAt: Instant
+    val modifiedAt: Instant,
 ) 

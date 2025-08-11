@@ -1,39 +1,112 @@
-## Google OAuth 설정 (Supabase 의존성 없이 백엔드 직접 연동)
+## 프론트엔드 연동 가이드
 
-- 서버 베이스 URL: `https://honmoon-api.site`
-- 프론트 사이트 URL: `https://honmoon.site`
+아래 순서로 인증 → 이미지 업로드(필요 시) → 각 도메인 API를 호출하세요. 모든 보호된 API는 Authorization: Bearer 세션 토큰이 필요합니다.
 
-### 1) Google Cloud Console 설정
+### 1) 인증 (이메일 매직 링크)
 
-- `승인된 리디렉션 URI`에 다음을 등록하세요:
-  - `https://honmoon-api.site/api/auth/google/callback`
-- 클라이언트 ID와 Client Secret을 발급받습니다.
+- step 1. 매직 링크 요청: POST `/api/auth/login/email/by-user`
+  - body: `{ "userId": "{UUID}" }`
+  - 응답 `data.magicLink` 에 링크가 반환됨
+- step 2. 백엔드 콜백 검증: GET `/api/auth/email/callback?token={TOKEN}&purpose=login`
+  - 302 Location 헤더의 fragment(`#token=...`) 에서 `token` 값을 추출 → 이후 Authorization: `Bearer {token}` 로 사용
+- 유틸: 현재 사용자 확인 GET `/api/auth/me` (Bearer 필요)
 
-주의: 기존 Supabase 콜백 URL(`https://srrbifwkihsblsqoiefy.supabase.co/auth/v1/callback`)은 사용하지 않습니다. 만약 백엔드가 아닌 프론트 직접 콜백을 사용하고 싶다면, 프론트 라우트에 콜백을 만들고 그 URL을 등록하면 됩니다. 이 레포에서는 백엔드 콜백을 사용합니다.
+예시
 
-### 2) 환경 변수 설정
+```bash
+curl -X POST "$HOST/api/auth/login/email/by-user" \
+  -H 'Content-Type: application/json' \
+  -d '{"userId":"2c0cd5f3-2993-4b71-a8da-5beeb79ad43c"}'
 
-- `properties/env.properties` (local 프로필) 또는 운영 환경 변수에 아래 값을 등록하세요.
-
+# magicLink 에서 token 추출 후
+curl -i "$HOST/api/auth/email/callback?token=$TOKEN&purpose=login"
+# Location 해시의 token 값을 Authorization: Bearer 로 사용
 ```
-GOOGLE_REDIRECT_URI=https://honmoon-api.site/api/auth/google/callback
+
+### 2) 이미지 업로드(필요 시)
+
+- 프로필 이미지 업로드 URL 발급: POST `/api/user-summary/me/profile-image/upload-url?fileName={name}`
+- 미션 이미지 업로드 URL 발급: POST `/api/missions/{missionId}/image/upload-url?fileName={name}`
+- 발급된 `data.uploadUrl` 로 파일 바이트를 PUT 업로드
+- 최종 사용 URL 구성
+  - 프로필: `https://storage.googleapis.com/{bucket}/profiles/{data.fileName}`
+  - 미션: `https://storage.googleapis.com/{bucket}/missions/{data.fileName}`
+
+예시(업로드)
+
+```bash
+# presigned URL 발급 후
+curl -X PUT "$UPLOAD_URL" \
+  -H 'Content-Type: image/jpeg' \
+  --data-binary @/absolute/path/to/file.jpg
 ```
 
-### 3) API 개요
+### 3) 미션/장소
 
-- `GET /api/auth/google/url` : 구글 인증 URL과 state 발급 (프론트는 이 URL로 리다이렉트)
-- `GET /api/auth/google/callback` : 구글이 전달한 `code`, `state`로 토큰 교환 및 사용자 정보 조회
-- 이메일 매직 링크(샘플):
-  - `POST /api/auth/email/magic-link` : 입력한 이메일로 매직 링크 발급 (실제 메일 전송 로직 필요)
-  - `GET /api/auth/email/callback` : 매직 링크 토큰 검증 (샘플 구현)
+- 미션 상세: GET `/api/missions/{id}`
+- 미션 답변 제출(텍스트): POST `/api/missions/{id}/submit-answer` body `{ "answer": "..." }`
+- 미션 답변 제출(이미지): POST `/api/missions/{id}/submit-image-answer` body `{ "imageUrl": "..." }`
+- 장소 상세/목록/검색/근처/장소별 미션:
+  - GET `/api/mission-places/{id}`
+  - GET `/api/mission-places`
+  - GET `/api/mission-places/search?title=...`
+  - GET `/api/mission-places/nearby?lat=..&lng=..&radius=..`
+  - GET `/api/mission-places/{id}/missions`
 
-### 4) 프론트 연동
+### 4) 사용자 활동/퀴즈 제출
 
-- 1. `GET /api/auth/google/url` 호출 → 응답의 `authorizationUrl`로 브라우저 리다이렉트
-- 2. 인증 후 구글이 백엔드 콜백(`/api/auth/google/callback`) 호출
-- 3. 백엔드는 구글 액세스 토큰, 사용자 정보 응답. 필요 시 앱 세션 토큰(JWT 등) 생성하여 `appSessionToken`에 담아 반환하면 됩니다.
+- 활동 상세/사용자별/장소별/생성/최근/내 활동:
+  - GET `/api/user-activities/{id}`
+  - GET `/api/user-activities/user/{userId}`
+  - GET `/api/user-activities/place/{placeId}`
+  - POST `/api/user-activities?userId={uuid}&placeId={id}&description=...`
+  - GET `/api/user-activities/user/{userId}/recent?limit=10`
+  - GET `/api/user-activities/me`, `/api/user-activities/me/recent?limit=10`
+- 퀴즈 제출:
+  - POST `/api/user-activities/missions/{missionId}/submit-quiz?userId={uuid}&textAnswer=...|selectedChoiceIndex=...|uploadedImageUrl=...`
+  - POST `/api/user-activities/missions/{missionId}/submit-quiz/me?textAnswer=...|selectedChoiceIndex=...|uploadedImageUrl=...`
 
-## OAuth Google Login 연동 가이드 (프론트엔드)
+### 5) 래플
+
+- 상품 상세/목록/검색/포인트범위/응모자수:
+  - GET `/api/raffle-products/{id}`
+  - GET `/api/raffle-products`
+  - GET `/api/raffle-products/search?name=...`
+  - GET `/api/raffle-products/by-points?minPoints=..&maxPoints=..`
+  - GET `/api/raffle-products/{id}/applicants-count`
+- 응모/내 응모/당첨자 선정/응모 상태:
+  - POST `/api/raffle-applications?userId={uuid}&raffleProductId={id}`
+  - POST `/api/raffle-applications/me?raffleProductId={id}`
+  - POST `/api/raffle-applications/{productId}/draw?winnerCount=1`
+  - GET `/api/raffle-applications/user/{userId}` `/api/raffle-applications/product/{productId}`
+  - GET `/api/raffle-applications/user/{userId}/product/{productId}`
+  - GET `/api/raffle-applications/me` `/api/raffle-applications/me/product/{productId}`
+
+### 6) 포인트
+
+- 상세/사용자별/획득/사용/내 내역:
+  - GET `/api/point-history/{id}`
+  - GET `/api/point-history/user/{userId}`
+  - GET `/api/point-history/user/{userId}/earned`
+  - GET `/api/point-history/user/{userId}/used`
+  - GET `/api/point-history/me`
+- 래플 응모 차감: POST `/api/point-history/use/raffle?userId={uuid}&raffleProductId={id}`
+
+### 7) 사용자 요약
+
+- 사용자 요약/포인트/퀴즈통계/미션통계:
+  - GET `/api/user-summary/{userId}`
+  - GET `/api/user-summary/{userId}/points`
+  - GET `/api/user-summary/{userId}/quiz-stats`
+  - GET `/api/user-summary/{userId}/mission-stats`
+- 내 요약/포인트/퀴즈통계/미션통계:
+  - GET `/api/user-summary/me`, `/api/user-summary/me/points`, `/api/user-summary/me/quiz-stats`, `/api/user-summary/me/mission-stats`
+- 프로필 업데이트/이미지 업데이트:
+  - PATCH `/api/user-summary/me` body `{ "displayName": "..." }`
+  - POST `/api/user-summary/me/profile-image?imageUrl=...`
+  - POST `/api/user-summary/user/{userId}/profile-image?imageUrl=...`
+
+주의사항
 
 ### 1) 인증 URL 생성
 
@@ -121,15 +194,7 @@ GOOGLE_REDIRECT_URI=https://honmoon-api.site/api/auth/google/callback
 - Basic 인증: 관리자용. 개발/운영 콘솔 등에서 사용. `Authorization: Basic base64(username:password)`
 - Bearer 세션 토큰: 일반 사용자용. OAuth 콜백에서 받은 `appSessionToken` 사용.
 
-## 보안/환경설정
-
-- Basic 계정은 환경 변수 혹은 `properties/env.properties`에 설정
-
-- CORS는 `CORS_ALLOWED_ORIGINS` 로 `allowedOriginPatterns` 설정
-
-## 주석
-
-- 모든 컨트롤러 메서드는 `@CurrentUser principal: UserPrincipal?` 파라미터로 현재 인증 정보를 주입받을 수 있습니다.
+불필요한 백엔드(yaml/환경설명 등)는 제거했습니다. 상세 스키마/예시는 Swagger UI(`/swagger-ui/index.html`) 또는 OpenAPI(`/v3/api-docs`)를 참고하세요.
 
 # Honmoon Backend
 
@@ -137,6 +202,33 @@ GOOGLE_REDIRECT_URI=https://honmoon-api.site/api/auth/google/callback
 - OpenAPI JSON: `/v3/api-docs`
 
 ## 프론트엔드 연동 가이드
+
+### OAuth 회원가입/로그인 플로우 (Google)
+
+1. 인증 URL 발급
+
+- GET `/api/auth/google/url?scope=profile email openid&redirectAfter=/` → `authorizationUrl`, `state` 반환
+- 프론트는 `authorizationUrl`로 즉시 리다이렉트
+
+2. Google 콜백 → 백엔드에서 사용자 정보 및 세션 발급
+
+- GET `/api/auth/google/callback?code=...&state=...`
+- 응답: `appSessionToken`(서버 세션 토큰), `google`(프로필), `googleTokens`(원본 토큰)
+  - 최초 로그인 시 자동 회원가입으로 간주(별도 가입 API 불필요)
+
+3. 이후 인증이 필요한 모든 API 호출에 세션 사용
+
+- 헤더: `Authorization: Bearer <appSessionToken>`
+- 서버에서는 Spring Security를 통해 현재 세션 사용자 정보(`@CurrentUser`)를 주입받아 사용
+- 별도 “로그인 상태 확인” API 없이도 보호된 API 호출이 가능
+
+4. 로그아웃
+
+- POST `/api/auth/logout` → 서버 세션 무효화
+
+선택) 현재 사용자 프로필 조회
+
+- GET `/api/auth/me` → 편의용 API (선택 사항). 백엔드는 `@CurrentUser`로 언제든지 접근 가능
 
 ### 1) OAuth 로그인/회원가입 연동 (Google)
 
@@ -185,7 +277,7 @@ GOOGLE_REDIRECT_URI=https://honmoon-api.site/api/auth/google/callback
   - 헤더: `Authorization: Bearer <appSessionToken>`
   - 응답: `true`
 
-### 2) 기능별 API 연동 플로우
+### 기능별 API 연동 플로우 요약
 
 세션 유지: 모든 보호된 API는 `Authorization: Bearer <appSessionToken>` 필요.
 
@@ -211,8 +303,7 @@ GOOGLE_REDIRECT_URI=https://honmoon-api.site/api/auth/google/callback
   - 특정 사용자 포인트 내역: GET `/api/point-history/user/{userId}`
   - 획득 내역만: GET `/api/point-history/user/{userId}/earned`
   - 사용 내역만: GET `/api/point-history/user/{userId}/used`
-  - 퀴즈 보상 적립(테스트용): POST `/api/point-history/earn/quiz?userId={userId}&quizId={quizId}&points={points}`
-  - 래플 응모 차감(내 계정은 아래 래플 API 사용 권장)
+  - 래플 응모 차감: POST `/api/point-history/use/raffle?userId={userId}&raffleProductId={id}`
 
 - 래플(Raffle)
 
@@ -247,3 +338,49 @@ GOOGLE_REDIRECT_URI=https://honmoon-api.site/api/auth/google/callback
 
 - 공통 에러 응답 스펙: `Response<T>` 래핑
 - 404: 리소스 없음, 400: 파라미터/검증 오류, 401: 인증 필요, 409: 중복 등
+
+### 이메일 매직 링크 연동 (프론트)
+
+- 회원가입 링크 전송: POST `https://honmoon-api.site/api/auth/signup/email` body: `{ email, name }`
+- 로그인 링크 전송(사용자 ID): POST `https://honmoon-api.site/api/auth/login/email/by-user` body: `{ userId }`
+- 콜백 처리: 프론트 콜백 라우트 `https://honmoon.site/auth/email/callback`
+  - 서버가 이메일 내 버튼을 프론트 URL로 발송합니다. 예: `https://honmoon.site/auth/email/callback?token=...&purpose=login|signup`
+  - 프론트는 첫 렌더링 시 `token`, `purpose`를 쿼리에서 읽어 백엔드 검증 API 호출 없이 그대로 진입할 수 있도록 구성하거나,
+    필요 시 백엔드 검증 엔드포인트(`GET https://honmoon-api.site/api/auth/email/callback?token=...`)로 302 리다이렉트를 받아 `#token=...` 형태로 처리할 수 있습니다.
+
+프론트 처리 가이드:
+
+1. 이메일 버튼 클릭 → 프론트 라우트 `/auth/email/callback` 진입
+2. `token`, `purpose` 쿼리 파라미터 추출
+3. 옵션 A: 즉시 서버 검증 대신 `GET https://honmoon-api.site/api/auth/email/callback?token=...&purpose=...`로 이동해 302 응답의 `#token=` 값을 수신
+4. 옵션 B: 바로 로컬 상태로 처리 후 필요한 API 호출부터 진행(권장: 옵션 A)
+5. 이후 전역 헤더 `Authorization: Bearer <appSessionToken>` 설정
+
+이메일 템플릿
+
+- 메일 로고: `https://storage.googleapis.com/honmoon-bucket/image/honmmon.png`
+- 버튼: “혼문에서 계속하기” → 프론트 콜백 URL 포함
+
+SMTP 설정 (Gmail/Naver)
+
+- application.yml
+
+```yaml
+spring:
+  mail:
+    host: ${MAIL_HOST}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          connectiontimeout: ${MAIL_CONNECTION_TIMEOUT:5000}
+          timeout: ${MAIL_TIMEOUT:5000}
+          writetimeout: ${MAIL_WRITE_TIMEOUT:5000}
+```
+
+- env.properties 예시는 `src/main/resources/properties/env.properties.example` 참고(주석 포함). 운영에서는 안전하게 환경 변수로 주입하세요.

@@ -1,5 +1,5 @@
 package site.honmoon.mission.dto
 
 data class MissionImageAnswerRequest(
-    val imageUrl: String
+    val imageUrl: String,
 )

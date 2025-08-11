@@ -1,6 +1,7 @@
 package site.honmoon.raffle.entity
 
 import jakarta.persistence.*
+import org.springframework.data.relational.core.mapping.Table
 import site.honmoon.common.Constant
 import site.honmoon.common.entity.BaseEntity
 

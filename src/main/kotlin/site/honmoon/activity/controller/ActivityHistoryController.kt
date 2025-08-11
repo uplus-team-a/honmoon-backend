@@ -3,8 +3,8 @@ package site.honmoon.activity.controller
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.media.Content
-import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.media.ExampleObject
+import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.web.bind.annotation.*
@@ -97,7 +97,10 @@ class UserActivityController(
             content = [Content(
                 mediaType = "application/json",
                 schema = Schema(implementation = UserActivityResponse::class),
-                examples = [ExampleObject(name = "success", value = "{\n  \"placeId\": 10, \n  \"description\": \"한강공원에서 산책\"\n}")]
+                examples = [ExampleObject(
+                    name = "success",
+                    value = "{\n  \"placeId\": 10, \n  \"description\": \"한강공원에서 산책\"\n}"
+                )]
             )]
         )]
     )

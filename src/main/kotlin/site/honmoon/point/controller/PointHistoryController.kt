@@ -15,7 +15,7 @@ import java.util.*
 @RestController
 @RequestMapping("/api/point-history")
 class PointHistoryController(
-    private val pointHistoryService: PointHistoryService
+    private val pointHistoryService: PointHistoryService,
 ) {
 
     @Operation(
@@ -26,7 +26,7 @@ class PointHistoryController(
     fun getPointHistory(
         @Parameter(description = "포인트 내역 ID", example = "1")
         @PathVariable id: Long,
-        @CurrentUser currentUser: UserPrincipal?
+        @CurrentUser currentUser: UserPrincipal?,
     ): Response<PointHistoryResponse> {
         return Response.success(pointHistoryService.getPointHistory(id))
     }
@@ -39,7 +39,7 @@ class PointHistoryController(
     fun getUserPointHistory(
         @Parameter(description = "사용자 UUID", example = "123e4567-e89b-12d3-a456-426614174000")
         @PathVariable userId: UUID,
-        @CurrentUser currentUser: UserPrincipal?
+        @CurrentUser currentUser: UserPrincipal?,
     ): Response<List<PointHistoryResponse>> {
         return Response.success(pointHistoryService.getUserPointHistory(userId))
     }
@@ -50,7 +50,7 @@ class PointHistoryController(
     )
     @GetMapping("/me")
     fun getMyPointHistory(
-        @CurrentUser currentUser: UserPrincipal
+        @CurrentUser currentUser: UserPrincipal,
     ): Response<List<PointHistoryResponse>> {
         val userId = UUID.fromString(currentUser.subject)
         return Response.success(pointHistoryService.getUserPointHistory(userId))
@@ -64,7 +64,7 @@ class PointHistoryController(
     fun getUserEarnedPointHistory(
         @Parameter(description = "사용자 UUID", example = "123e4567-e89b-12d3-a456-426614174000")
         @PathVariable userId: UUID,
-        @CurrentUser currentUser: UserPrincipal?
+        @CurrentUser currentUser: UserPrincipal?,
     ): Response<List<PointHistoryResponse>> {
         return Response.success(pointHistoryService.getUserEarnedPointHistory(userId))
     }
@@ -77,7 +77,7 @@ class PointHistoryController(
     fun getUserUsedPointHistory(
         @Parameter(description = "사용자 UUID", example = "123e4567-e89b-12d3-a456-426614174000")
         @PathVariable userId: UUID,
-        @CurrentUser currentUser: UserPrincipal?
+        @CurrentUser currentUser: UserPrincipal?,
     ): Response<List<PointHistoryResponse>> {
         return Response.success(pointHistoryService.getUserUsedPointHistory(userId))
     }
@@ -92,7 +92,7 @@ class PointHistoryController(
         @RequestParam userId: UUID,
         @Parameter(description = "래플 상품 ID", example = "1")
         @RequestParam raffleProductId: Long,
-        @CurrentUser currentUser: UserPrincipal?
+        @CurrentUser currentUser: UserPrincipal?,
     ): Response<PointHistoryResponse> {
         return Response.success(pointHistoryService.usePointsForRaffle(userId, raffleProductId))
     }

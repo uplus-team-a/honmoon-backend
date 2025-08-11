@@ -3,13 +3,13 @@ package site.honmoon.point.service
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import site.honmoon.common.ErrorCode
+import site.honmoon.common.exception.EntityNotFoundException
 import site.honmoon.point.dto.PointHistoryResponse
 import site.honmoon.point.entity.PointHistory
 import site.honmoon.point.repository.PointHistoryRepository
-import site.honmoon.user.repository.UserSummaryRepository
 import site.honmoon.raffle.repository.RaffleProductRepository
-import site.honmoon.common.ErrorCode
-import site.honmoon.common.exception.EntityNotFoundException
+import site.honmoon.user.repository.UsersRepository
 import java.util.*
 
 /**
@@ -19,7 +19,7 @@ import java.util.*
 @Transactional(readOnly = true)
 class PointHistoryService(
     private val pointHistoryRepository: PointHistoryRepository,
-    private val userSummaryRepository: UserSummaryRepository,
+    private val usersRepository: UsersRepository,
     private val raffleProductRepository: RaffleProductRepository,
 ) {
     /**
@@ -104,11 +104,10 @@ class PointHistoryService(
 
         val savedPointHistory = pointHistoryRepository.save(pointHistory)
 
-        val userSummary = userSummaryRepository.findByUserId(userId)
-        userSummary?.let {
-            it.totalPoints += points
-            userSummaryRepository.save(it)
-        }
+        val user = usersRepository.findById(userId)
+            .orElseThrow { EntityNotFoundException(ErrorCode.USER_NOT_FOUND, "User ID: $userId") }
+        user.totalPoints += points
+        usersRepository.save(user)
 
         return PointHistoryResponse(
             id = savedPointHistory.id,
@@ -129,11 +128,11 @@ class PointHistoryService(
             ?: throw EntityNotFoundException(ErrorCode.RAFFLE_NOT_FOUND, "ID: $raffleProductId")
         val requiredPoints = raffleProduct.pointCost
 
-        val userSummary = userSummaryRepository.findByUserId(userId)
-            ?: throw EntityNotFoundException(ErrorCode.USER_NOT_FOUND, "User ID: $userId")
+        val user = usersRepository.findById(userId)
+            .orElseThrow { EntityNotFoundException(ErrorCode.USER_NOT_FOUND, "User ID: $userId") }
 
-        if (userSummary.totalPoints < requiredPoints) {
-            throw IllegalArgumentException("포인트가 부족합니다. 필요: $requiredPoints, 보유: ${userSummary.totalPoints}")
+        if (user.totalPoints < requiredPoints) {
+            throw IllegalArgumentException("포인트가 부족합니다. 필요: $requiredPoints, 보유: ${user.totalPoints}")
         }
 
         val pointHistory = PointHistory(
@@ -144,8 +143,8 @@ class PointHistoryService(
 
         val savedPointHistory = pointHistoryRepository.save(pointHistory)
 
-        userSummary.totalPoints -= requiredPoints
-        userSummaryRepository.save(userSummary)
+        user.totalPoints -= requiredPoints
+        usersRepository.save(user)
 
         return PointHistoryResponse(
             id = savedPointHistory.id,

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="PersistenceUnitSettings">
+    <persistence-units>
+      <persistence-unit moduleName="honmoon.main" name="honmoon.main" framework="Spring Data JDBC" ormUnit="honmoon.main" defaultDataSourceId="36e000dd-97ea-4857-976a-98753ca6c4bd" />
+    </persistence-units>
+  </component>
+</project>

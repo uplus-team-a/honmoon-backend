@@ -10,7 +10,7 @@ import site.honmoon.mission.entity.MissionDetail
 @Service
 class FallbackAIService(
     @Qualifier("openai") private val openAIService: AIService,
-    @Qualifier("gemini") private val geminiService: AIService
+    @Qualifier("gemini") private val geminiService: AIService,
 ) : AIService {
 
     private val logger = LoggerFactory.getLogger(FallbackAIService::class.java)
@@ -54,7 +54,7 @@ class FallbackAIService(
     private fun <T> tryWithFallback(
         primaryAction: () -> T,
         fallbackAction: () -> T,
-        operationName: String
+        operationName: String,
     ): T {
         return try {
             logger.debug("Trying primary AI service (OpenAI) for $operationName")

@@ -16,5 +16,5 @@ data class UserActivityResponse(
     val selectedChoiceIndex: Int?,
     val uploadedImageUrl: String?,
     val createdAt: Instant,
-    val modifiedAt: Instant
+    val modifiedAt: Instant,
 ) 

@@ -17,5 +17,5 @@ data class MissionDetailResponse(
     val correctImageUrl: String?,
     val imageUploadInstruction: String?,
     val createdAt: Instant,
-    val modifiedAt: Instant
+    val modifiedAt: Instant,
 ) 

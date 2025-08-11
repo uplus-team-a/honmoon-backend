@@ -5,5 +5,5 @@ data class AnswerCheckResult(
     val confidence: Double,
     val reasoning: String,
     val extractedText: String? = null,
-    val hint: String? = null
+    val hint: String? = null,
 )

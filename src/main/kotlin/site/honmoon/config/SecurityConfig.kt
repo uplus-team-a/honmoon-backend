@@ -49,6 +49,9 @@ class SecurityConfig(
                     .requestMatchers(
                         "/api/auth/google/url",
                         "/api/auth/google/callback",
+                        "/api/auth/signup/email",
+                        "/api/auth/login/email/by-user",
+                        "/api/auth/email/callback",
                         "/v3/api-docs/**",
                         "/swagger-ui/**",
                         "/actuator/health"

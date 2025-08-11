@@ -2,6 +2,7 @@
 ### 사용자 요약 정보 조회
 GET {{host}}/api/user-summary/{{userId}}
 Accept: application/json
+Authorization: {{token}}
 
 > {%
     client.test("사용자 요약 정보 조회 - 200", () => {
@@ -12,6 +13,7 @@ Accept: application/json
 ### 사용자 포인트 현황 조회
 GET {{host}}/api/user-summary/{{userId}}/points
 Accept: application/json
+Authorization: {{token}}
 
 > {%
     client.test("사용자 포인트 현황 조회 - 200", () => {
@@ -22,6 +24,7 @@ Accept: application/json
 ### 사용자 퀴즈 활동 통계 조회
 GET {{host}}/api/user-summary/{{userId}}/quiz-stats
 Accept: application/json
+Authorization: {{token}}
 
 > {%
     client.test("사용자 퀴즈 활동 통계 조회 - 200", () => {
@@ -32,6 +35,7 @@ Accept: application/json
 ### 사용자 미션 달성률 조회
 GET {{host}}/api/user-summary/{{userId}}/mission-stats
 Accept: application/json
+Authorization: {{token}}
 
 > {%
     client.test("사용자 미션 달성률 조회 - 200", () => {
@@ -42,6 +46,7 @@ Accept: application/json
 ### 내 요약 정보 조회
 GET {{host}}/api/user-summary/me
 Accept: application/json
+Authorization: {{token}}
 
 > {%
     client.test("내 요약 정보 조회 - 200", () => {
@@ -52,6 +57,7 @@ Accept: application/json
 ### 내 포인트 현황 조회
 GET {{host}}/api/user-summary/me/points
 Accept: application/json
+Authorization: {{token}}
 
 > {%
     client.test("내 포인트 현황 조회 - 200", () => {
@@ -62,6 +68,7 @@ Accept: application/json
 ### 내 퀴즈 활동 통계 조회
 GET {{host}}/api/user-summary/me/quiz-stats
 Accept: application/json
+Authorization: {{token}}
 
 > {%
     client.test("내 퀴즈 활동 통계 조회 - 200", () => {
@@ -72,9 +79,43 @@ Accept: application/json
 ### 내 미션 달성률 조회
 GET {{host}}/api/user-summary/me/mission-stats
 Accept: application/json
+Authorization: {{token}}
 
 > {%
     client.test("내 미션 달성률 조회 - 200", () => {
+        client.assert(response.status === 200, "Status must be 200 OK");
+    });
+%} 
+
+### 사용자 프로필 이미지 업데이트 (내부 업로드 URL 사용)
+POST {{host}}/api/user-summary/user/{{userId}}/profile-image?imageUrl=https://storage.googleapis.com/{{bucket}}/profiles/{{profileFileName}}
+Accept: application/json
+Authorization: {{token}}
+
+> {%
+    client.test("사용자 프로필 이미지 업데이트 - 200", () => {
+        client.assert(response.status === 200, "Status must be 200 OK");
+    });
+%}
+
+### 내 프로필 이미지 업데이트 (내부 업로드 URL 사용)
+POST {{host}}/api/user-summary/me/profile-image?imageUrl=https://storage.googleapis.com/{{bucket}}/profiles/{{profileFileName}}
+Accept: application/json
+Authorization: {{token}}
+
+> {%
+    client.test("내 프로필 이미지 업데이트 - 200", () => {
+        client.assert(response.status === 200, "Status must be 200 OK");
+    });
+%}
+
+### 내 프로필 이미지 업로드 URL 발급
+POST {{host}}/api/user-summary/me/profile-image/upload-url?fileName=profile.jpg
+Accept: application/json
+Authorization: {{token}}
+
+> {%
+    client.test("내 프로필 이미지 업로드 URL 발급 - 200", () => {
         client.assert(response.status === 200, "Status must be 200 OK");
     });
 %} 

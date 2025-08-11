@@ -9,5 +9,5 @@ data class RaffleProductResponse(
     val imageUrl: String?,
     val pointCost: Int,
     val createdAt: Instant,
-    val modifiedAt: Instant
+    val modifiedAt: Instant,
 ) 

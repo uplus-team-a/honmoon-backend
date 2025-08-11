@@ -6,26 +6,25 @@ import org.springframework.transaction.annotation.Transactional
 import site.honmoon.activity.dto.UserActivityResponse
 import site.honmoon.activity.entity.UserActivity
 import site.honmoon.activity.repository.UserActivityRepository
-import site.honmoon.user.repository.UserSummaryRepository
+import site.honmoon.common.ErrorCode
+import site.honmoon.common.exception.DuplicateResourceException
+import site.honmoon.common.exception.EntityNotFoundException
 import site.honmoon.mission.entity.MissionDetail
 import site.honmoon.mission.repository.MissionDetailRepository
+import site.honmoon.mission.service.FallbackAIService
 import site.honmoon.mission.type.MissionType
 import site.honmoon.point.service.PointHistoryService
-import site.honmoon.common.ErrorCode
-import site.honmoon.common.exception.EntityNotFoundException
-import site.honmoon.common.exception.DuplicateResourceException
+import site.honmoon.user.repository.UsersRepository
 import java.util.*
-import site.honmoon.mission.service.FallbackAIService
 
 /**
  * 사용자 활동 기록과 미션 제출을 처리하는 서비스
- * 미션 퀴즈 정답 시 포인트 적립과 사용자 요약 통계를 갱신한다.
  */
 @Service
 @Transactional(readOnly = true)
 class UserActivityService(
     private val userActivityRepository: UserActivityRepository,
-    private val userSummaryRepository: UserSummaryRepository,
+    private val usersRepository: UsersRepository,
     private val missionDetailRepository: MissionDetailRepository,
     private val pointHistoryService: PointHistoryService,
     private val fallbackAIService: FallbackAIService,
@@ -105,7 +104,10 @@ class UserActivityService(
     @Transactional
     fun createActivity(userId: UUID, placeId: Long, description: String): UserActivityResponse {
         userActivityRepository.findByUserIdAndPlaceId(userId, placeId)?.let {
-            throw DuplicateResourceException(ErrorCode.DUPLICATE_ACTIVITY, "User $userId already has activity for place $placeId")
+            throw DuplicateResourceException(
+                ErrorCode.DUPLICATE_ACTIVITY,
+                "User $userId already has activity for place $placeId"
+            )
         }
 
         val userActivity = UserActivity(
@@ -116,9 +118,10 @@ class UserActivityService(
         )
         val savedActivity = userActivityRepository.save(userActivity)
 
-        userSummaryRepository.findByUserId(userId)?.let {
+        val user = usersRepository.findById(userId).orElse(null)
+        user?.let {
             it.totalActivities += 1
-            userSummaryRepository.save(it)
+            usersRepository.save(it)
         }
 
         return UserActivityResponse(
@@ -181,7 +184,10 @@ class UserActivityService(
             ?: throw EntityNotFoundException(ErrorCode.PLACE_NOT_FOUND, "Mission $missionId has no place")
 
         userActivityRepository.findByUserIdAndPlaceId(userId, placeId)?.let {
-            throw DuplicateResourceException(ErrorCode.DUPLICATE_ACTIVITY, "User $userId already has activity for place $placeId")
+            throw DuplicateResourceException(
+                ErrorCode.DUPLICATE_ACTIVITY,
+                "User $userId already has activity for place $placeId"
+            )
         }
 
         validateQuizAnswer(missionDetail, textAnswer, selectedChoiceIndex, uploadedImageUrl)
@@ -204,9 +210,10 @@ class UserActivityService(
         if (pointsToGrant > 0) {
             pointHistoryService.earnPointsFromQuiz(userId, missionId, pointsToGrant)
         }
-        userSummaryRepository.findByUserId(userId)?.let {
+        val user = usersRepository.findById(userId).orElse(null)
+        user?.let {
             it.totalActivities += 1
-            userSummaryRepository.save(it)
+            usersRepository.save(it)
         }
 
         return UserActivityResponse(
@@ -240,13 +247,16 @@ class UserActivityService(
                     "선택지 인덱스가 유효하지 않습니다."
                 }
             }
+
             MissionType.QUIZ_TEXT_INPUT -> {
                 requireNotNull(textAnswer) { "텍스트 입력 퀴즈는 텍스트 답변이 필수입니다." }
                 require(textAnswer.isNotBlank()) { "텍스트 답변이 비어있을 수 없습니다." }
             }
+
             MissionType.QUIZ_IMAGE_UPLOAD -> {
                 requireNotNull(uploadedImageUrl) { "이미지 업로드 퀴즈는 업로드된 이미지 URL이 필수입니다." }
             }
+
             else -> {
             }
         }
@@ -263,15 +273,18 @@ class UserActivityService(
                 val correctChoiceIndex = missionDetail.choices?.choices?.indexOf(missionDetail.answer)
                 selectedChoiceIndex == correctChoiceIndex
             }
+
             MissionType.QUIZ_TEXT_INPUT -> {
                 textAnswer?.trim()?.equals(missionDetail.answer?.trim(), ignoreCase = true) ?: false
             }
+
             MissionType.QUIZ_IMAGE_UPLOAD -> {
                 val imageUrl = uploadedImageUrl ?: return false
                 val analysis = fallbackAIService.analyzeImage(imageUrl)
                 val result = fallbackAIService.checkImageAnswer(missionDetail, analysis.extractedText)
                 result.isCorrect && result.confidence >= 0.5
             }
+
             else -> false
         }
     }

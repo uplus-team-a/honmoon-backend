@@ -7,5 +7,5 @@ data class MissionSummaryResponse(
     val title: String,
     val description: String?,
     val points: Int,
-    val missionType: MissionType
+    val missionType: MissionType,
 ) 

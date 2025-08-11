@@ -1,6 +1,7 @@
 package site.honmoon.point.entity
 
 import jakarta.persistence.*
+import org.springframework.data.relational.core.mapping.Table
 import site.honmoon.common.Constant
 import site.honmoon.common.entity.BaseEntity
 import java.util.*
@@ -10,12 +11,12 @@ import java.util.*
 class PointHistory(
     @Column(name = "user_id", nullable = false)
     var userId: UUID,
-    
+
     @Column(name = "points", nullable = false)
     var points: Int,
-    
+
     @Column(name = "description", nullable = false)
-    var description: String
+    var description: String,
 ) : BaseEntity() {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

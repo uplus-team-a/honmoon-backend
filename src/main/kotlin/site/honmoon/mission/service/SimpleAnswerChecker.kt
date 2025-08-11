@@ -6,7 +6,7 @@ import site.honmoon.mission.type.MissionType
 
 @Component
 class SimpleAnswerChecker : AnswerChecker {
-    
+
     override fun checkAnswer(mission: MissionDetail, userAnswer: String): Boolean {
         return when (mission.missionType) {
             MissionType.QUIZ_MULTIPLE_CHOICE -> checkMultipleChoiceAnswer(mission, userAnswer)
