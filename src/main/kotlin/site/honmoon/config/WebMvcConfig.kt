@@ -21,6 +21,7 @@ class WebMvcConfig(
             .allowedOriginPatterns("*")
             .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
             .allowedHeaders("*")
+            .exposedHeaders("Authorization", "Content-Type")
             .allowCredentials(true)
             .maxAge(3600)
     }

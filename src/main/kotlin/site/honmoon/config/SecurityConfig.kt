@@ -7,6 +7,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
+import org.springframework.http.HttpMethod
 import org.springframework.security.core.userdetails.User
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
@@ -17,6 +18,9 @@ import org.springframework.security.web.context.SecurityContextHolderFilter
 import org.springframework.security.web.firewall.HttpStatusRequestRejectedHandler
 import org.springframework.security.web.firewall.RequestRejectedHandler
 import org.springframework.web.servlet.HandlerExceptionResolver
+import org.springframework.web.cors.CorsConfiguration
+import org.springframework.web.cors.CorsConfigurationSource
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 import site.honmoon.auth.security.SecurityExceptionHandlerDelegator
 import site.honmoon.auth.security.SecurityRoles
 import site.honmoon.auth.security.SessionAuthService
@@ -49,6 +53,7 @@ class SecurityConfig(
         val delegator = SecurityExceptionHandlerDelegator(handlerExceptionResolver)
 
         http
+            .cors { }
             .csrf { it.disable() }
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .exceptionHandling { eh ->
@@ -57,6 +62,7 @@ class SecurityConfig(
             }
             .authorizeHttpRequests { auth ->
                 auth
+                    .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                     .requestMatchers(
                         "/api/auth/google/url",
                         "/api/auth/google/callback",
@@ -79,6 +85,21 @@ class SecurityConfig(
                 SecurityContextHolderFilter::class.java
             )
         return http.build()
+    }
+
+    @Bean
+    fun corsConfigurationSource(): CorsConfigurationSource {
+        val config = CorsConfiguration()
+        config.allowedOriginPatterns = listOf("*")
+        config.allowedMethods = listOf("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
+        config.allowedHeaders = listOf("*")
+        config.exposedHeaders = listOf("Authorization", "Content-Type")
+        config.allowCredentials = true
+        config.maxAge = 3600
+
+        val source = UrlBasedCorsConfigurationSource()
+        source.registerCorsConfiguration("/**", config)
+        return source
     }
 
     @Bean

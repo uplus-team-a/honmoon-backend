@@ -125,17 +125,18 @@ class AuthService(
         if (email == null) {
             throw AuthException(ErrorCode.INVALID_OR_EXPIRED_TOKEN)
         }
+        val savedUser = userService.getOrCreateUserByEmail(email)
         val sessionToken = sessionAuthService.createSession(
             UserPrincipal(
-                subject = email,
-                email = email,
-                name = email.substringBefore('@'),
-                picture = null,
+                subject = savedUser.id.toString(),
+                email = savedUser.email,
+                name = savedUser.nickname ?: savedUser.email ?: savedUser.id.toString(),
+                picture = savedUser.profileImageUrl,
                 provider = "email",
                 roles = setOf(SecurityAuthorities.ROLE_USER)
             )
         )
-        logger.debug { "[AuthService] Magic-link session created token=${sessionToken} subject=${email}" }
+        logger.debug { "[AuthService] Magic-link session created token=${sessionToken} subject=${savedUser.id}" }
         val finalRedirectUrl = redirectUrl ?: "https://www.honmoon.site"
         val redirectUrlWithToken = "$finalRedirectUrl#token=$sessionToken&email=$email&purpose=${purpose ?: "login"}"
         return ResponseEntity.status(302).header(HttpHeaders.LOCATION, redirectUrlWithToken).build()
@@ -149,17 +150,18 @@ class AuthService(
         if (email == null) {
             throw AuthException(ErrorCode.INVALID_OR_EXPIRED_TOKEN)
         }
+        val savedUser = userService.getOrCreateUserByEmail(email)
         val sessionToken = sessionAuthService.createSession(
             UserPrincipal(
-                subject = email,
-                email = email,
-                name = email.substringBefore('@'),
-                picture = null,
+                subject = savedUser.id.toString(),
+                email = savedUser.email,
+                name = savedUser.nickname ?: savedUser.email ?: savedUser.id.toString(),
+                picture = savedUser.profileImageUrl,
                 provider = "email",
                 roles = setOf(SecurityAuthorities.ROLE_USER)
             )
         )
-        logger.debug { "[AuthService] Magic-link session created (JSON) token=${sessionToken} subject=${email}" }
+        logger.debug { "[AuthService] Magic-link session created (JSON) token=${sessionToken} subject=${savedUser.id}" }
         return EmailCallbackResponse(
             email = email,
             isValid = true,

@@ -119,6 +119,40 @@ class UserService(
     }
 
     /**
+     * 이메일 사용자를 조회하거나 없으면 새로 생성한다.
+     */
+    @Transactional
+    fun getOrCreateUserByEmail(email: String): Users {
+        val existing = usersRepository.findByEmail(email)
+        if (existing != null) {
+            return existing
+        }
+
+        val welcome = Constant.WELCOME_POINTS_DEFAULT
+        val newUser = Users(
+            id = UUID.randomUUID(),
+            email = email,
+            nickname = email.substringBefore('@'),
+            totalPoints = welcome,
+            totalActivities = 0,
+            profileImageUrl = null,
+            isActive = true,
+        )
+        val savedUser = usersRepository.save(newUser)
+
+        if (welcome > 0) {
+            val ph = PointHistory(
+                userId = savedUser.id,
+                points = welcome,
+                description = "웰컴 포인트 지급",
+            )
+            pointHistoryRepository.save(ph)
+        }
+
+        return savedUser
+    }
+
+    /**
      * Google OAuth 로그인 시 사용자 정보를 기반으로 회원을 조회하거나 새로 생성한다.
      */
     @Transactional

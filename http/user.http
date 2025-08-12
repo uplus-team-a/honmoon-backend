@@ -129,4 +129,22 @@ Authorization: {{token}}
     });
 %}
 
+### 내 프로필 정보 수정 (닉네임/이미지)
+PATCH {{host}}/api/users/me
+Content-Type: application/json
+Accept: application/json
+Authorization: {{token}}
+
+{
+  "nickname": "지원",
+  "profileImageUrl": "https://storage.googleapis.com/{{bucket}}/profiles/{{profileFileName}}"
+}
+
+> {%
+    client.test("내 프로필 정보 수정 - 200", () => {
+        client.assert(response.status === 200, "Status must be 200 OK");
+        client.assert(response.body.data.nickname === "지원", "nickname updated");
+    });
+%}
+
 ### (참고) 사용자별 조회/수정 엔드포인트는 제거되고 모두 /me 기반으로 통일됨

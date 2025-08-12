@@ -76,6 +76,7 @@ GET /api/users/me/points                            # 내 포인트 현황
 GET /api/users/me/quiz-stats                        # 내 퀴즈 통계
 GET /api/users/me/mission-stats                     # 내 미션 통계
 PUT /api/users/me/profile-image?imageUrl=...        # 내 프로필 이미지 업데이트
+PATCH /api/users/me                                  # 내 프로필 정보 수정 (nickname, profileImageUrl)
 ```
 
 ## 활동 내역
