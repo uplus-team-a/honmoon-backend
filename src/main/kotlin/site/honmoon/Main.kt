@@ -30,8 +30,8 @@ class HonMoonApplication : SpringBootServletInitializer() {
 fun main(args: Array<String>) {
     logger.info {
         """
-        Swagger UI: https://honmoon-api.site/swagger-ui.html
-        OpenAPI Docs (JSON): https://honmoon-api.site/v3/api-docs
+        Swagger UI: https://www.honmoon-api.site/swagger-ui.html
+        OpenAPI Docs (JSON): https://www.honmoon-api.site/v3/api-docs
         """.trimIndent()
     }
 

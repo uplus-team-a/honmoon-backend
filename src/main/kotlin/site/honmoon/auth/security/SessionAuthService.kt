@@ -35,7 +35,7 @@ class SessionAuthService(
             existing.name = principal.name
             existing.picture = principal.picture
             existing.provider = principal.provider
-            existing.expiresAt = now.plus(30, ChronoUnit.MINUTES)
+            existing.expiresAt = now.plus(60, ChronoUnit.MINUTES)
             appSessionRepository.save(existing)
             logger.info { "[Session] updated token=${existing.token} subject=${existing.subject} provider=${existing.provider} email=${existing.email} expiresAt=${existing.expiresAt}" }
             return existing.token
@@ -48,7 +48,7 @@ class SessionAuthService(
             name = principal.name,
             picture = principal.picture,
             provider = principal.provider,
-            expiresAt = now.plus(30, ChronoUnit.MINUTES)
+            expiresAt = now.plus(60, ChronoUnit.MINUTES)
         )
         appSessionRepository.save(session)
         logger.info { "[Session] created token=${newToken} subject=${session.subject} provider=${session.provider} email=${session.email} expiresAt=${session.expiresAt}" }

@@ -67,7 +67,8 @@ class SecurityConfig(
                         "/api/auth/email/exchange",
                         "/v3/api-docs/**",
                         "/swagger-ui/**",
-                        "/actuator/health"
+                        "/actuator/health",
+                        "/favicon.ico"
                     ).permitAll()
                     .requestMatchers("/api/auth/test-token").hasRole(SecurityRoles.ADMIN)
                     .anyRequest().hasRole(SecurityRoles.USER)

@@ -102,9 +102,9 @@ class AuthService(
 
     fun sendSignupMagicLink(body: EmailSignUpRequest, frontendRedirectUrl: String? = null): EmailMagicLinkResponse {
         val token = magicLinkService.issue(body.email, 15)
-        val magicLink = "https://honmoon-api.site/api/auth/email/callback?token=$token&purpose=signup" + 
+        val magicLink = "https://www.honmoon-api.site/api/auth/email/callback?token=$token&purpose=signup" +
             if (frontendRedirectUrl != null) "&redirectUrl=$frontendRedirectUrl" else ""
-        val expiresAt = LocalDateTime.now().plusMinutes(15)
+        val expiresAt = LocalDateTime.now().plusMinutes(60)
         emailService.sendMagicLinkHtml(body.email, magicLink, purpose = "회원가입", name = body.name)
         return EmailMagicLinkResponse(body.email, magicLink, expiresAt)
     }
@@ -113,9 +113,9 @@ class AuthService(
     fun sendLoginMagicLinkByUserId(request: EmailLoginByUserRequest, frontendRedirectUrl: String? = null): EmailMagicLinkResponse {
         val email = userService.getEmailByUserId(request.userId)
         val token = magicLinkService.issue(email, 15)
-        val magicLink = "https://honmoon-api.site/api/auth/email/callback?token=$token&purpose=login" + 
+        val magicLink = "https://www.honmoon-api.site/api/auth/email/callback?token=$token&purpose=login" +
             if (frontendRedirectUrl != null) "&redirectUrl=$frontendRedirectUrl" else ""
-        val expiresAt = LocalDateTime.now().plusMinutes(15)
+        val expiresAt = LocalDateTime.now().plusMinutes(60)
         emailService.sendMagicLinkHtml(email, magicLink, purpose = "로그인")
         return EmailMagicLinkResponse(email, magicLink, expiresAt)
     }

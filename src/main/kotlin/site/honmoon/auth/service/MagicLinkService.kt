@@ -15,7 +15,7 @@ class MagicLinkService(
     private val logger = KotlinLogging.logger {}
 
     @Transactional
-    fun issue(email: String, ttlMinutes: Long = 15): String {
+    fun issue(email: String, ttlMinutes: Long = 60): String {
         val token = UUID.randomUUID().toString().replace("-", "")
         val entity = MagicLinkToken(
             token = token,

@@ -18,7 +18,7 @@ import javax.crypto.spec.SecretKeySpec
 class GoogleOAuthService(
     @Value("\${GOOGLE_CLIENT_ID}") private val clientId: String,
     @Value("\${GOOGLE_CLIENT_SECRET}") private val clientSecret: String,
-    @Value("\${GOOGLE_REDIRECT_URI:https://honmoon-api.site/api/auth/google/callback}") private val redirectUri: String,
+    @Value("\${GOOGLE_REDIRECT_URI:https://www.honmoon-api.site/api/auth/google/callback}") private val redirectUri: String,
     private val oauthApi: GoogleOAuthApi,
     private val userInfoApi: GoogleUserInfoApi,
 ) {
@@ -43,7 +43,7 @@ class GoogleOAuthService(
         val url = oauthAuthorizeBase + "?" + params.entries.joinToString("&") { (k, v) ->
             k + "=" + URLEncoder.encode(v, StandardCharsets.UTF_8)
         }
-        return Triple(url, state, Instant.now().plus(Duration.ofMinutes(10)))
+        return Triple(url, state, Instant.now().plus(Duration.ofMinutes(60)))
     }
 
     fun exchangeCodeForTokens(code: String): site.honmoon.auth.dto.GoogleTokenApiResponse {
