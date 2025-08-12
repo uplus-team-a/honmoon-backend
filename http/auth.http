@@ -1,7 +1,6 @@
 ### 0) 변수 설정(필요 시)
 @signupEmail=sylvester7412@gmail.com
 @signupName=지원
-@userId={{userId}}
 @basicAuth={{basicToken}}
 
 ### 1) Basic 인증으로 테스트용 세션 토큰 발급
@@ -31,7 +30,7 @@ Authorization: {{token}}
 %}
 
 ### 2) 회원가입: 이메일 매직 링크 발급
-POST {{host}}/api/auth/signup/email
+POST {{host}}/api/auth/signup/email?redirectUrl=https://honmoon.site/auth/success
 Content-Type: application/json
 
 {
@@ -53,7 +52,7 @@ Content-Type: application/json
 %}
 
 ### 3) 회원가입: 백엔드 콜백 검증 → 세션 토큰 발급(302 Location 해시)
-GET {{host}}/api/auth/email/callback?token={{signupToken}}&purpose=signup
+GET {{host}}/api/auth/email/callback?token={{signupToken}}&purpose=signup&redirectUrl=https://honmoon.site/auth/success
 Accept: application/json
 
 > {%
@@ -83,11 +82,11 @@ Authorization: {{token}}
 %}
 
 ### 5) 로그인: 사용자ID로 매직 링크 발급(사전 확보된 userId 필요)
-POST {{host}}/api/auth/login/email/by-user
+POST {{host}}/api/auth/login/email/by-user?redirectUrl=https://honmoon.site/dashboard
 Content-Type: application/json
 
 {
-  "userId": "{{userId}}"
+  "userId": "00000000-0000-0000-0000-000000000000"
 }
 
 > {%
@@ -104,7 +103,7 @@ Content-Type: application/json
 %}
 
 ### 6) 로그인: 백엔드 콜백 검증 → 새 세션 토큰 발급
-GET {{host}}/api/auth/email/callback?token={{loginToken}}&purpose=login
+GET {{host}}/api/auth/email/callback?token={{loginToken}}&purpose=login&redirectUrl=https://honmoon.site/dashboard
 Accept: application/json
 
 > {%

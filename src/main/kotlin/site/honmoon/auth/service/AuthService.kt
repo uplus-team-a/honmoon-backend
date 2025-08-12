@@ -83,25 +83,27 @@ class AuthService(
         )
     }
 
-    fun sendSignupMagicLink(body: EmailSignUpRequest): EmailMagicLinkResponse {
+    fun sendSignupMagicLink(body: EmailSignUpRequest, frontendRedirectUrl: String? = null): EmailMagicLinkResponse {
         val token = magicLinkService.issue(body.email, 15)
-        val magicLink = "https://honmoon.site/api/auth/email/callback?token=$token&purpose=signup"
+        val magicLink = "https://honmoon-api.site/api/auth/email/callback?token=$token&purpose=signup" + 
+            if (frontendRedirectUrl != null) "&redirectUrl=$frontendRedirectUrl" else ""
         val expiresAt = LocalDateTime.now().plusMinutes(15)
         emailService.sendMagicLinkHtml(body.email, magicLink, purpose = "회원가입", name = body.name)
         return EmailMagicLinkResponse(body.email, magicLink, expiresAt)
     }
 
 
-    fun sendLoginMagicLinkByUserId(request: EmailLoginByUserRequest): EmailMagicLinkResponse {
+    fun sendLoginMagicLinkByUserId(request: EmailLoginByUserRequest, frontendRedirectUrl: String? = null): EmailMagicLinkResponse {
         val email = userService.getEmailByUserId(request.userId)
         val token = magicLinkService.issue(email, 15)
-        val magicLink = "https://honmoon.site/api/auth/email/callback?token=$token&purpose=login"
+        val magicLink = "https://honmoon-api.site/api/auth/email/callback?token=$token&purpose=login" + 
+            if (frontendRedirectUrl != null) "&redirectUrl=$frontendRedirectUrl" else ""
         val expiresAt = LocalDateTime.now().plusMinutes(15)
         emailService.sendMagicLinkHtml(email, magicLink, purpose = "로그인")
         return EmailMagicLinkResponse(email, magicLink, expiresAt)
     }
 
-    fun handleMagicLinkCallback(token: String, purpose: String?): ResponseEntity<Void> {
+    fun handleMagicLinkCallback(token: String, purpose: String?, redirectUrl: String?): ResponseEntity<Void> {
         val email = magicLinkService.verify(token)
         if (email == null) {
             throw AuthException(ErrorCode.INVALID_OR_EXPIRED_TOKEN)
@@ -117,9 +119,9 @@ class AuthService(
             )
         )
         logger.debug { "[AuthService] Magic-link session created token=${sessionToken} subject=${email}" }
-        val redirectUrl =
-            "https://honmoon.site/api/auth/email/callback#token=$sessionToken&email=$email&purpose=${purpose ?: "login"}"
-        return ResponseEntity.status(302).header(HttpHeaders.LOCATION, redirectUrl).build()
+        val finalRedirectUrl = redirectUrl ?: "https://honmoon.site"
+        val redirectUrlWithToken = "$finalRedirectUrl#token=$sessionToken&email=$email&purpose=${purpose ?: "login"}"
+        return ResponseEntity.status(302).header(HttpHeaders.LOCATION, redirectUrlWithToken).build()
     }
 
     fun buildCurrentProfile(principal: UserPrincipal?): ProfileResponse {

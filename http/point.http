@@ -34,35 +34,35 @@ Authorization: {{token}}
     });
 %}
 
-### 사용자 포인트 내역 조회
-GET {{host}}/api/point-history/user/{{userId}}
+### 내 포인트 내역 조회
+GET {{host}}/api/point-history/me
 Accept: application/json
 Authorization: {{token}}
 
 > {%
-    client.test("사용자 포인트 내역 조회 - 200", () => {
+    client.test("내 포인트 내역 조회 - 200", () => {
         client.assert(response.status === 200, "Status must be 200 OK");
     });
 %}
 
-### 사용자 포인트 획득 내역 조회
-GET {{host}}/api/point-history/user/{{userId}}/earned
+### 내 포인트 획득 내역 조회
+GET {{host}}/api/point-history/me/earned
 Accept: application/json
 Authorization: {{token}}
 
 > {%
-    client.test("사용자 포인트 획득 내역 조회 - 200", () => {
+    client.test("내 포인트 획득 내역 조회 - 200", () => {
         client.assert(response.status === 200, "Status must be 200 OK");
     });
 %}
 
-### 사용자 포인트 사용 내역 조회
-GET {{host}}/api/point-history/user/{{userId}}/used
+### 내 포인트 사용 내역 조회
+GET {{host}}/api/point-history/me/used
 Accept: application/json
 Authorization: {{token}}
 
 > {%
-    client.test("사용자 포인트 사용 내역 조회 - 200", () => {
+    client.test("내 포인트 사용 내역 조회 - 200", () => {
         client.assert(response.status === 200, "Status must be 200 OK");
     });
 %}

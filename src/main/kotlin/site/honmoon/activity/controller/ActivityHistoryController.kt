@@ -47,19 +47,7 @@ class UserActivityController(
         return Response.success(userActivityService.getUserActivity(id))
     }
 
-    @Operation(
-        summary = "사용자 활동 내역 조회",
-        description = "특정 사용자의 모든 활동 내역을 조회합니다.",
-        responses = [ApiResponse(responseCode = "200", description = "성공")]
-    )
-    @GetMapping("/user/{userId}")
-    fun getUserActivityHistory(
-        @Parameter(description = "사용자 UUID", example = "123e4567-e89b-12d3-a456-426614174000")
-        @PathVariable userId: UUID,
-        @CurrentUser currentUser: UserPrincipal?,
-    ): Response<List<UserActivityResponse>> {
-        return Response.success(userActivityService.getUserActivityHistory(userId))
-    }
+    
 
     @Operation(
         summary = "내 활동 내역 조회",
@@ -106,32 +94,17 @@ class UserActivityController(
     )
     @PostMapping
     fun createActivity(
-        @Parameter(description = "사용자 UUID", example = "123e4567-e89b-12d3-a456-426614174000")
-        @RequestParam userId: UUID,
         @Parameter(description = "장소 ID", example = "1")
         @RequestParam placeId: Long,
         @Parameter(description = "활동 설명", example = "한강공원에서 산책")
         @RequestParam description: String,
-        @CurrentUser currentUser: UserPrincipal?,
+        @CurrentUser currentUser: UserPrincipal,
     ): Response<UserActivityResponse> {
+        val userId = UUID.fromString(currentUser.subject)
         return Response.success(userActivityService.createActivity(userId, placeId, description))
     }
 
-    @Operation(
-        summary = "사용자 최근 활동 조회",
-        description = "특정 사용자의 최근 활동 내역을 조회합니다.",
-        responses = [ApiResponse(responseCode = "200", description = "성공")]
-    )
-    @GetMapping("/user/{userId}/recent")
-    fun getUserRecentActivity(
-        @Parameter(description = "사용자 UUID", example = "123e4567-e89b-12d3-a456-426614174000")
-        @PathVariable userId: UUID,
-        @Parameter(description = "조회할 활동 수", example = "10")
-        @RequestParam limit: Int = 10,
-        @CurrentUser currentUser: UserPrincipal?,
-    ): Response<List<UserActivityResponse>> {
-        return Response.success(userActivityService.getUserRecentActivity(userId, limit))
-    }
+    
 
     @Operation(
         summary = "내 최근 활동 조회",
@@ -157,16 +130,15 @@ class UserActivityController(
     fun submitQuizAnswer(
         @Parameter(description = "미션 ID", example = "1")
         @PathVariable missionId: Long,
-        @Parameter(description = "사용자 UUID", example = "123e4567-e89b-12d3-a456-426614174000")
-        @RequestParam userId: UUID,
         @Parameter(description = "텍스트 답변 (텍스트 입력 퀴즈용)")
         @RequestParam(required = false) textAnswer: String?,
         @Parameter(description = "선택지 인덱스 (객관식 퀴즈용)")
         @RequestParam(required = false) selectedChoiceIndex: Int?,
         @Parameter(description = "업로드된 이미지 URL (이미지 업로드 퀴즈용)")
         @RequestParam(required = false) uploadedImageUrl: String?,
-        @CurrentUser currentUser: UserPrincipal?,
+        @CurrentUser currentUser: UserPrincipal,
     ): Response<UserActivityResponse> {
+        val userId = UUID.fromString(currentUser.subject)
         return Response.success(
             userActivityService.submitQuizAnswer(
                 missionId = missionId,

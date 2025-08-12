@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.*
 import site.honmoon.auth.security.CurrentUser
 import site.honmoon.auth.security.UserPrincipal
 import site.honmoon.common.Response
-import site.honmoon.raffle.dto.RaffleUserApplicationResponse
 import site.honmoon.raffle.dto.RaffleApplyResult
+import site.honmoon.raffle.dto.RaffleUserApplicationResponse
 import site.honmoon.raffle.service.RaffleUserApplicationService
 import java.util.*
 
@@ -48,19 +48,6 @@ class RaffleUserApplicationController(
         return Response.success(raffleUserApplicationService.getRaffleUserApplication(id))
     }
 
-    @Operation(
-        summary = "사용자 래플 응모 내역 조회",
-        description = "특정 사용자의 모든 래플 응모 내역을 조회합니다.",
-        responses = [ApiResponse(responseCode = "200", description = "성공")]
-    )
-    @GetMapping("/user/{userId}")
-    fun getUserRaffleApplications(
-        @Parameter(description = "사용자 UUID", example = "123e4567-e89b-12d3-a456-426614174000")
-        @PathVariable userId: UUID,
-        @CurrentUser currentUser: UserPrincipal?,
-    ): Response<List<RaffleUserApplicationResponse>> {
-        return Response.success(raffleUserApplicationService.getUserRaffleApplications(userId))
-    }
 
     @Operation(
         summary = "내 래플 응모 내역 조회",
@@ -104,12 +91,11 @@ class RaffleUserApplicationController(
     )
     @PostMapping
     fun applyRaffle(
-        @Parameter(description = "사용자 UUID", example = "123e4567-e89b-12d3-a456-426614174000")
-        @RequestParam userId: UUID,
         @Parameter(description = "래플 상품 ID", example = "1")
         @RequestParam raffleProductId: Long,
-        @CurrentUser currentUser: UserPrincipal?,
+        @CurrentUser currentUser: UserPrincipal,
     ): Response<RaffleApplyResult> {
+        val userId = UUID.fromString(currentUser.subject)
         return Response.success(raffleUserApplicationService.applyRaffleWithStatus(userId, raffleProductId))
     }
 
@@ -144,21 +130,6 @@ class RaffleUserApplicationController(
         return Response.success(raffleUserApplicationService.drawRaffleWinners(productId, winnerCount))
     }
 
-    @Operation(
-        summary = "사용자 응모 상태 조회",
-        description = "특정 사용자가 특정 래플 상품에 응모했는지 확인합니다.",
-        responses = [ApiResponse(responseCode = "200", description = "성공")]
-    )
-    @GetMapping("/user/{userId}/product/{productId}")
-    fun getUserApplicationStatus(
-        @Parameter(description = "사용자 UUID", example = "123e4567-e89b-12d3-a456-426614174000")
-        @PathVariable userId: UUID,
-        @Parameter(description = "래플 상품 ID", example = "1")
-        @PathVariable productId: Long,
-        @CurrentUser currentUser: UserPrincipal?,
-    ): Response<RaffleUserApplicationResponse?> {
-        return Response.success(raffleUserApplicationService.getUserApplicationStatus(userId, productId))
-    }
 
     @Operation(
         summary = "내 응모 상태 조회",

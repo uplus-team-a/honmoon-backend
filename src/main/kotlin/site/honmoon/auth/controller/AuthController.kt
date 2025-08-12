@@ -106,15 +106,23 @@ class AuthController(
 
     @Operation(summary = "이메일 회원가입 링크 전송", description = "입력된 이메일로 회원가입 확인 링크를 전송합니다.")
     @PostMapping("/signup/email")
-    fun signupByEmail(@RequestBody body: EmailSignUpRequest): Response<EmailMagicLinkResponse> {
-        val res = authService.sendSignupMagicLink(body)
+    fun signupByEmail(
+        @RequestBody body: EmailSignUpRequest,
+        @Parameter(description = "인증 성공 후 리다이렉트할 프론트엔드 URL", example = "https://honmoon.site/auth/success")
+        @RequestParam(required = false) redirectUrl: String?
+    ): Response<EmailMagicLinkResponse> {
+        val res = authService.sendSignupMagicLink(body, redirectUrl)
         return Response.success(res)
     }
 
     @Operation(summary = "이메일 로그인 링크 전송(사용자 ID)", description = "프론트에서 이메일을 입력하지 않고 사용자 ID로 이메일을 조회하여 매직 링크를 전송합니다.")
     @PostMapping("/login/email/by-user")
-    fun loginByEmailByUser(@RequestBody body: EmailLoginByUserRequest): Response<EmailMagicLinkResponse> {
-        val res = authService.sendLoginMagicLinkByUserId(body)
+    fun loginByEmailByUser(
+        @RequestBody body: EmailLoginByUserRequest,
+        @Parameter(description = "인증 성공 후 리다이렉트할 프론트엔드 URL", example = "https://honmoon.site/auth/success")
+        @RequestParam(required = false) redirectUrl: String?
+    ): Response<EmailMagicLinkResponse> {
+        val res = authService.sendLoginMagicLinkByUserId(body, redirectUrl)
         return Response.success(res)
     }
 
@@ -123,7 +131,9 @@ class AuthController(
     fun magicLinkCallback(
         @RequestParam token: String,
         @RequestParam(required = false) purpose: String?,
+        @Parameter(description = "인증 성공 후 리다이렉트할 프론트엔드 URL")
+        @RequestParam(required = false) redirectUrl: String?,
     ): ResponseEntity<Void> {
-        return authService.handleMagicLinkCallback(token, purpose)
+        return authService.handleMagicLinkCallback(token, purpose, redirectUrl)
     }
 }

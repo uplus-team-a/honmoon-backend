@@ -35,17 +35,6 @@ Authorization: {{token}}
     });
 %}
 
-### 사용자 활동 내역 조회
-GET {{host}}/api/user-activities/user/{{userId}}
-Accept: application/json
-Authorization: {{token}}
-
-> {%
-    client.test("사용자 활동 내역 조회 - 200", () => {
-        client.assert(response.status === 200, "Status must be 200 OK");
-    });
-%}
-
 ### 장소별 활동 내역 조회
 GET {{host}}/api/user-activities/place/{{placeId}}
 Accept: application/json
@@ -58,23 +47,12 @@ Authorization: {{token}}
 %}
 
 ### 활동 기록 생성
-POST {{host}}/api/user-activities?userId={{userId}}&placeId={{placeId}}&description=한강공원에서%20산책
+POST {{host}}/api/user-activities?placeId={{placeId}}&description=한강공원에서%20산책
 Accept: application/json
 Authorization: {{token}}
 
 > {%
     client.test("활동 기록 생성 - 200", () => {
-        client.assert(response.status === 200, "Status must be 200 OK");
-    });
-%}
-
-### 사용자 최근 활동 조회
-GET {{host}}/api/user-activities/user/{{userId}}/recent?limit=10
-Accept: application/json
-Authorization: {{token}}
-
-> {%
-    client.test("사용자 최근 활동 조회 - 200", () => {
         client.assert(response.status === 200, "Status must be 200 OK");
     });
 %}

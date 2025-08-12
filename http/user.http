@@ -25,49 +25,49 @@ Authorization: {{token}}
 %}
 
 
-### 사용자 프로필 조회
-GET {{host}}/api/users/{{userId}}
+### 내 프로필 조회
+GET {{host}}/api/users/me
 Accept: application/json
 Authorization: {{token}}
 
 > {%
-    client.test("사용자 요약 정보 조회 - 200", () => {
+    client.test("내 요약 정보 조회 - 200", () => {
         client.assert(response.status === 200, "Status must be 200 OK");
     });
 %}
 
-### 사용자 포인트 현황 조회
-GET {{host}}/api/users/{{userId}}/points
+### 내 포인트 현황 조회
+GET {{host}}/api/users/me/points
 Accept: application/json
 Authorization: {{token}}
 
 > {%
-    client.test("사용자 포인트 현황 조회 - 200", () => {
+    client.test("내 포인트 현황 조회 - 200", () => {
         client.assert(response.status === 200, "Status must be 200 OK");
     });
 %}
 
-### 사용자 퀴즈 활동 통계 조회
-GET {{host}}/api/users/{{userId}}/quiz-stats
+### 내 퀴즈 활동 통계 조회
+GET {{host}}/api/users/me/quiz-stats
 Accept: application/json
 Authorization: {{token}}
 
 > {%
-    client.test("사용자 퀴즈 활동 통계 조회 - 200", () => {
+    client.test("내 퀴즈 활동 통계 조회 - 200", () => {
         client.assert(response.status === 200, "Status must be 200 OK");
     });
 %}
 
-### 사용자 미션 달성률 조회
-GET {{host}}/api/users/{{userId}}/mission-stats
+### 내 미션 달성률 조회
+GET {{host}}/api/users/me/mission-stats
 Accept: application/json
 Authorization: {{token}}
 
 > {%
-    client.test("사용자 미션 달성률 조회 - 200", () => {
+    client.test("내 미션 달성률 조회 - 200", () => {
         client.assert(response.status === 200, "Status must be 200 OK");
     });
-%} 
+%}
 
 ### 내 프로필 조회
 GET {{host}}/api/users/me
@@ -113,22 +113,6 @@ Authorization: {{token}}
     });
 %} 
 
-### 사용자 프로필 이미지 업데이트
-PUT {{host}}/api/users/{{userId}}/profile-image
-Content-Type: application/json
-Accept: application/json
-Authorization: {{token}}
-
-{
-  "imageUrl": "https://storage.googleapis.com/{{bucket}}/profiles/{{profileFileName}}"
-}
-
-> {%
-    client.test("사용자 프로필 이미지 업데이트 - 200", () => {
-        client.assert(response.status === 200, "Status must be 200 OK");
-    });
-%}
-
 ### 내 프로필 이미지 업데이트
 PUT {{host}}/api/users/me/profile-image
 Content-Type: application/json
@@ -145,4 +129,4 @@ Authorization: {{token}}
     });
 %}
 
-### (삭제) 내 프로필 이미지 업로드 URL 발급 - user-summary 제거됨
+### (참고) 사용자별 조회/수정 엔드포인트는 제거되고 모두 /me 기반으로 통일됨
