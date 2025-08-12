@@ -40,8 +40,10 @@ class AuthController(
         @RequestParam(required = false, defaultValue = "profile email openid") scope: String,
         @Parameter(description = "인증 성공 후 프론트에서 이동할 경로", example = "/")
         @RequestParam(required = false) redirectAfter: String?,
+        @Parameter(description = "프론트 콜백 URL (코드/상태를 넘길 경로)", example = "https://honmoon.site/auth/google/callback")
+        @RequestParam(required = false) frontendCallbackUrl: String?,
     ): Response<AuthUrlResponse> {
-        val res = authService.buildGoogleAuthUrl(scope, redirectAfter)
+        val res = authService.buildGoogleAuthUrl(scope, redirectAfter, frontendCallbackUrl)
         return Response.success(res)
     }
 
@@ -63,8 +65,21 @@ class AuthController(
         @RequestParam code: String,
         @Parameter(description = "요청 시 생성된 state")
         @RequestParam state: String,
+    ): ResponseEntity<Void> {
+        // 프론트 콜백으로 코드/상태를 넘겨 프론트에서 교환 API를 호출하도록 302 리다이렉트
+        val location = authService.buildFrontendCallbackRedirect(code, state)
+        return ResponseEntity.status(302).header(HttpHeaders.LOCATION, location).build()
+    }
+
+    @Operation(
+        summary = "Google OAuth 코드 교환",
+        description = "프론트 콜백에서 받은 code/state를 서버에 전달하여 세션 토큰을 발급받습니다."
+    )
+    @PostMapping("/google/exchange")
+    fun exchangeGoogleCode(
+        @RequestBody body: GoogleCodeExchangeRequest
     ): Response<AuthLoginResponse> {
-        val res = authService.handleGoogleCallback(code, state)
+        val res = authService.handleGoogleCallback(body.code, body.state)
         return Response.success(res)
     }
 
@@ -135,5 +150,14 @@ class AuthController(
         @RequestParam(required = false) redirectUrl: String?,
     ): ResponseEntity<Void> {
         return authService.handleMagicLinkCallback(token, purpose, redirectUrl)
+    }
+
+    @Operation(summary = "이메일 매직 토큰 교환", description = "매직 토큰을 검증하고 세션 토큰을 JSON으로 반환합니다.")
+    @PostMapping("/email/exchange")
+    fun exchangeEmailMagicToken(
+        @RequestBody body: EmailMagicTokenExchangeRequest
+    ): Response<EmailCallbackResponse> {
+        val res = authService.exchangeEmailMagicToken(body.token, body.purpose)
+        return Response.success(res)
     }
 }

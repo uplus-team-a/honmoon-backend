@@ -20,15 +20,26 @@ Body: {"email": "...", "name": "..."}
 POST /api/auth/login/email/by-user?redirectUrl=https://honmoon.site/dashboard
 Body: {"userId": "..."}
 
-# 콜백 (302 리다이렉트, Location 헤더 #token= 값 사용)
+# 콜백(옵션 A: 302 리다이렉트)
 GET /api/auth/email/callback?token=...&purpose=signup|login&redirectUrl=...
+
+# 교환(옵션 B: JSON 교환)
+POST /api/auth/email/exchange
+Body: {"token": "...", "purpose": "signup|login"}
 ```
 
-### 3. Google OAuth
+### 3. Google OAuth (서버 주도, 프론트 콜백 지정 가능)
 
 ```bash
-GET /api/auth/google/url?scope=openid%20email%20profile&redirectAfter=/
+# 1) 인증 URL 발급: redirectAfter(최종 이동 경로), frontendCallbackUrl(프론트 콜백) 지정
+GET /api/auth/google/url?scope=openid%20email%20profile&redirectAfter=/my-profile&frontendCallbackUrl=https://honmoon.site/auth/google/callback
+
+# 2) 구글 → 서버 콜백 → 프론트 콜백으로 302 리다이렉트 (code/state/redirectAfter 전달)
 GET /api/auth/google/callback?code=...&state=...
+
+# 3) 프론트 콜백에서 code/state를 서버로 교환하여 세션 발급
+POST /api/auth/google/exchange
+Body: {"code": "...", "state": "..."}
 ```
 
 ### 4. 현재 사용자 확인 & 로그아웃

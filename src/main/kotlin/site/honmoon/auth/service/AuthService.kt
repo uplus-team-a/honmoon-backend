@@ -25,11 +25,14 @@ class AuthService(
     private val userService: UserService,
 ) {
     private val logger = KotlinLogging.logger {}
-    fun buildGoogleAuthUrl(scope: String, redirectAfter: String?): AuthUrlResponse {
+    fun buildGoogleAuthUrl(scope: String, redirectAfter: String?, frontendCallbackUrl: String?): AuthUrlResponse {
         val scopes = scope.split(' ').filter { it.isNotBlank() }
         val (url, state, _) = googleOAuthService.buildAuthorizationUrl(
             scopes = scopes,
-            statePayload = if (redirectAfter != null) mapOf("redirectAfter" to redirectAfter) else emptyMap()
+            statePayload = buildMap {
+                if (redirectAfter != null) put("redirectAfter", redirectAfter)
+                if (frontendCallbackUrl != null) put("frontendCallbackUrl", frontendCallbackUrl)
+            }
         )
         return AuthUrlResponse("google", url, state)
     }
@@ -83,6 +86,20 @@ class AuthService(
         )
     }
 
+    fun buildFrontendCallbackRedirect(code: String, state: String): String {
+        val frontendCallback = googleOAuthService.extractFieldFromState(state, "frontendCallbackUrl")
+            ?: "https://www.honmoon.site/auth/google/callback"
+        val redirectAfter = googleOAuthService.extractFieldFromState(state, "redirectAfter")
+        val sep = if (frontendCallback.contains('?')) '&' else '?'
+        val encodedCode = java.net.URLEncoder.encode(code, java.nio.charset.StandardCharsets.UTF_8)
+        val encodedState = java.net.URLEncoder.encode(state, java.nio.charset.StandardCharsets.UTF_8)
+        val base = "$frontendCallback${sep}code=$encodedCode&state=$encodedState"
+        return if (redirectAfter.isNullOrBlank()) base else {
+            val encodedAfter = java.net.URLEncoder.encode(redirectAfter, java.nio.charset.StandardCharsets.UTF_8)
+            "$base&redirectAfter=$encodedAfter"
+        }
+    }
+
     fun sendSignupMagicLink(body: EmailSignUpRequest, frontendRedirectUrl: String? = null): EmailMagicLinkResponse {
         val token = magicLinkService.issue(body.email, 15)
         val magicLink = "https://honmoon-api.site/api/auth/email/callback?token=$token&purpose=signup" + 
@@ -119,9 +136,35 @@ class AuthService(
             )
         )
         logger.debug { "[AuthService] Magic-link session created token=${sessionToken} subject=${email}" }
-        val finalRedirectUrl = redirectUrl ?: "https://honmoon.site"
+        val finalRedirectUrl = redirectUrl ?: "https://www.honmoon.site"
         val redirectUrlWithToken = "$finalRedirectUrl#token=$sessionToken&email=$email&purpose=${purpose ?: "login"}"
         return ResponseEntity.status(302).header(HttpHeaders.LOCATION, redirectUrlWithToken).build()
+    }
+
+    /**
+     * 이메일 매직 토큰을 검증하고 세션 토큰을 JSON으로 반환한다.
+     */
+    fun exchangeEmailMagicToken(token: String, purpose: String?): EmailCallbackResponse {
+        val email = magicLinkService.verify(token)
+        if (email == null) {
+            throw AuthException(ErrorCode.INVALID_OR_EXPIRED_TOKEN)
+        }
+        val sessionToken = sessionAuthService.createSession(
+            UserPrincipal(
+                subject = email,
+                email = email,
+                name = email.substringBefore('@'),
+                picture = null,
+                provider = "email",
+                roles = setOf(SecurityAuthorities.ROLE_USER)
+            )
+        )
+        logger.debug { "[AuthService] Magic-link session created (JSON) token=${sessionToken} subject=${email}" }
+        return EmailCallbackResponse(
+            email = email,
+            isValid = true,
+            appSessionToken = sessionToken
+        )
     }
 
     fun buildCurrentProfile(principal: UserPrincipal?): ProfileResponse {

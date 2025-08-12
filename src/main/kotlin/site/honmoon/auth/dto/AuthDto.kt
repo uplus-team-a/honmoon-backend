@@ -91,3 +91,13 @@ data class BasicTokenResponse(
     val token: String,
     val expiresAt: Instant,
 )
+
+data class GoogleCodeExchangeRequest(
+    val code: String,
+    val state: String,
+)
+
+data class EmailMagicTokenExchangeRequest(
+    val token: String,
+    val purpose: String? = null,
+)

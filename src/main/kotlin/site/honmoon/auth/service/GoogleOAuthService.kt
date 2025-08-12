@@ -76,6 +76,25 @@ class GoogleOAuthService(
         }
     }
 
+    /**
+     * state 문자열에서 payload(JSON)를 복원하여 특정 key의 값을 추출한다.
+     * 유효성 검증은 별도로 verifyState(state)로 수행한다.
+     */
+    fun extractFieldFromState(state: String, key: String): String? {
+        return try {
+            val parts = state.split('.')
+            if (parts.size != 3) return null
+            val payloadB64 = parts[0]
+            val payloadJson = String(Base64.getUrlDecoder().decode(payloadB64))
+            val regex = Regex("\\\"" + Regex.escape(key) + "\\\"\\s*:\\s*\\\"([^\\\"]*)\\\"")
+            val match = regex.find(payloadJson)
+            match?.groupValues?.getOrNull(1)
+        } catch (e: Exception) {
+            logger.warn(e) { "extract field '$key' failed from state" }
+            null
+        }
+    }
+
     private fun signState(payload: Map<String, String>): String {
         val payloadJson = payload.entries.joinToString(prefix = "{", postfix = "}") { "\"${it.key}\":\"${it.value}\"" }
         val payloadB64 = Base64.getUrlEncoder().withoutPadding().encodeToString(payloadJson.toByteArray())
