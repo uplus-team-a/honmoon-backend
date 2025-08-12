@@ -72,6 +72,10 @@ data class EmailPasswordLoginRequest(
     val password: String,
 )
 
+data class SetPasswordRequest(
+    val password: String,
+)
+
 data class LogoutResponse(
     val success: Boolean,
 )

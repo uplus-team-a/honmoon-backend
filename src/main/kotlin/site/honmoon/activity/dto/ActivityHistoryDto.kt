@@ -1,5 +1,6 @@
 package site.honmoon.activity.dto
 
+import site.honmoon.mission.dto.AnswerCheckResult
 import java.time.Instant
 import java.util.*
 
@@ -17,5 +18,6 @@ data class UserActivityResponse(
     val uploadedImageUrl: String?,
     val createdAt: Instant,
     val modifiedAt: Instant,
+    val aiResult: AnswerCheckResult? = null,
     val alreadyExists: Boolean = false,
-) 
+)

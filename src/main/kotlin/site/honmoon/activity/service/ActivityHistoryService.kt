@@ -7,15 +7,16 @@ import site.honmoon.activity.dto.UserActivityResponse
 import site.honmoon.activity.entity.UserActivity
 import site.honmoon.activity.repository.UserActivityRepository
 import site.honmoon.common.ErrorCode
-import site.honmoon.common.exception.DuplicateResourceException
 import site.honmoon.common.exception.EntityNotFoundException
+import site.honmoon.common.exception.InvalidRequestException
+import site.honmoon.mission.dto.AnswerCheckResult
 import site.honmoon.mission.entity.MissionDetail
 import site.honmoon.mission.repository.MissionDetailRepository
 import site.honmoon.mission.service.FallbackAIService
-import site.honmoon.mission.type.MissionType
+import site.honmoon.mission.service.ImageUrlValidator
+import site.honmoon.mission.type.MissionType.*
 import site.honmoon.point.service.PointHistoryService
 import site.honmoon.user.repository.UsersRepository
-import site.honmoon.common.exception.InvalidRequestException
 import java.util.*
 
 /**
@@ -29,6 +30,7 @@ class UserActivityService(
     private val missionDetailRepository: MissionDetailRepository,
     private val pointHistoryService: PointHistoryService,
     private val fallbackAIService: FallbackAIService,
+    private val imageUrlValidator: ImageUrlValidator,
 ) {
     /**
      * 사용자 활동 단건을 조회한다.
@@ -216,7 +218,12 @@ class UserActivityService(
         }
 
         validateQuizAnswer(missionDetail, textAnswer, selectedChoiceIndex, uploadedImageUrl)
-        val isCorrect = checkAnswer(missionDetail, textAnswer, selectedChoiceIndex, uploadedImageUrl)
+        val (isCorrect, aiResult) = checkAnswerWithAi(
+            missionDetail,
+            textAnswer,
+            selectedChoiceIndex,
+            uploadedImageUrl
+        )
 
         val pointsToGrant = if (isCorrect) missionDetail.points else 0
         val userActivity = UserActivity(
@@ -254,7 +261,8 @@ class UserActivityService(
             selectedChoiceIndex = savedActivity.selectedChoiceIndex,
             uploadedImageUrl = savedActivity.uploadedImageUrl,
             createdAt = savedActivity.createdAt,
-            modifiedAt = savedActivity.modifiedAt
+            modifiedAt = savedActivity.modifiedAt,
+            aiResult = aiResult
         )
     }
 
@@ -265,7 +273,7 @@ class UserActivityService(
         uploadedImageUrl: String?,
     ) {
         when (missionDetail.missionType) {
-            MissionType.QUIZ_MULTIPLE_CHOICE -> {
+            QUIZ_MULTIPLE_CHOICE -> {
                 if (selectedChoiceIndex == null) {
                     throw InvalidRequestException(ErrorCode.REQUIRED_FIELD_MISSING, "선택지 인덱스")
                 }
@@ -277,7 +285,7 @@ class UserActivityService(
                 }
             }
 
-            MissionType.QUIZ_TEXT_INPUT -> {
+            QUIZ_TEXT_INPUT -> {
                 if (textAnswer == null) {
                     throw InvalidRequestException(ErrorCode.REQUIRED_FIELD_MISSING, "텍스트 답변")
                 }
@@ -286,10 +294,30 @@ class UserActivityService(
                 }
             }
 
-            MissionType.QUIZ_IMAGE_UPLOAD -> {
+            QUIZ_IMAGE_UPLOAD -> {
                 if (uploadedImageUrl == null) {
                     throw InvalidRequestException(ErrorCode.REQUIRED_FIELD_MISSING, "이미지 URL")
                 }
+            }
+
+            PHOTO_UPLOAD -> {
+                if (uploadedImageUrl == null) {
+                    throw InvalidRequestException(ErrorCode.REQUIRED_FIELD_MISSING, "이미지 URL")
+                }
+                imageUrlValidator.validateImageUrl(uploadedImageUrl)
+            }
+
+            SURVEY -> {
+                if (textAnswer == null) {
+                    throw InvalidRequestException(ErrorCode.REQUIRED_FIELD_MISSING, "설문 응답")
+                }
+                if (textAnswer.isBlank()) {
+                    throw InvalidRequestException(ErrorCode.TEXT_ANSWER_EMPTY)
+                }
+            }
+
+            PLACE_VISIT -> {
+                // 별도 입력 필요 없음
             }
 
             else -> {
@@ -297,30 +325,46 @@ class UserActivityService(
         }
     }
 
-    private fun checkAnswer(
+    private fun checkAnswerWithAi(
         missionDetail: MissionDetail,
         textAnswer: String?,
         selectedChoiceIndex: Int?,
         uploadedImageUrl: String?,
-    ): Boolean {
+    ): Pair<Boolean, AnswerCheckResult?> {
         return when (missionDetail.missionType) {
-            MissionType.QUIZ_MULTIPLE_CHOICE -> {
+            QUIZ_MULTIPLE_CHOICE -> {
                 val correctChoiceIndex = missionDetail.choices?.choices?.indexOf(missionDetail.answer)
-                selectedChoiceIndex == correctChoiceIndex
+                Pair(selectedChoiceIndex == correctChoiceIndex, null)
             }
 
-            MissionType.QUIZ_TEXT_INPUT -> {
-                textAnswer?.trim()?.equals(missionDetail.answer?.trim(), ignoreCase = true) ?: false
+            QUIZ_TEXT_INPUT -> {
+                val correct = textAnswer?.trim()?.equals(missionDetail.answer?.trim(), ignoreCase = true) ?: false
+                Pair(correct, null)
             }
 
-            MissionType.QUIZ_IMAGE_UPLOAD -> {
-                val imageUrl = uploadedImageUrl ?: return false
+            QUIZ_IMAGE_UPLOAD -> {
+                val imageUrl = uploadedImageUrl ?: return Pair(false, null)
                 val analysis = fallbackAIService.analyzeImage(imageUrl)
-                val result = fallbackAIService.checkImageAnswer(missionDetail, analysis.extractedText)
-                result.isCorrect && result.confidence >= 0.5
+                val result: AnswerCheckResult = fallbackAIService.checkImageAnswer(missionDetail, analysis.extractedText)
+                Pair(result.isCorrect && result.confidence >= 0.5, result.copy(extractedText = analysis.extractedText))
             }
 
-            else -> false
+            PHOTO_UPLOAD -> {
+                val url = uploadedImageUrl ?: return Pair(false, null)
+                imageUrlValidator.validateImageUrl(url)
+                Pair(true, AnswerCheckResult(isCorrect = true, confidence = 1.0, reasoning = "이미지 업로드 완료"))
+            }
+
+            SURVEY -> {
+                val ok = !(textAnswer.isNullOrBlank())
+                Pair(ok, if (ok) AnswerCheckResult(true, 1.0, "설문 응답 접수") else null)
+            }
+
+            PLACE_VISIT -> {
+                Pair(true, AnswerCheckResult(true, 1.0, "장소 방문 완료"))
+            }
+
+            else -> Pair(false, null)
         }
     }
 } 

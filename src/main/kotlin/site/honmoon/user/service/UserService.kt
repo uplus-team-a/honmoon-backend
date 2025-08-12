@@ -30,6 +30,12 @@ class UserService(
         }
     }
 
+    fun getByEmailOrThrow(email: String): Users {
+        return usersRepository.findByEmail(email) ?: throw EntityNotFoundException(
+            ErrorCode.USER_NOT_FOUND, "Email: $email"
+        )
+    }
+
     /**
      * 이메일 기준 오름차순 첫 번째 사용자 반환. 없으면 예외.
      */
@@ -65,6 +71,82 @@ class UserService(
             isActive = user.isActive ?: true,
             createdAt = user.createdAt,
             modifiedAt = user.modifiedAt
+        )
+    }
+
+    fun getUserProfileSummary(userId: UUID): site.honmoon.user.dto.UserProfileSummaryResponse {
+        val profile = getUser(userId)
+        val points = getUserPoints(userId)
+        val recentActivities = userActivityRepository.findByUserIdOrderByCreatedAtDesc(userId).take(10).map {
+            site.honmoon.activity.dto.UserActivityResponse(
+                id = it.id,
+                userId = it.userId,
+                placeId = it.placeId,
+                missionId = it.missionId,
+                description = it.description,
+                isCorrect = it.isCorrect,
+                isCompleted = it.isCompleted,
+                pointsEarned = it.pointsEarned,
+                textAnswer = it.textAnswer,
+                selectedChoiceIndex = it.selectedChoiceIndex,
+                uploadedImageUrl = it.uploadedImageUrl,
+                createdAt = it.createdAt,
+                modifiedAt = it.modifiedAt
+            )
+        }
+        val recentPointHistory = pointHistoryRepository.findByUserId(userId).sortedByDescending { it.createdAt }.take(10).map {
+            site.honmoon.point.dto.PointHistoryResponse(
+                id = it.id,
+                userId = it.userId,
+                points = it.points,
+                description = it.description,
+                createdAt = it.createdAt,
+                modifiedAt = it.modifiedAt
+            )
+        }
+        return site.honmoon.user.dto.UserProfileSummaryResponse(
+            profile = profile,
+            pointsSummary = points,
+            recentActivities = recentActivities,
+            recentPointHistory = recentPointHistory,
+        )
+    }
+
+    fun getUserProfileDetail(userId: UUID): site.honmoon.user.dto.UserProfileDetailResponse {
+        val profile = getUser(userId)
+        val points = getUserPoints(userId)
+        val activities = userActivityRepository.findByUserId(userId).map {
+            site.honmoon.activity.dto.UserActivityResponse(
+                id = it.id,
+                userId = it.userId,
+                placeId = it.placeId,
+                missionId = it.missionId,
+                description = it.description,
+                isCorrect = it.isCorrect,
+                isCompleted = it.isCompleted,
+                pointsEarned = it.pointsEarned,
+                textAnswer = it.textAnswer,
+                selectedChoiceIndex = it.selectedChoiceIndex,
+                uploadedImageUrl = it.uploadedImageUrl,
+                createdAt = it.createdAt,
+                modifiedAt = it.modifiedAt
+            )
+        }
+        val pointHistory = pointHistoryRepository.findByUserId(userId).sortedByDescending { it.createdAt }.map {
+            site.honmoon.point.dto.PointHistoryResponse(
+                id = it.id,
+                userId = it.userId,
+                points = it.points,
+                description = it.description,
+                createdAt = it.createdAt,
+                modifiedAt = it.modifiedAt
+            )
+        }
+        return site.honmoon.user.dto.UserProfileDetailResponse(
+            profile = profile,
+            pointsSummary = points,
+            activities = activities,
+            pointHistory = pointHistory,
         )
     }
 
@@ -216,6 +298,13 @@ class UserService(
         profileImageUrl?.let { user.profileImageUrl = it }
         usersRepository.save(user)
         return getUser(userId)
+    }
+
+    @Transactional
+    fun updatePasswordHash(userId: UUID, passwordHash: String) {
+        val user = getByIdOrThrow(userId)
+        user.passwordHash = passwordHash
+        usersRepository.save(user)
     }
 }
 

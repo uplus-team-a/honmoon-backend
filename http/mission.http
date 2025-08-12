@@ -34,6 +34,17 @@ client.test("미션 상세 정보 조회 - 200 또는 404", () => {
 });
 %}
 
+### 미션 상세 정보 조회 (별칭)
+GET {{host}}/api/missions/1/detail
+Accept: application/json
+Authorization: {{token}}
+
+> {%
+client.test("미션 상세 정보 조회(별칭) - 200 또는 404", () => {
+  client.assert([200,404].includes(response.status), "Expected 200 or 404");
+});
+%}
+
 ### 미션 장소 상세 조회
 GET {{host}}/api/mission-places/1
 Accept: application/json
@@ -78,13 +89,13 @@ client.test("근처 미션 장소 조회 - 200", () => {
 });
 %}
 
-### 미션 장소별 미션 목록 조회
+### 미션 장소별 미션 목록 조회 (상세 포함)
 GET {{host}}/api/mission-places/1/missions
 Accept: application/json
 Authorization: {{token}}
 
 > {%
-client.test("미션 장소별 미션 목록 조회 - 200", () => {
+client.test("미션 장소별 미션 목록 조회(상세) - 200", () => {
   client.assert(response.status === 200, "Status must be 200");
 });
 %}
@@ -143,6 +154,99 @@ client.test("미션 이미지 답변 제출 - 200", () => {
   client.assert(response.body.success, "Response must be successful");
   client.assert(response.body.data.hasOwnProperty("isCorrect"), "Response must contain isCorrect");
   client.assert(response.body.data.hasOwnProperty("pointsEarned"), "Response must contain pointsEarned");
+});
+%}
+
+### 미션 퀴즈 답변 제출(통합)
+POST {{host}}/api/missions/1/submit-quiz?textAnswer=정답
+Accept: application/json
+Authorization: {{token}}
+
+> {%
+client.test("미션 퀴즈 답변 제출(통합) - 200", () => {
+  client.assert(response.status === 200, "Status must be 200 OK");
+  client.assert(response.body.data.hasOwnProperty("aiResult"), "aiResult must exist");
+});
+%}
+
+### PLACE_VISIT 미션 완료 (입력 없이 호출만으로 완료)
+POST {{host}}/api/missions/23/submit-quiz
+Accept: application/json
+Authorization: {{token}}
+
+> {%
+client.test("PLACE_VISIT 완료 - 200", () => {
+  client.assert(response.status === 200, "Status must be 200 OK");
+});
+%}
+
+### PHOTO_UPLOAD 미션 완료 (이미지 URL)
+POST {{host}}/api/missions/27/submit-quiz?uploadedImageUrl=https://example.com/sample.jpg
+Accept: application/json
+Authorization: {{token}}
+
+> {%
+client.test("PHOTO_UPLOAD 완료 - 200", () => {
+  client.assert(response.status === 200, "Status must be 200 OK");
+});
+%}
+
+### SURVEY 미션 완료 (텍스트 응답)
+POST {{host}}/api/missions/29/submit-quiz?textAnswer=아주%20만족
+Accept: application/json
+Authorization: {{token}}
+
+> {%
+client.test("SURVEY 완료 - 200", () => {
+  client.assert(response.status === 200, "Status must be 200 OK");
+});
+%}
+
+### 미션 퀴즈 답변 제출(내 계정)
+POST {{host}}/api/missions/1/submit-quiz/me?textAnswer=정답
+Accept: application/json
+Authorization: {{token}}
+
+> {%
+client.test("미션 퀴즈 답변 제출(내 계정) - 200", () => {
+  client.assert(response.status === 200, "Status must be 200 OK");
+  client.assert(response.body.data.hasOwnProperty("aiResult"), "aiResult must exist");
+});
+%}
+
+### QUIZ_TEXT_INPUT 예시
+POST {{host}}/api/missions/9/submit-quiz?textAnswer=서울
+Accept: application/json
+Authorization: {{token}}
+
+> {%
+client.test("QUIZ_TEXT_INPUT - 200", () => {
+  client.assert(response.status === 200, "Status must be 200 OK");
+  client.assert(response.body.data.hasOwnProperty("aiResult"), "aiResult must exist");
+});
+%}
+
+### QUIZ_MULTIPLE_CHOICE 예시 (선택지 인덱스)
+POST {{host}}/api/missions/1/submit-quiz?selectedChoiceIndex=1
+Accept: application/json
+Authorization: {{token}}
+
+> {%
+client.test("QUIZ_MULTIPLE_CHOICE - 200", () => {
+  client.assert(response.status === 200, "Status must be 200 OK");
+  client.assert(response.body.data.hasOwnProperty("aiResult"), "aiResult must exist");
+});
+%}
+
+### QUIZ_IMAGE_UPLOAD 예시 (통합 엔드포인트)
+POST {{host}}/api/missions/15/submit-quiz?uploadedImageUrl=https://storage.googleapis.com/{{bucket}}/missions/sample.jpg
+Accept: application/json
+Authorization: {{token}}
+
+> {%
+client.test("QUIZ_IMAGE_UPLOAD(통합) - 200", () => {
+  client.assert(response.status === 200, "Status must be 200 OK");
+  client.assert(response.body.data.hasOwnProperty("aiResult"), "aiResult must exist");
 });
 %}
 

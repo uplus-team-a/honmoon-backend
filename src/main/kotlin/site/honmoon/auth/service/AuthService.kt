@@ -23,6 +23,7 @@ class AuthService(
     private val emailService: EmailService,
     private val magicLinkService: MagicLinkService,
     private val userService: UserService,
+    private val passwordEncoder: org.springframework.security.crypto.password.PasswordEncoder,
 ) {
     private val logger = KotlinLogging.logger {}
     fun buildGoogleAuthUrl(scope: String, redirectAfter: String?, frontendCallbackUrl: String?): AuthUrlResponse {
@@ -188,6 +189,45 @@ class AuthService(
             sessionAuthService.invalidate(token)
         }
         return LogoutResponse(true)
+    }
+
+    /**
+     * 이메일/비밀번호 로그인 처리. 세션 토큰을 발급한다.
+     */
+    fun loginWithEmailPassword(email: String, rawPassword: String): AuthLoginResponse {
+        val user = userService.getByEmailOrThrow(email)
+        val hash = user.passwordHash
+        if (hash.isNullOrBlank() || !passwordEncoder.matches(rawPassword, hash)) {
+            throw AuthException(ErrorCode.UNAUTHORIZED)
+        }
+        val sessionToken = sessionAuthService.createSession(
+            UserPrincipal(
+                subject = user.id.toString(),
+                email = user.email,
+                name = user.nickname ?: user.email ?: user.id.toString(),
+                picture = user.profileImageUrl,
+                provider = "email",
+                roles = setOf(SecurityAuthorities.ROLE_USER)
+            )
+        )
+        return AuthLoginResponse(
+            provider = "email",
+            google = null,
+            googleTokens = null,
+            appSessionToken = sessionToken
+        )
+    }
+
+    /**
+     * 현재 사용자 비밀번호를 설정/변경한다.
+     */
+    @Transactional
+    fun setPassword(userId: java.util.UUID, rawPassword: String) {
+        if (rawPassword.length < 8) {
+            throw InvalidRequestException(ErrorCode.ILLEGAL_REQUEST, "비밀번호는 8자 이상이어야 합니다.")
+        }
+        val encoded = passwordEncoder.encode(rawPassword)
+        userService.updatePasswordHash(userId, encoded)
     }
 
     /**

@@ -31,6 +31,9 @@ class Users(
 
     @Column(name = "is_active")
     var isActive: Boolean? = true,
+
+    @Column(name = "password_hash")
+    var passwordHash: String? = null,
 ) : BaseEntity()
 
 

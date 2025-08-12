@@ -68,8 +68,8 @@ Authorization: {{token}}
     });
 %}
 
-### 내 최근 활동 조회
-GET {{host}}/api/user-activities/me/recent?limit=10
+### 내 최근 활동 조회 (프로필 요약으로 대체)
+GET {{host}}/api/users/me/profile/summary
 Accept: application/json
 Authorization: {{token}}
 
@@ -79,13 +79,4 @@ Authorization: {{token}}
     });
 %}
 
-### 내 퀴즈 답변 제출
-POST {{host}}/api/user-activities/missions/1/submit-quiz/me?textAnswer=정답
-Accept: application/json
-Authorization: {{token}}
-
-> {%
-    client.test("내 퀴즈 답변 제출 - 200", () => {
-        client.assert(response.status === 200, "Status must be 200 OK");
-    });
-%} 
+### (변경됨) 퀴즈 제출은 /api/missions/{id}/submit-quiz 경로 사용

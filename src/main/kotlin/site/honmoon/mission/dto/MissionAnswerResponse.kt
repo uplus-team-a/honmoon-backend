@@ -5,4 +5,5 @@ data class MissionAnswerResponse(
     val pointsEarned: Int,
     val explanation: String?,
     val hint: String? = null,
+    val aiResult: AnswerCheckResult? = null,
 )

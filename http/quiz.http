@@ -35,7 +35,7 @@ Authorization: {{token}}
 %}
 
 ### 퀴즈 답변 제출 (텍스트)
-POST {{host}}/api/user-activities/missions/1/submit-quiz?textAnswer=정답
+POST {{host}}/api/missions/1/submit-quiz?textAnswer=정답
 Accept: application/json
 Authorization: {{token}}
 
@@ -46,7 +46,7 @@ Authorization: {{token}}
 %}
 
 ### 퀴즈 답변 제출 (선택지)
-POST {{host}}/api/user-activities/missions/1/submit-quiz?selectedChoiceIndex=0
+POST {{host}}/api/missions/1/submit-quiz?selectedChoiceIndex=0
 Accept: application/json
 Authorization: {{token}}
 
@@ -57,7 +57,7 @@ Authorization: {{token}}
 %}
 
 ### 퀴즈 답변 제출 (이미지)
-POST {{host}}/api/user-activities/missions/1/submit-quiz?uploadedImageUrl=https://example.com/image.jpg
+POST {{host}}/api/missions/1/submit-quiz?uploadedImageUrl=https://example.com/image.jpg
 Accept: application/json
 Authorization: {{token}}
 
@@ -68,7 +68,7 @@ Authorization: {{token}}
 %}
 
 ### 내 퀴즈 답변 제출 (텍스트)
-POST {{host}}/api/user-activities/missions/1/submit-quiz/me?textAnswer=정답
+POST {{host}}/api/missions/1/submit-quiz/me?textAnswer=정답
 Accept: application/json
 Authorization: {{token}}
 
@@ -79,7 +79,7 @@ Authorization: {{token}}
 %}
 
 ### 내 퀴즈 답변 제출 (선택지)
-POST {{host}}/api/user-activities/missions/1/submit-quiz/me?selectedChoiceIndex=0
+POST {{host}}/api/missions/1/submit-quiz/me?selectedChoiceIndex=0
 Accept: application/json
 Authorization: {{token}}
 
@@ -90,7 +90,7 @@ Authorization: {{token}}
 %}
 
 ### 내 퀴즈 답변 제출 (이미지)
-POST {{host}}/api/user-activities/missions/1/submit-quiz/me?uploadedImageUrl=https://example.com/image.jpg
+POST {{host}}/api/missions/1/submit-quiz/me?uploadedImageUrl=https://example.com/image.jpg
 Accept: application/json
 Authorization: {{token}}
 

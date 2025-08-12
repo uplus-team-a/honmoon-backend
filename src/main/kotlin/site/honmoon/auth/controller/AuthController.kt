@@ -119,6 +119,26 @@ class AuthController(
         return Response.success(res)
     }
 
+    @Operation(summary = "이메일 ID/비밀번호 로그인", description = "이메일과 비밀번호로 로그인하여 세션 토큰을 발급합니다.")
+    @PostMapping("/login/email/password")
+    fun loginWithEmailPassword(
+        @RequestBody body: EmailPasswordLoginRequest
+    ): Response<AuthLoginResponse> {
+        val res = authService.loginWithEmailPassword(body.email, body.password)
+        return Response.success(res)
+    }
+
+    @Operation(summary = "비밀번호 설정/변경", description = "세션 사용자에 대해 비밀번호를 설정하거나 변경합니다. (8자 이상)")
+    @PostMapping("/password/set")
+    fun setPassword(
+        @RequestBody body: SetPasswordRequest,
+        @CurrentUser principal: UserPrincipal
+    ): Response<LogoutResponse> {
+        val userId = java.util.UUID.fromString(principal.subject)
+        authService.setPassword(userId, body.password)
+        return Response.success(LogoutResponse(true))
+    }
+
     @Operation(summary = "이메일 회원가입 링크 전송", description = "입력된 이메일로 회원가입 확인 링크를 전송합니다.")
     @PostMapping("/signup/email")
     fun signupByEmail(

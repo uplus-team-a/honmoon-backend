@@ -69,6 +69,7 @@ class SecurityConfig(
                         "/api/auth/google/exchange",
                         "/api/auth/signup/email",
                         "/api/auth/login/email/by-user",
+                        "/api/auth/login/email/password",
                         "/api/auth/email/callback",
                         "/api/auth/email/exchange",
                         "/v3/api-docs/**",

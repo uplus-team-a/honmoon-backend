@@ -1,5 +1,7 @@
 package site.honmoon.user.dto
 
+import site.honmoon.activity.dto.UserActivityResponse
+import site.honmoon.point.dto.PointHistoryResponse
 import java.time.Instant
 import java.util.*
 
@@ -22,4 +24,18 @@ data class UpdateUserRequest(
 
 data class UpdateProfileImageRequest(
     val imageUrl: String,
+)
+
+data class UserProfileSummaryResponse(
+    val profile: UserResponse,
+    val pointsSummary: Map<String, Int>,
+    val recentActivities: List<UserActivityResponse>,
+    val recentPointHistory: List<PointHistoryResponse>,
+)
+
+data class UserProfileDetailResponse(
+    val profile: UserResponse,
+    val pointsSummary: Map<String, Int>,
+    val activities: List<UserActivityResponse>,
+    val pointHistory: List<PointHistoryResponse>,
 )

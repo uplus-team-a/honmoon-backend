@@ -36,38 +36,28 @@ Authorization: {{token}}
     });
 %}
 
-### 내 포인트 현황 조회
-GET {{host}}/api/users/me/points
+### 내 프로필(간략)
+GET {{host}}/api/users/me/profile/summary
 Accept: application/json
 Authorization: {{token}}
 
 > {%
-    client.test("내 포인트 현황 조회 - 200", () => {
+    client.test("내 프로필(간략) - 200", () => {
         client.assert(response.status === 200, "Status must be 200 OK");
     });
 %}
 
-### 내 퀴즈 활동 통계 조회
-GET {{host}}/api/users/me/quiz-stats
+### 내 프로필(상세)
+GET {{host}}/api/users/me/profile/detail
 Accept: application/json
 Authorization: {{token}}
 
 > {%
-    client.test("내 퀴즈 활동 통계 조회 - 200", () => {
+    client.test("내 프로필(상세) - 200", () => {
         client.assert(response.status === 200, "Status must be 200 OK");
     });
 %}
 
-### 내 미션 달성률 조회
-GET {{host}}/api/users/me/mission-stats
-Accept: application/json
-Authorization: {{token}}
-
-> {%
-    client.test("내 미션 달성률 조회 - 200", () => {
-        client.assert(response.status === 200, "Status must be 200 OK");
-    });
-%}
 
 ### 내 프로필 조회
 GET {{host}}/api/users/me
@@ -80,38 +70,6 @@ Authorization: {{token}}
     });
 %}
 
-### 내 포인트 현황 조회
-GET {{host}}/api/users/me/points
-Accept: application/json
-Authorization: {{token}}
-
-> {%
-    client.test("내 포인트 현황 조회 - 200", () => {
-        client.assert(response.status === 200, "Status must be 200 OK");
-    });
-%}
-
-### 내 퀴즈 활동 통계 조회
-GET {{host}}/api/users/me/quiz-stats
-Accept: application/json
-Authorization: {{token}}
-
-> {%
-    client.test("내 퀴즈 활동 통계 조회 - 200", () => {
-        client.assert(response.status === 200, "Status must be 200 OK");
-    });
-%}
-
-### 내 미션 달성률 조회
-GET {{host}}/api/users/me/mission-stats
-Accept: application/json
-Authorization: {{token}}
-
-> {%
-    client.test("내 미션 달성률 조회 - 200", () => {
-        client.assert(response.status === 200, "Status must be 200 OK");
-    });
-%} 
 
 ### 내 프로필 이미지 업데이트
 PUT {{host}}/api/users/me/profile-image
@@ -146,5 +104,3 @@ Authorization: {{token}}
         client.assert(response.body.data.nickname === "지원", "nickname updated");
     });
 %}
-
-### (참고) 사용자별 조회/수정 엔드포인트는 제거되고 모두 /me 기반으로 통일됨

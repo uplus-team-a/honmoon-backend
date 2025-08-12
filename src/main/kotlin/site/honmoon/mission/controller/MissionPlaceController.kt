@@ -80,7 +80,7 @@ class MissionPlaceController(
         @Parameter(description = "미션 장소 ID", example = "1")
         @PathVariable id: Long,
         @CurrentUser currentUser: UserPrincipal?,
-    ): Response<List<site.honmoon.mission.dto.MissionSummaryResponse>> {
+    ): Response<List<site.honmoon.mission.dto.MissionDetailResponse>> {
         return Response.success(missionPlaceService.getMissionsByPlace(id))
     }
 } 

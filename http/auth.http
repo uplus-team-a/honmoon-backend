@@ -184,6 +184,45 @@ Authorization: {{token}}
     });
 %}
 
+### 9) 이메일/비밀번호 로그인
+POST {{host}}/api/auth/login/email/password
+Content-Type: application/json
+Accept: application/json
+
+{
+  "email": "user@example.com",
+  "password": "password1234"
+}
+
+> {%
+client.test("이메일/비밀번호 로그인 - 200 또는 401", () => {
+  client.assert([200,401].includes(response.status), "Expected 200 or 401");
+});
+if (response.status === 200) {
+  const tok = response.body.data.appSessionToken;
+  if (tok) {
+    client.global.set("sessionToken", tok);
+    client.global.set("token", `Bearer ${tok}`);
+  }
+}
+%}
+
+### 10) 비밀번호 설정/변경 (세션 필요)
+POST {{host}}/api/auth/password/set
+Content-Type: application/json
+Accept: application/json
+Authorization: {{token}}
+
+{
+  "password": "newPassword1234"
+}
+
+> {%
+client.test("비밀번호 설정/변경 - 200", () => {
+  client.assert(response.status === 200, "Status must be 200 OK");
+});
+%}
+
 ### (선택) Google OAuth URL 발급 (프론트 콜백 지정)
 GET {{host}}/api/auth/google/url?scope=openid%20email%20profile&redirectAfter=%2Fmy-profile&frontendCallbackUrl=https%3A%2F%2Fhonmoon.site%2Fauth%2Fgoogle%2Fcallback
 Accept: application/json

@@ -42,21 +42,58 @@ POST /api/auth/google/exchange
 Body: {"code": "...", "state": "..."}
 ```
 
-### 4. 현재 사용자 확인 & 로그아웃
+### 4. 현재 사용자 확인 & 로그아웃 + 이메일/비밀번호
 
 ```bash
 GET /api/auth/me
 POST /api/auth/logout
+POST /api/auth/login/email/password                  # 이메일/비번 로그인 → 세션 토큰 발급
+POST /api/auth/password/set                          # (세션) 비밀번호 설정/변경
 ```
 
 ## 미션
 
 ```bash
 GET /api/missions/{id}                              # 미션 상세
+GET /api/missions/{id}/detail                       # 미션 상세(별칭)
 POST /api/missions/{id}/submit-answer               # 텍스트 답변 제출
 POST /api/missions/{id}/submit-image-answer         # 이미지 답변 제출
 POST /api/missions/{id}/image/upload-url            # 이미지 업로드 URL 발급
+POST /api/missions/{id}/submit-quiz                 # (통합) 퀴즈 제출(텍스트/객관식/이미지)
+POST /api/missions/{id}/submit-quiz/me              # (통합) 내 계정으로 퀴즈 제출
 ```
+
+### 미션 타입별 호출/응답 가이드
+
+- QUIZ_TEXT_INPUT
+
+  - 호출: `POST /api/missions/{id}/submit-quiz?textAnswer=정답`
+  - 응답: `isCorrect`, `pointsEarned`, `explanation`, `hint`, `aiResult`(reasoning 포함)
+
+- QUIZ_MULTIPLE_CHOICE
+
+  - 호출: `POST /api/missions/{id}/submit-quiz?selectedChoiceIndex={index}` (0-based)
+  - 응답: 위와 동일 (정답/오답 reasoning 포함)
+
+- QUIZ_IMAGE_UPLOAD
+
+  - 호출(통합): `POST /api/missions/{id}/submit-quiz?uploadedImageUrl={이미지URL}`
+  - 또는: `POST /api/missions/{id}/submit-image-answer` (body.imageUrl)
+  - 응답: `aiResult`에 `extractedText`, `confidence`, `reasoning` 포함
+
+- PHOTO_UPLOAD
+
+  - 호출: `POST /api/missions/{id}/submit-quiz?uploadedImageUrl={이미지URL}`
+  - 응답: `aiResult.reasoning = "이미지 업로드 완료"`
+
+- PLACE_VISIT
+
+  - 호출: `POST /api/missions/{id}/submit-quiz` (입력값 없음)
+  - 응답: `aiResult.reasoning = "장소 방문 완료"`
+
+- SURVEY
+  - 호출: `POST /api/missions/{id}/submit-quiz?textAnswer={설문 응답}`
+  - 응답: `aiResult.reasoning = "설문 응답 접수"`
 
 ## 미션 장소
 
@@ -72,9 +109,8 @@ GET /api/mission-places/{id}/missions               # 장소별 미션 목록
 
 ```bash
 GET /api/users/me                                   # 내 프로필
-GET /api/users/me/points                            # 내 포인트 현황
-GET /api/users/me/quiz-stats                        # 내 퀴즈 통계
-GET /api/users/me/mission-stats                     # 내 미션 통계
+GET /api/users/me/profile/summary                   # 내 프로필(간략): 포인트 요약 + 최근 활동/포인트 10건
+GET /api/users/me/profile/detail                    # 내 프로필(상세): 포인트 요약 + 전체 활동/포인트 내역
 PUT /api/users/me/profile-image?imageUrl=...        # 내 프로필 이미지 업데이트
 PATCH /api/users/me                                  # 내 프로필 정보 수정 (nickname, profileImageUrl)
 ```
@@ -92,24 +128,20 @@ POST /api/user-activities?placeId=...&description=...  # 활동 기록 생성 (�
 ## 퀴즈 제출
 
 ```bash
-# 내 퀴즈 제출 (세션 사용자 기준)
-POST /api/user-activities/missions/{missionId}/submit-quiz?textAnswer=...
-POST /api/user-activities/missions/{missionId}/submit-quiz?selectedChoiceIndex=...
-POST /api/user-activities/missions/{missionId}/submit-quiz?uploadedImageUrl=...
-
-# (대체) 기존 /me 경로는 계속 지원
-POST /api/user-activities/missions/{missionId}/submit-quiz/me?textAnswer=...
-POST /api/user-activities/missions/{missionId}/submit-quiz/me?selectedChoiceIndex=...
-POST /api/user-activities/missions/{missionId}/submit-quiz/me?uploadedImageUrl=...
+POST /api/missions/{missionId}/submit-quiz?textAnswer=...
+POST /api/missions/{missionId}/submit-quiz?selectedChoiceIndex=...
+POST /api/missions/{missionId}/submit-quiz?uploadedImageUrl=...
+POST /api/missions/{missionId}/submit-quiz/me?textAnswer=...
+POST /api/missions/{missionId}/submit-quiz/me?selectedChoiceIndex=...
+POST /api/missions/{missionId}/submit-quiz/me?uploadedImageUrl=...
 ```
+
+응답 공통 필드: `isCorrect`, `pointsEarned`, `explanation`, `hint`, `aiResult({isCorrect, confidence, reasoning, extractedText?})`
 
 ## 포인트
 
 ```bash
-GET /api/point-history/{id}                         # 포인트 내역 상세
-GET /api/point-history/me                           # 내 포인트 내역
-GET /api/point-history/me/earned                    # 내 획득 내역
-GET /api/point-history/me/used                      # 내 사용 내역
+// 삭제됨: 포인트 내역/요약은 /api/users/me/profile/* 에 통합
 ```
 
 ## 래플

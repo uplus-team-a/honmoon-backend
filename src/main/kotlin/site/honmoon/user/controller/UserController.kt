@@ -35,44 +35,37 @@ class UserController(
         return Response.success(userService.getUser(userId))
     }
 
-    
-
     @Operation(
-        summary = "내 포인트 현황 조회",
-        description = "현재 로그인한 사용자의 포인트 현황을 조회합니다. Authorization: Bearer 필요.",
+        summary = "내 프로필(간략)",
+        description = "프로필, 포인트 요약, 최근 활동 10건, 최근 포인트 10건을 반환합니다.",
         responses = [ApiResponse(responseCode = "200", description = "성공")]
     )
-    @GetMapping("/me/points")
-    fun getMyPoints(@CurrentUser currentUser: UserPrincipal): Response<Map<String, Int>> {
+    @GetMapping("/me/profile/summary")
+    fun getMyProfileSummary(@CurrentUser currentUser: UserPrincipal): Response<site.honmoon.user.dto.UserProfileSummaryResponse> {
         val userId = UUID.fromString(currentUser.subject)
-        return Response.success(userService.getUserPoints(userId))
+        return Response.success(userService.getUserProfileSummary(userId))
     }
+
+    @Operation(
+        summary = "내 프로필(상세)",
+        description = "프로필, 포인트 요약, 전체 활동 리스트, 전체 포인트 내역을 반환합니다.",
+        responses = [ApiResponse(responseCode = "200", description = "성공")]
+    )
+    @GetMapping("/me/profile/detail")
+    fun getMyProfileDetail(@CurrentUser currentUser: UserPrincipal): Response<site.honmoon.user.dto.UserProfileDetailResponse> {
+        val userId = UUID.fromString(currentUser.subject)
+        return Response.success(userService.getUserProfileDetail(userId))
+    }
+
+    // 삭제됨: 포인트/활동 개별 조회 엔드포인트
 
     
 
-    @Operation(
-        summary = "내 퀴즈 통계 조회",
-        description = "현재 로그인한 사용자의 퀴즈 활동 통계를 조회합니다.",
-        responses = [ApiResponse(responseCode = "200", description = "성공")]
-    )
-    @GetMapping("/me/quiz-stats")
-    fun getMyQuizStats(@CurrentUser currentUser: UserPrincipal): Response<Map<String, Any>> {
-        val userId = UUID.fromString(currentUser.subject)
-        return Response.success(userService.getUserQuizStats(userId))
-    }
+    // 삭제됨: 퀴즈/미션 통계 개별 조회 엔드포인트
 
     
 
-    @Operation(
-        summary = "내 미션 통계 조회",
-        description = "현재 로그인한 사용자의 미션 달성 통계를 조회합니다.",
-        responses = [ApiResponse(responseCode = "200", description = "성공")]
-    )
-    @GetMapping("/me/mission-stats")
-    fun getMyMissionStats(@CurrentUser currentUser: UserPrincipal): Response<Map<String, Any>> {
-        val userId = UUID.fromString(currentUser.subject)
-        return Response.success(userService.getUserMissionStats(userId))
-    }
+    // 삭제됨: 미션 통계 개별 조회 엔드포인트
 
     
 

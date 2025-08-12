@@ -88,15 +88,24 @@ class MissionPlaceService(
         }
     }
 
-    fun getMissionsByPlace(placeId: Long): List<site.honmoon.mission.dto.MissionSummaryResponse> {
+    fun getMissionsByPlace(placeId: Long): List<site.honmoon.mission.dto.MissionDetailResponse> {
         val missions = missionDetailRepository.findByPlaceId(placeId)
         return missions.map { mission ->
-            site.honmoon.mission.dto.MissionSummaryResponse(
+            site.honmoon.mission.dto.MissionDetailResponse(
                 id = mission.id,
                 title = mission.title,
                 description = mission.description,
                 points = mission.points,
-                missionType = mission.missionType
+                missionType = mission.missionType,
+                placeId = mission.placeId,
+                question = mission.question,
+                answer = mission.answer,
+                choices = mission.choices,
+                answerExplanation = mission.answerExplanation,
+                correctImageUrl = mission.correctImageUrl,
+                imageUploadInstruction = mission.imageUploadInstruction,
+                createdAt = mission.createdAt,
+                modifiedAt = mission.modifiedAt
             )
         }
     }

@@ -10,6 +10,7 @@ data class MissionDetailResponse(
     val description: String?,
     val points: Int,
     val missionType: MissionType,
+    val placeId: Long?,
     val question: String?,
     val answer: String?,
     val choices: MissionChoicesVo?,

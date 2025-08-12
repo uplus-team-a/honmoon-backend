@@ -163,6 +163,7 @@ create table if not exists users
     total_points      integer                  default 0                              not null,
     total_activities  integer                  default 0                              not null,
     profile_image_url varchar(255),
+    password_hash     varchar(255),
     created_by        varchar(255)             default 'anonymous'::character varying not null,
     created_at        timestamp with time zone default now()                          not null,
     modified_by       varchar(255)             default 'anonymous'::character varying not null,

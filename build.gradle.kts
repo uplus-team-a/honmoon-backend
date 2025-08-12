@@ -51,6 +51,8 @@ configurations {
             force(libs.guava)
             force(libs.protobuf.java)
         }
+        // Exclude legacy Swagger annotations to avoid conflicts with Jakarta variant
+        exclude(group = "io.swagger.core.v3", module = "swagger-annotations")
     }
 }
 

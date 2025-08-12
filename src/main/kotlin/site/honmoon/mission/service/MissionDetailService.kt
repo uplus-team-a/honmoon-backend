@@ -29,6 +29,7 @@ class MissionDetailService(
             description = mission.description,
             points = mission.points,
             missionType = mission.missionType,
+            placeId = mission.placeId,
             question = mission.question,
             answer = mission.answer,
             choices = mission.choices,

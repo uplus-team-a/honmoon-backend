@@ -74,7 +74,8 @@ class MissionAnswerService(
             } else {
                 checkResult.reasoning
             },
-            hint = if (!checkResult.isCorrect) checkResult.hint?.ifBlank { null } else null
+            hint = if (!checkResult.isCorrect) checkResult.hint?.ifBlank { null } else null,
+            aiResult = checkResult
         )
     }
 
@@ -99,7 +100,8 @@ class MissionAnswerService(
             } else {
                 "추출된 텍스트: '${checkResult.extractedText}' - ${checkResult.reasoning}"
             },
-            hint = if (!checkResult.isCorrect) checkResult.hint?.ifBlank { null } else null
+            hint = if (!checkResult.isCorrect) checkResult.hint?.ifBlank { null } else null,
+            aiResult = checkResult
         )
     }
 }
