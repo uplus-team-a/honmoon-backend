@@ -23,20 +23,6 @@ client.test("현재 사용자 프로필(테스트 토큰) - 200", () => {
 });
 %}
 
-### 프로필 이미지 업로드 URL 발급 (삭제됨: user-summary → users로 이관, 업로드 URL 별도 제공하지 않음)
-# POST {{host}}/api/users/me/profile-image/upload-url?fileName=profile.jpg
-Accept: application/json
-Authorization: {{token}}
-
-> {%
-client.test("프로필 이미지 업로드 URL 발급 - 200", () => {
-  client.assert(response.status === 200, "Status must be 200 OK");
-  client.assert(!!response.body.data.uploadUrl, "uploadUrl should exist");
-  client.assert(!!response.body.data.fileName, "fileName should exist");
-  client.global.set("profileUploadUrl", response.body.data.uploadUrl);
-  client.global.set("profileFileName", response.body.data.fileName);
-});
-%}
 
 ### 미션 이미지 업로드 URL 발급
 POST {{host}}/api/missions/1/image/upload-url?fileName=mission.jpg

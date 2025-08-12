@@ -8,10 +8,11 @@ import site.honmoon.common.exception.DuplicateResourceException
 import site.honmoon.common.exception.EntityNotFoundException
 import site.honmoon.point.service.PointHistoryService
 import site.honmoon.raffle.dto.RaffleUserApplicationResponse
+import site.honmoon.raffle.dto.RaffleApplyResult
 import site.honmoon.raffle.entity.RaffleUserApplication
 import site.honmoon.raffle.repository.RaffleProductRepository
 import site.honmoon.raffle.repository.RaffleUserApplicationRepository
-import java.time.LocalDateTime
+import java.time.OffsetDateTime
 import java.util.*
 
 @Service
@@ -66,8 +67,15 @@ class RaffleUserApplicationService(
         raffleProductRepository.findByIdOrNull(raffleProductId)
             ?: throw EntityNotFoundException(ErrorCode.RAFFLE_NOT_FOUND, "ID: $raffleProductId")
 
-        raffleUserApplicationRepository.findByUserIdAndRaffleProductId(userId, raffleProductId)?.let {
-            throw DuplicateResourceException(ErrorCode.DUPLICATE_ACTIVITY, "이미 해당 래플에 응모했습니다.")
+        raffleUserApplicationRepository.findByUserIdAndRaffleProductId(userId, raffleProductId)?.let { existing ->
+            return RaffleUserApplicationResponse(
+                id = existing.id,
+                userId = existing.userId,
+                raffleProductId = existing.raffleProductId,
+                applicationDate = existing.applicationDate,
+                createdAt = existing.createdAt,
+                modifiedAt = existing.modifiedAt
+            )
         }
 
         pointHistoryService.usePointsForRaffle(userId, raffleProductId)
@@ -75,7 +83,7 @@ class RaffleUserApplicationService(
         val raffleApplication = RaffleUserApplication(
             userId = userId,
             raffleProductId = raffleProductId,
-            applicationDate = LocalDateTime.now()
+            applicationDate = OffsetDateTime.now()
         )
 
         val savedApplication = raffleUserApplicationRepository.save(raffleApplication)
@@ -87,6 +95,64 @@ class RaffleUserApplicationService(
             applicationDate = savedApplication.applicationDate,
             createdAt = savedApplication.createdAt,
             modifiedAt = savedApplication.modifiedAt
+        )
+    }
+
+    /**
+     * 포인트 부족/중복 등의 사유를 200 응답으로 전달하기 위한 상태형 응모 메서드
+     */
+    @Transactional
+    fun applyRaffleWithStatus(userId: UUID, raffleProductId: Long): RaffleApplyResult {
+        val product = raffleProductRepository.findByIdOrNull(raffleProductId)
+            ?: return RaffleApplyResult(
+                success = false,
+                reasonCode = ErrorCode.RAFFLE_NOT_FOUND.name,
+            )
+
+        raffleUserApplicationRepository.findByUserIdAndRaffleProductId(userId, raffleProductId)?.let { existing ->
+            return RaffleApplyResult(
+                success = false,
+                reasonCode = ErrorCode.DUPLICATE_ACTIVITY.name,
+                application = RaffleUserApplicationResponse(
+                    id = existing.id,
+                    userId = existing.userId,
+                    raffleProductId = existing.raffleProductId,
+                    applicationDate = existing.applicationDate,
+                    createdAt = existing.createdAt,
+                    modifiedAt = existing.modifiedAt,
+                )
+            )
+        }
+
+        val userPoints = pointHistoryService.tryUsePoints(userId, product.pointCost)
+        if (!userPoints.success) {
+            return RaffleApplyResult(
+                success = false,
+                reasonCode = userPoints.reasonCode,
+                requiredPoints = userPoints.requiredPoints,
+                currentPoints = userPoints.currentPoints,
+            )
+        }
+
+        pointHistoryService.usePointsForRaffle(userId, raffleProductId)
+
+        val raffleApplication = RaffleUserApplication(
+            userId = userId,
+            raffleProductId = raffleProductId,
+            applicationDate = OffsetDateTime.now()
+        )
+        val saved = raffleUserApplicationRepository.save(raffleApplication)
+
+        return RaffleApplyResult(
+            success = true,
+            application = RaffleUserApplicationResponse(
+                id = saved.id,
+                userId = saved.userId,
+                raffleProductId = saved.raffleProductId,
+                applicationDate = saved.applicationDate,
+                createdAt = saved.createdAt,
+                modifiedAt = saved.modifiedAt,
+            )
         )
     }
 

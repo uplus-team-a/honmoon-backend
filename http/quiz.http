@@ -57,8 +57,7 @@ Authorization: {{token}}
 %}
 
 ### 퀴즈 답변 제출 (이미지)
-POST {{host}}/api/user-activities/missions/1/submit-quiz?userId={{userId}}&
-    uploadedImageUrl=https://example.com/image.jpg
+POST {{host}}/api/user-activities/missions/1/submit-quiz?userId={{userId}}&uploadedImageUrl=https://example.com/image.jpg
 Accept: application/json
 Authorization: {{token}}
 

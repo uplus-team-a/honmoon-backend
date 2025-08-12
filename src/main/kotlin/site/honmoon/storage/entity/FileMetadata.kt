@@ -4,8 +4,7 @@ import jakarta.persistence.*
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.LastModifiedDate
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
-import org.springframework.data.relational.core.mapping.Table
-import java.time.Instant
+import java.time.OffsetDateTime
 import java.util.*
 
 @Entity
@@ -34,7 +33,7 @@ data class FileMetadata(
     @Column(name = "content_type")
     val contentType: String? = null,
 
-    @Column(name = "folder", nullable = false, columnDefinition = "varchar(255) default 'images'")
+    @Column(name = "folder", nullable = false)
     val folder: String = "images",
 
     @Column(name = "created_by", nullable = false)
@@ -45,12 +44,12 @@ data class FileMetadata(
 
     @CreatedDate
     @Column(name = "created_at", nullable = false)
-    val createdAt: Instant? = null,
+    val createdAt: OffsetDateTime? = null,
 
     @LastModifiedDate
     @Column(name = "modified_at", nullable = false)
-    val modifiedAt: Instant? = null,
+    val modifiedAt: OffsetDateTime? = null,
 
-    @Column(name = "is_active", nullable = false, columnDefinition = "boolean default true")
+    @Column(name = "is_active", nullable = false)
     val isActive: Boolean = true,
 )

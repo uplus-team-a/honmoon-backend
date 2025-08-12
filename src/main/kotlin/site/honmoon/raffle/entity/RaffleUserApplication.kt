@@ -1,10 +1,9 @@
 package site.honmoon.raffle.entity
 
 import jakarta.persistence.*
-import org.springframework.data.relational.core.mapping.Table
 import site.honmoon.common.Constant
 import site.honmoon.common.entity.BaseEntity
-import java.time.LocalDateTime
+import java.time.OffsetDateTime
 import java.util.*
 
 @Entity
@@ -17,7 +16,7 @@ class RaffleUserApplication(
     var raffleProductId: Long,
 
     @Column(name = "application_date", nullable = false)
-    var applicationDate: LocalDateTime,
+    var applicationDate: OffsetDateTime,
 ) : BaseEntity() {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

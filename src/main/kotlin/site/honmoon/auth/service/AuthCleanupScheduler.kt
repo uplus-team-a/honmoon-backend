@@ -4,13 +4,13 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
-import site.honmoon.auth.repository.AuthSessionRepository
+import site.honmoon.auth.repository.AppSessionRepository
 import site.honmoon.auth.repository.MagicLinkTokenRepository
 import java.time.Instant
 
 @Component
 class AuthCleanupScheduler(
-    private val authSessionRepository: AuthSessionRepository,
+    private val authSessionRepository: AppSessionRepository,
     private val magicLinkTokenRepository: MagicLinkTokenRepository,
 ) {
     private val logger = KotlinLogging.logger {}

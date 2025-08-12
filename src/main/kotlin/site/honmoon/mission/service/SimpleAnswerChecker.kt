@@ -23,10 +23,10 @@ class SimpleAnswerChecker : AnswerChecker {
     }
 
     private fun checkMultipleChoiceAnswer(mission: MissionDetail, userAnswer: String): Boolean {
-        return mission.answer?.answer?.equals(userAnswer, ignoreCase = true) == true
+        return mission.answer?.equals(userAnswer, ignoreCase = true) == true
     }
 
     private fun checkTextInputAnswer(mission: MissionDetail, userAnswer: String): Boolean {
-        return mission.answer?.answer?.equals(userAnswer.trim(), ignoreCase = true) == true
+        return mission.answer?.equals(userAnswer.trim(), ignoreCase = true) == true
     }
 }

@@ -55,6 +55,7 @@ configurations {
 }
 
 dependencies {
+    implementation(libs.spring.boot.starter.aop)
     implementation(libs.spring.boot.starter.actuator)
     implementation(libs.spring.boot.starter.data.jdbc)
     implementation(libs.spring.boot.starter.data.jpa)

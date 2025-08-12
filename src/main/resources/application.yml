@@ -1,7 +1,8 @@
 logging:
   level:
     root: info
-    org.springframework.security: info
+    org.springframework.security: debug
+    site.honmoon.auth: debug
 
 management:
   endpoints:
@@ -10,11 +11,11 @@ management:
         include: health, info, metrics, prometheus
   metrics:
     enable:
-      all: true
+      all: false
   prometheus:
     metrics:
       export:
-        enabled: true
+        enabled: false
 
 server:
   tomcat:
@@ -36,7 +37,6 @@ spring:
     compose:
       enabled: false
   flyway:
-    baseline-on-migrate: true
     enabled: true
     locations: classpath:db/migration
   ai:
@@ -57,8 +57,8 @@ spring:
   cloud:
     gcp:
       storage:
-        project-id: ${GCP_PROJECT_ID:lexical-rock-465404-f3}
-        bucket: ${GCP_BUCKET_NAME:springboot-honmoon-access}
+        project-id: ${GCP_PROJECT_ID}
+        bucket: ${GCP_BUCKET_NAME}
 
   mail:
     host: ${MAIL_HOST:}
@@ -102,7 +102,10 @@ spring:
         query.in_clause_parameter_padding: true
         default_batch_fetch_size: 50
         connection.provider_disables_autocommit: true
+        jdbc.time_zone: UTC
     database-platform: org.hibernate.dialect.PostgreSQLDialect
+  jackson:
+    time-zone: UTC
   datasource:
     auto-commit: false
     connection-timeout: 3000
@@ -125,6 +128,10 @@ spring:
       data-locations: classpath:db/data.sql
       schema-locations: classpath:db/schema.sql
       mode: never
+management:
+  health:
+    mail:
+      enabled: false
 ---
 spring:
   config:
@@ -134,11 +141,15 @@ spring:
     enabled: false
   datasource:
     driver-class-name: org.postgresql.Driver
-    jdbc-url: ${POSTGRES_URL}
-    username: ${POSTGRES_USERNAME}
-    password: ${POSTGRES_PASSWORD}
+    jdbc-url: ${POSTGRES_URL:jdbc:postgresql://localhost:5432/honmoon}
+    username: ${POSTGRES_USERNAME:postgres}
+    password: ${POSTGRES_PASSWORD:postgres}
   sql:
     init:
       data-locations: classpath:db/data.sql
       schema-locations: classpath:db/schema.sql
       mode: never
+management:
+  health:
+    mail:
+      enabled: false

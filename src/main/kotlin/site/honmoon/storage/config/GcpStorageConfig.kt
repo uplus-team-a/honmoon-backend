@@ -8,52 +8,57 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import java.io.ByteArrayInputStream
+import java.util.*
 
 @Configuration
 class GcpStorageConfig {
-    private val logger = KotlinLogging.logger { }
 
-    @Value("\${GCP_SERVICE_ACCOUNT_JSON:\${SPRING_GCP_CREDENTIALS_JSON:}}")
+    private val logger = KotlinLogging.logger {}
+
+    @Value("\${GCP_SERVICE_ACCOUNT_JSON:}")
     private lateinit var serviceAccountJson: String
+
+    @Value("\${GCP_PROJECT_ID:}")
+    private var projectId: String? = null
 
     @Bean
     fun storage(): Storage {
-        val credentials = resolveCredentials()
-        return if (credentials != null) {
-            StorageOptions.newBuilder()
-                .setCredentials(credentials)
-                .build()
-                .service
-        } else {
-            StorageOptions.getDefaultInstance().service
+        val credential: GoogleCredentials? = resolveCredentials()
+
+        if (credential != null || !projectId.isNullOrBlank()) {
+            val builder = StorageOptions.newBuilder()
+
+            if (credential != null) {
+                val scoped = if (credential.createScopedRequired())
+                    credential.createScoped(listOf("https://www.googleapis.com/auth/cloud-platform"))
+                else
+                    credential
+                builder.setCredentials(scoped)
+            }
+
+            projectId?.takeIf { it.isNotBlank() }?.let { builder.setProjectId(it) }
+
+            return builder.build().service
         }
+
+        logger.warn { "명시적 GCP 설정이 없어 Application Default Credentials로 동작합니다." }
+        return StorageOptions.getDefaultInstance().service
     }
 
     private fun resolveCredentials(): GoogleCredentials? {
-        if (this::serviceAccountJson.isInitialized && serviceAccountJson.isNotBlank()) {
-            // 1차: 원본 그대로 시도
-            try {
-                return GoogleCredentials.fromStream(ByteArrayInputStream(serviceAccountJson.trim().toByteArray()))
-            } catch (_: Exception) {
-                // 2차: 실제 개행 문자를 JSON 호환 "\\n"으로 변환 후 재시도
-                try {
-                    val normalized = normalizeNewlinesForJson(serviceAccountJson)
-                    return GoogleCredentials.fromStream(ByteArrayInputStream(normalized.toByteArray()))
-                } catch (e: Exception) {
-                    logger.warn { "GoogleCredentials json parse error" }
-                }
+        if (!(this::serviceAccountJson.isInitialized) || serviceAccountJson.isBlank()) return null
+
+        return try {
+            val raw = serviceAccountJson.trim()
+            val json = if (raw.startsWith("{")) {
+                raw
+            } else {
+                String(Base64.getDecoder().decode(raw), Charsets.UTF_8)
             }
+            GoogleCredentials.fromStream(ByteArrayInputStream(json.toByteArray(Charsets.UTF_8)))
+        } catch (e: Exception) {
+            logger.warn { "GoogleCredentials 로드 실패: ${e.message}. ADC로 폴백합니다." }
+            null
         }
-
-        logger.warn { "GCP 서비스 계정 설정이 없어 기본 자격 증명을 사용합니다" }
-        return null
     }
-
-    private fun normalizeNewlinesForJson(value: String): String {
-        val trimmed = value.trim()
-        // properties 로더가 \n 을 실제 개행으로 변환했을 가능성을 고려해 실제 개행을 JSON 호환 \\n 으로 치환
-        return trimmed
-            .replace("\r\n", "\\n")
-            .replace("\n", "\\n")
-    }
-} 
+}

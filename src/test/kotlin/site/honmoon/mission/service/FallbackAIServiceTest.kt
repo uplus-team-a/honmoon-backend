@@ -9,7 +9,6 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import site.honmoon.mission.entity.MissionDetail
 import site.honmoon.mission.type.MissionType
-import site.honmoon.mission.vo.MissionAnswerVo
 
 @OptIn(ExperimentalKotest::class)
 @Disabled
@@ -32,7 +31,7 @@ class FallbackAIServiceTest : DescribeSpec() {
                     points = 100,
                     missionType = MissionType.QUIZ_TEXT_INPUT,
                     question = "다음 장소의 이름은 무엇인가요?",
-                    answer = MissionAnswerVo("경복궁")
+                    answer = "경복궁"
                 )
                 // 고의로 템플릿 문제를 유발할 가능성이 있으므로 정상 문자열 사용
                 val result = fallbackAIService.checkTextAnswer(mission, "경복궁")
@@ -46,7 +45,7 @@ class FallbackAIServiceTest : DescribeSpec() {
                     points = 100,
                     missionType = MissionType.QUIZ_IMAGE_UPLOAD,
                     question = "이 이미지는 어떤 장소인가요?",
-                    answer = MissionAnswerVo("경복궁")
+                    answer = "경복궁"
                 )
                 val imageUrl = "https://storage.googleapis.com/honmoon-bucket/place/image/gyeongbokgung-palace.jpeg"
 

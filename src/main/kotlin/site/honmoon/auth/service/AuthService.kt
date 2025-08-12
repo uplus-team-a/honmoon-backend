@@ -1,17 +1,20 @@
 package site.honmoon.auth.service
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.http.HttpHeaders
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import site.honmoon.auth.dto.*
+import site.honmoon.auth.security.SecurityAuthorities
 import site.honmoon.auth.security.SessionAuthService
 import site.honmoon.auth.security.UserPrincipal
-import java.time.LocalDateTime
 import site.honmoon.common.ErrorCode
 import site.honmoon.common.exception.AuthException
 import site.honmoon.common.exception.InvalidRequestException
+import site.honmoon.user.service.UserService
 import java.time.Instant
-import java.util.UUID
+import java.time.LocalDateTime
 
 @Service
 class AuthService(
@@ -19,8 +22,9 @@ class AuthService(
     private val sessionAuthService: SessionAuthService,
     private val emailService: EmailService,
     private val magicLinkService: MagicLinkService,
-    private val userService: site.honmoon.user.service.UserService,
+    private val userService: UserService,
 ) {
+    private val logger = KotlinLogging.logger {}
     fun buildGoogleAuthUrl(scope: String, redirectAfter: String?): AuthUrlResponse {
         val scopes = scope.split(' ').filter { it.isNotBlank() }
         val (url, state, _) = googleOAuthService.buildAuthorizationUrl(
@@ -58,9 +62,10 @@ class AuthService(
                 name = googleUser.name,
                 picture = googleUser.picture,
                 provider = "google",
-                roles = setOf("ROLE_USER")
+                roles = setOf(SecurityAuthorities.ROLE_USER)
             )
         )
+        logger.debug { "[AuthService] Google login session created token=${sessionToken} subject=${savedUser.id}" }
         val tokens = GoogleTokenResponse(
             accessToken = tokenRes.accessToken,
             idToken = tokenRes.idToken,
@@ -82,7 +87,7 @@ class AuthService(
         val token = magicLinkService.issue(body.email, 15)
         val magicLink = "https://honmoon.site/api/auth/email/callback?token=$token&purpose=signup"
         val expiresAt = LocalDateTime.now().plusMinutes(15)
-        emailService.sendMagicLinkHtml(body.email, magicLink, purpose = "회원가입", name=body.name)
+        emailService.sendMagicLinkHtml(body.email, magicLink, purpose = "회원가입", name = body.name)
         return EmailMagicLinkResponse(body.email, magicLink, expiresAt)
     }
 
@@ -108,9 +113,10 @@ class AuthService(
                 name = email.substringBefore('@'),
                 picture = null,
                 provider = "email",
-                roles = setOf("ROLE_USER")
+                roles = setOf(SecurityAuthorities.ROLE_USER)
             )
         )
+        logger.debug { "[AuthService] Magic-link session created token=${sessionToken} subject=${email}" }
         val redirectUrl =
             "https://honmoon.site/api/auth/email/callback#token=$sessionToken&email=$email&purpose=${purpose ?: "login"}"
         return ResponseEntity.status(302).header(HttpHeaders.LOCATION, redirectUrl).build()
@@ -139,11 +145,11 @@ class AuthService(
 
     /**
      * Basic 인증된 호출자에게 실제 OAuth 사용자와 동일한 세션 토큰을 발급한다.
-     * 고정 사용자: cf9f9ba7-d1fb-4240-9521-1b1e9a8d8808 (sylvester7412@gmail.com)
+     * 이메일 오름차순 첫 번째 사용자를 선택한다.
      */
-    fun issueTestTokenForBasicAuth(@Suppress("UNUSED_PARAMETER") principal: UserPrincipal): BasicTokenResponse {
-        val fixedUserId = UUID.fromString("cf9f9ba7-d1fb-4240-9521-1b1e9a8d8808")
-        val user = userService.getByIdOrThrow(fixedUserId)
+    @Transactional
+    fun issueTestTokenForBasicAuth(): BasicTokenResponse {
+        val user = userService.getFirstUserByEmailAscOrThrow()
 
         val oauthLikePrincipal = UserPrincipal(
             subject = user.id.toString(),
@@ -151,10 +157,11 @@ class AuthService(
             name = user.nickname ?: user.email ?: user.id.toString(),
             picture = user.profileImageUrl,
             provider = "google",
-            roles = setOf("ROLE_USER"),
+            roles = setOf(SecurityAuthorities.ROLE_USER),
         )
 
         val token = sessionAuthService.createSession(oauthLikePrincipal)
+        logger.info { "[AuthService] Test session created token=${token} subject=${user.id} email=${user.email}" }
         val expiresAt = Instant.now().plusSeconds(60L * 60L * 24L * 7L)
         return BasicTokenResponse(token = token, expiresAt = expiresAt)
     }

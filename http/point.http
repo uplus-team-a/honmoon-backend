@@ -4,12 +4,12 @@ Accept: application/json
 Authorization: {{basicToken}}
 
 > {%
-client.test("Basic 테스트 토큰 발급 - 200", () => {
-  client.assert(response.status === 200, "Status must be 200 OK");
-  client.assert(!!response.body.data.token, "token must exist");
-});
-const tok = response.body.data.token;
-client.global.set("token", `Bearer ${tok}`);
+    client.test("Basic 테스트 토큰 발급 - 200", () => {
+        client.assert(response.status === 200, "Status must be 200 OK");
+        client.assert(!!response.body.data.token, "token must exist");
+    });
+    const tok = response.body.data.token;
+    client.global.set("token", `Bearer ${tok}`);
 %}
 
 ### 현재 사용자 프로필 확인(테스트 토큰)
@@ -18,9 +18,9 @@ Accept: application/json
 Authorization: {{token}}
 
 > {%
-client.test("현재 사용자 프로필(테스트 토큰) - 200", () => {
-  client.assert(response.status === 200, "Status must be 200 OK");
-});
+    client.test("현재 사용자 프로필(테스트 토큰) - 200", () => {
+        client.assert(response.status === 200, "Status must be 200 OK");
+    });
 %}
 
 ### 포인트 내역 상세 조회
@@ -29,9 +29,9 @@ Accept: application/json
 Authorization: {{token}}
 
 > {%
-client.test("포인트 내역 상세 조회 - 200 또는 404", () => {
-  client.assert([200,404].includes(response.status), "Expected 200 or 404");
-});
+    client.test("포인트 내역 상세 조회 - 200 또는 404", () => {
+        client.assert([200, 404].includes(response.status), "Expected 200 or 404");
+    });
 %}
 
 ### 사용자 포인트 내역 조회
@@ -40,9 +40,9 @@ Accept: application/json
 Authorization: {{token}}
 
 > {%
-client.test("사용자 포인트 내역 조회 - 200", () => {
-  client.assert(response.status === 200, "Status must be 200 OK");
-});
+    client.test("사용자 포인트 내역 조회 - 200", () => {
+        client.assert(response.status === 200, "Status must be 200 OK");
+    });
 %}
 
 ### 사용자 포인트 획득 내역 조회
@@ -51,9 +51,9 @@ Accept: application/json
 Authorization: {{token}}
 
 > {%
-client.test("사용자 포인트 획득 내역 조회 - 200", () => {
-  client.assert(response.status === 200, "Status must be 200 OK");
-});
+    client.test("사용자 포인트 획득 내역 조회 - 200", () => {
+        client.assert(response.status === 200, "Status must be 200 OK");
+    });
 %}
 
 ### 사용자 포인트 사용 내역 조회
@@ -62,21 +62,23 @@ Accept: application/json
 Authorization: {{token}}
 
 > {%
-client.test("사용자 포인트 사용 내역 조회 - 200", () => {
-  client.assert(response.status === 200, "Status must be 200 OK");
-});
+    client.test("사용자 포인트 사용 내역 조회 - 200", () => {
+        client.assert(response.status === 200, "Status must be 200 OK");
+    });
 %}
 
-### 래플 응모 포인트 차감
-POST {{host}}/api/point-history/use/raffle?userId={{userId}}&raffleProductId=1
+
+### 포인트 사용 가능 여부 확인
+GET {{host}}/api/point-history/use/check?requiredPoints=100
 Accept: application/json
 Authorization: {{token}}
 
 > {%
-client.test("래플 응모 포인트 차감 - 200", () => {
-  client.assert(response.status === 200, "Status must be 200 OK");
-});
-%} 
+    client.test("포인트 사용 가능 여부 확인 - 200", () => {
+        client.assert(response.status === 200, "Status must be 200 OK");
+        client.assert(typeof response.body.data.success === 'boolean', 'success flag required');
+    });
+%}
 
 ### 내 포인트 내역 조회
 GET {{host}}/api/point-history/me
@@ -84,7 +86,7 @@ Accept: application/json
 Authorization: {{token}}
 
 > {%
-client.test("내 포인트 내역 조회 - 200", () => {
-  client.assert(response.status === 200, "Status must be 200 OK");
-});
+    client.test("내 포인트 내역 조회 - 200", () => {
+        client.assert(response.status === 200, "Status must be 200 OK");
+    });
 %} 

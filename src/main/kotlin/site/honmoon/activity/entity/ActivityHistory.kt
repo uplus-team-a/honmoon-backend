@@ -1,13 +1,12 @@
 package site.honmoon.activity.entity
 
 import jakarta.persistence.*
-import org.springframework.data.relational.core.mapping.Table
 import site.honmoon.common.Constant
 import site.honmoon.common.entity.BaseEntity
 import java.util.*
 
 @Entity
-@Table(name = "user_activity")
+@jakarta.persistence.Table(name = "user_activity")
 class UserActivity(
     @Column(name = "user_id", nullable = false)
     var userId: UUID,

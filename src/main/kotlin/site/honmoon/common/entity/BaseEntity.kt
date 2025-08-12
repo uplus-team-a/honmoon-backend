@@ -1,6 +1,7 @@
 package site.honmoon.common.entity
 
 import jakarta.persistence.EntityListeners
+import jakarta.persistence.Column
 import jakarta.persistence.MappedSuperclass
 import org.springframework.data.annotation.CreatedBy
 import org.springframework.data.annotation.CreatedDate
@@ -13,14 +14,18 @@ import java.time.Instant
 @EntityListeners(AuditingEntityListener::class)
 class BaseEntity {
     @CreatedBy
-    var createdBy: String? = "anonymous"
+    @Column(name = "created_by", nullable = false)
+    var createdBy: String = "anonymous"
 
     @CreatedDate
+    @Column(name = "created_at", nullable = false)
     var createdAt: Instant = Instant.now()
 
     @LastModifiedBy
-    var modifiedBy: String? = "anonymous"
+    @Column(name = "modified_by", nullable = false)
+    var modifiedBy: String = "anonymous"
 
     @LastModifiedDate
+    @Column(name = "modified_at", nullable = false)
     var modifiedAt: Instant = Instant.now()
 }

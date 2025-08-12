@@ -3,9 +3,10 @@ package site.honmoon.auth.security
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import site.honmoon.auth.entity.AuthSession
-import site.honmoon.auth.repository.AuthSessionRepository
+import site.honmoon.auth.entity.AppSession
+import site.honmoon.auth.repository.AppSessionRepository
 import java.time.Instant
+import java.time.temporal.ChronoUnit
 import java.util.*
 
 /**
@@ -14,28 +15,44 @@ import java.util.*
  */
 @Service
 class SessionAuthService(
-    private val authSessionRepository: AuthSessionRepository,
+    private val appSessionRepository: AppSessionRepository,
 ) {
     private val logger = KotlinLogging.logger {}
-    private val defaultTtlSeconds: Long = 60L * 60L * 24L * 7L
 
     /**
      * 주어진 사용자 정보로 세션을 생성하고 토큰을 반환한다.
      */
     @Transactional
-    fun createSession(principal: UserPrincipal, ttlSeconds: Long = defaultTtlSeconds): String {
-        val token = UUID.randomUUID().toString().replace("-", "")
-        val session = AuthSession(
-            token = token,
+    fun createSession(principal: UserPrincipal): String {
+        val now = Instant.now()
+        val existing = appSessionRepository.findFirstBySubjectOrderByCreatedAtDesc(principal.subject)
+        val newToken = UUID.randomUUID().toString().replace("-", "")
+
+        if (existing != null) {
+            // 기존 세션 토큰을 재사용하지 않고, 토큰을 교체하여 업데이트
+            existing.token = newToken
+            existing.email = principal.email
+            existing.name = principal.name
+            existing.picture = principal.picture
+            existing.provider = principal.provider
+            existing.expiresAt = now.plus(30, ChronoUnit.MINUTES)
+            appSessionRepository.save(existing)
+            logger.info { "[Session] updated token=${existing.token} subject=${existing.subject} provider=${existing.provider} email=${existing.email} expiresAt=${existing.expiresAt}" }
+            return existing.token
+        }
+
+        val session = AppSession(
+            token = newToken,
             subject = principal.subject,
             email = principal.email,
             name = principal.name,
             picture = principal.picture,
             provider = principal.provider,
-            expiresAt = Instant.now().plusSeconds(ttlSeconds)
+            expiresAt = now.plus(30, ChronoUnit.MINUTES)
         )
-        authSessionRepository.save(session)
-        return token
+        appSessionRepository.save(session)
+        logger.info { "[Session] created token=${newToken} subject=${session.subject} provider=${session.provider} email=${session.email} expiresAt=${session.expiresAt}" }
+        return newToken
     }
 
     /**
@@ -43,8 +60,13 @@ class SessionAuthService(
      */
     @Transactional(readOnly = true)
     fun authenticate(token: String): UserPrincipal? {
-        val session = authSessionRepository.findById(token).orElse(null) ?: return null
+        val session = appSessionRepository.findById(token).orElse(null)
+        if (session == null) {
+            logger.warn { "[Session] not found token=${token}" }
+            return null
+        }
         if (session.expiresAt.isBefore(Instant.now())) {
+            logger.warn { "[Session] expired token=${token} expiresAt=${session.expiresAt} now=${Instant.now()}" }
             return null
         }
         return UserPrincipal(
@@ -53,7 +75,7 @@ class SessionAuthService(
             name = session.name,
             picture = session.picture,
             provider = session.provider,
-            roles = setOf("ROLE_USER")
+            roles = setOf(SecurityAuthorities.ROLE_USER)
         )
     }
 
@@ -62,6 +84,6 @@ class SessionAuthService(
      */
     @Transactional
     fun invalidate(token: String) {
-        authSessionRepository.deleteById(token)
+        appSessionRepository.deleteById(token)
     }
 }

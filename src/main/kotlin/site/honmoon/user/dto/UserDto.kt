@@ -19,3 +19,7 @@ data class UpdateUserRequest(
     val nickname: String?,
     val profileImageUrl: String?,
 )
+
+data class UpdateProfileImageRequest(
+    val imageUrl: String,
+)

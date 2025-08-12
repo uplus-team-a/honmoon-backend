@@ -6,6 +6,7 @@ import java.util.*
 
 interface UsersRepository : JpaRepository<Users, UUID> {
     fun findByEmail(email: String): Users?
+    fun findFirstByEmailIsNotNullOrderByEmailAsc(): Users?
 }
 
 

@@ -6,9 +6,9 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener
 import java.time.Instant
 
 @Entity
-@Table(name = "app_session")
+@jakarta.persistence.Table(name = "app_session")
 @EntityListeners(AuditingEntityListener::class)
-data class AuthSession(
+data class AppSession(
     @Id
     @Column(name = "token", nullable = false, length = 64)
     var token: String = "",

@@ -111,7 +111,7 @@ client.test("래플 상품별 응모자 목록 조회 - 200", () => {
 });
 %}
 
-### 래플 응모
+### 래플 응모 (성공/중복/포인트부족 모두 200)
 POST {{host}}/api/raffle-applications?userId={{userId}}&raffleProductId=1
 Accept: application/json
 Authorization: {{token}}
@@ -155,7 +155,7 @@ client.test("내 래플 응모 내역 조회 - 200", () => {
 });
 %}
 
-### 내 래플 응모
+### 내 래플 응모 (성공/중복/포인트부족 모두 200)
 POST {{host}}/api/raffle-applications/me?raffleProductId=1
 Accept: application/json
 Authorization: {{token}}

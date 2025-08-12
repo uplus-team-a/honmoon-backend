@@ -31,6 +31,14 @@ class UserService(
     }
 
     /**
+     * 이메일 기준 오름차순 첫 번째 사용자 반환. 없으면 예외.
+     */
+    fun getFirstUserByEmailAscOrThrow(): Users {
+        return usersRepository.findFirstByEmailIsNotNullOrderByEmailAsc()
+            ?: throw EntityNotFoundException(ErrorCode.USER_NOT_FOUND, "No users found (email asc)")
+    }
+
+    /**
      * 사용자 ID로 이메일 조회. 비어있거나 없으면 예외.
      */
     fun getEmailByUserId(userId: UUID): String {
@@ -54,7 +62,7 @@ class UserService(
             totalPoints = user.totalPoints,
             totalActivities = user.totalActivities,
             profileImageUrl = user.profileImageUrl,
-            isActive = user.isActive,
+            isActive = user.isActive ?: true,
             createdAt = user.createdAt,
             modifiedAt = user.modifiedAt
         )

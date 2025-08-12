@@ -11,6 +11,7 @@ import site.honmoon.auth.security.CurrentUser
 import site.honmoon.auth.security.UserPrincipal
 import site.honmoon.common.Response
 import site.honmoon.user.dto.UpdateUserRequest
+import site.honmoon.user.dto.UpdateProfileImageRequest
 import site.honmoon.user.dto.UserResponse
 import site.honmoon.user.service.UserService
 import java.util.*
@@ -130,14 +131,18 @@ class UserController(
             content = [Content(schema = Schema(implementation = UserResponse::class))]
         )]
     )
-    @PatchMapping("/{userId}/profile-image")
+    @PutMapping("/{userId}/profile-image")
     fun updateUserProfileImage(
         @Parameter(description = "사용자 UUID", example = "123e4567-e89b-12d3-a456-426614174000")
         @PathVariable userId: UUID,
-        @Parameter(description = "프로필 이미지 URL", example = "https://storage.googleapis.com/bucket/profiles/abc.jpg")
-        @RequestParam imageUrl: String,
+        @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            description = "프로필 이미지 URL",
+            required = true,
+            content = [Content(schema = Schema(implementation = UpdateProfileImageRequest::class))]
+        )
+        @RequestBody body: UpdateProfileImageRequest,
     ): Response<UserResponse> {
-        return Response.success(userService.updateProfileImage(userId, imageUrl))
+        return Response.success(userService.updateProfileImage(userId, body.imageUrl))
     }
 
     @Operation(
@@ -145,14 +150,18 @@ class UserController(
         description = "현재 로그인한 사용자의 프로필 이미지를 변경합니다.",
         responses = [ApiResponse(responseCode = "200", description = "성공")]
     )
-    @PatchMapping("/me/profile-image")
+    @PutMapping("/me/profile-image")
     fun updateMyProfileImage(
-        @Parameter(description = "프로필 이미지 URL", example = "https://storage.googleapis.com/bucket/profiles/abc.jpg")
-        @RequestParam imageUrl: String,
+        @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            description = "프로필 이미지 URL",
+            required = true,
+            content = [Content(schema = Schema(implementation = UpdateProfileImageRequest::class))]
+        )
+        @RequestBody body: UpdateProfileImageRequest,
         @CurrentUser currentUser: UserPrincipal,
     ): Response<UserResponse> {
         val userId = UUID.fromString(currentUser.subject)
-        return Response.success(userService.updateProfileImage(userId, imageUrl))
+        return Response.success(userService.updateProfileImage(userId, body.imageUrl))
     }
 
     @Operation(

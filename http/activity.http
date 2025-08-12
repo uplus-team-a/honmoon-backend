@@ -10,7 +10,6 @@ Authorization: {{basicToken}}
     });
     const tok = response.body.data.token;
     client.global.set("token", `Bearer ${tok}`);
-    console.log(client.global.get("token"));
 %}
 
 ### 현재 사용자 프로필 확인(테스트 토큰)

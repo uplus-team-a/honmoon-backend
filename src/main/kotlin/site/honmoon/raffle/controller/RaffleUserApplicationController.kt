@@ -12,6 +12,7 @@ import site.honmoon.auth.security.CurrentUser
 import site.honmoon.auth.security.UserPrincipal
 import site.honmoon.common.Response
 import site.honmoon.raffle.dto.RaffleUserApplicationResponse
+import site.honmoon.raffle.dto.RaffleApplyResult
 import site.honmoon.raffle.service.RaffleUserApplicationService
 import java.util.*
 
@@ -108,8 +109,8 @@ class RaffleUserApplicationController(
         @Parameter(description = "래플 상품 ID", example = "1")
         @RequestParam raffleProductId: Long,
         @CurrentUser currentUser: UserPrincipal?,
-    ): Response<RaffleUserApplicationResponse> {
-        return Response.success(raffleUserApplicationService.applyRaffle(userId, raffleProductId))
+    ): Response<RaffleApplyResult> {
+        return Response.success(raffleUserApplicationService.applyRaffleWithStatus(userId, raffleProductId))
     }
 
     @Operation(
@@ -122,9 +123,9 @@ class RaffleUserApplicationController(
         @Parameter(description = "래플 상품 ID", example = "1")
         @RequestParam raffleProductId: Long,
         @CurrentUser currentUser: UserPrincipal,
-    ): Response<RaffleUserApplicationResponse> {
+    ): Response<RaffleApplyResult> {
         val userId = UUID.fromString(currentUser.subject)
-        return Response.success(raffleUserApplicationService.applyRaffle(userId, raffleProductId))
+        return Response.success(raffleUserApplicationService.applyRaffleWithStatus(userId, raffleProductId))
     }
 
     @Operation(

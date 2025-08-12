@@ -43,6 +43,8 @@ springAi = "1.0.0-M5"
 googleGenai = "1.11.0"
 
 [libraries]
+# Spring Boot AOP
+spring-boot-starter-aop = { module = "org.springframework.boot:spring-boot-starter-aop" }
 # prometheus
 micrometer-registry-prometheus = { module = "io.micrometer:micrometer-registry-prometheus", version.ref = "micrometerPrometheus" }
 

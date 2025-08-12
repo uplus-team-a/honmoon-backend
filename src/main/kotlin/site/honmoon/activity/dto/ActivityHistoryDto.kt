@@ -17,4 +17,5 @@ data class UserActivityResponse(
     val uploadedImageUrl: String?,
     val createdAt: Instant,
     val modifiedAt: Instant,
+    val alreadyExists: Boolean = false,
 ) 

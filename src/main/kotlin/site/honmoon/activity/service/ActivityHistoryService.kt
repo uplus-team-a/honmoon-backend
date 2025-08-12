@@ -104,10 +104,22 @@ class UserActivityService(
      */
     @Transactional
     fun createActivity(userId: UUID, placeId: Long, description: String): UserActivityResponse {
-        userActivityRepository.findByUserIdAndPlaceId(userId, placeId)?.let {
-            throw DuplicateResourceException(
-                ErrorCode.DUPLICATE_ACTIVITY,
-                "User $userId already has activity for place $placeId"
+        userActivityRepository.findByUserIdAndPlaceId(userId, placeId)?.let { existing ->
+            return UserActivityResponse(
+                id = existing.id,
+                userId = existing.userId,
+                placeId = existing.placeId,
+                missionId = existing.missionId,
+                description = existing.description,
+                isCorrect = existing.isCorrect,
+                isCompleted = existing.isCompleted,
+                pointsEarned = existing.pointsEarned,
+                textAnswer = existing.textAnswer,
+                selectedChoiceIndex = existing.selectedChoiceIndex,
+                uploadedImageUrl = existing.uploadedImageUrl,
+                createdAt = existing.createdAt,
+                modifiedAt = existing.modifiedAt,
+                alreadyExists = true,
             )
         }
 
@@ -184,10 +196,22 @@ class UserActivityService(
         val placeId = missionDetail.placeId
             ?: throw EntityNotFoundException(ErrorCode.PLACE_NOT_FOUND, "Mission $missionId has no place")
 
-        userActivityRepository.findByUserIdAndPlaceId(userId, placeId)?.let {
-            throw DuplicateResourceException(
-                ErrorCode.DUPLICATE_ACTIVITY,
-                "User $userId already has activity for place $placeId"
+        userActivityRepository.findByUserIdAndPlaceId(userId, placeId)?.let { existing ->
+            return UserActivityResponse(
+                id = existing.id,
+                userId = existing.userId,
+                placeId = existing.placeId,
+                missionId = existing.missionId,
+                description = existing.description,
+                isCorrect = existing.isCorrect,
+                isCompleted = existing.isCompleted,
+                pointsEarned = existing.pointsEarned,
+                textAnswer = existing.textAnswer,
+                selectedChoiceIndex = existing.selectedChoiceIndex,
+                uploadedImageUrl = existing.uploadedImageUrl,
+                createdAt = existing.createdAt,
+                modifiedAt = existing.modifiedAt,
+                alreadyExists = true,
             )
         }
 
@@ -281,12 +305,12 @@ class UserActivityService(
     ): Boolean {
         return when (missionDetail.missionType) {
             MissionType.QUIZ_MULTIPLE_CHOICE -> {
-                val correctChoiceIndex = missionDetail.choices?.choices?.indexOf(missionDetail.answer?.answer)
+                val correctChoiceIndex = missionDetail.choices?.choices?.indexOf(missionDetail.answer)
                 selectedChoiceIndex == correctChoiceIndex
             }
 
             MissionType.QUIZ_TEXT_INPUT -> {
-                textAnswer?.trim()?.equals(missionDetail.answer?.answer?.trim(), ignoreCase = true) ?: false
+                textAnswer?.trim()?.equals(missionDetail.answer?.trim(), ignoreCase = true) ?: false
             }
 
             MissionType.QUIZ_IMAGE_UPLOAD -> {

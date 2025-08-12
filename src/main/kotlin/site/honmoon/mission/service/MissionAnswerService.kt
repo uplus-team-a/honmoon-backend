@@ -70,7 +70,7 @@ class MissionAnswerService(
             isCorrect = checkResult.isCorrect,
             pointsEarned = pointsEarned,
             explanation = if (checkResult.isCorrect) {
-                mission.answer?.explanation ?: checkResult.reasoning
+                mission.answerExplanation ?: checkResult.reasoning
             } else {
                 checkResult.reasoning
             },
@@ -95,7 +95,7 @@ class MissionAnswerService(
             isCorrect = checkResult.isCorrect,
             pointsEarned = pointsEarned,
             explanation = if (checkResult.isCorrect) {
-                mission.answer?.explanation ?: checkResult.reasoning
+                mission.answerExplanation ?: checkResult.reasoning
             } else {
                 "추출된 텍스트: '${checkResult.extractedText}' - ${checkResult.reasoning}"
             },

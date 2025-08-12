@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.HttpHeaders
 import org.springframework.http.ResponseEntity
+import org.springframework.security.oauth2.client.web.client.RequestAttributePrincipalResolver.principal
 import org.springframework.web.bind.annotation.*
 import site.honmoon.auth.dto.*
 import site.honmoon.auth.security.UserPrincipal
@@ -98,8 +99,8 @@ class AuthController(
         description = "Basic 인증으로 호출 시 서버 세션 토큰(Bearer)을 발급합니다."
     )
     @PostMapping("/test-token")
-    fun issueTestToken(@CurrentUser principal: UserPrincipal): Response<BasicTokenResponse> {
-        val res = authService.issueTestTokenForBasicAuth(principal)
+    fun issueTestToken(): Response<BasicTokenResponse> {
+        val res = authService.issueTestTokenForBasicAuth()
         return Response.success(res)
     }
 

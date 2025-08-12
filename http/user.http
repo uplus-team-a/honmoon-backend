@@ -114,9 +114,14 @@ Authorization: {{token}}
 %} 
 
 ### 사용자 프로필 이미지 업데이트
-PATCH {{host}}/api/users/{{userId}}/profile-image?imageUrl=https://storage.googleapis.com/{{bucket}}/profiles/{{profileFileName}}
+PUT {{host}}/api/users/{{userId}}/profile-image
+Content-Type: application/json
 Accept: application/json
 Authorization: {{token}}
+
+{
+  "imageUrl": "https://storage.googleapis.com/{{bucket}}/profiles/{{profileFileName}}"
+}
 
 > {%
     client.test("사용자 프로필 이미지 업데이트 - 200", () => {
@@ -125,9 +130,14 @@ Authorization: {{token}}
 %}
 
 ### 내 프로필 이미지 업데이트
-PATCH {{host}}/api/users/me/profile-image?imageUrl=https://storage.googleapis.com/{{bucket}}/profiles/{{profileFileName}}
+PUT {{host}}/api/users/me/profile-image
+Content-Type: application/json
 Accept: application/json
 Authorization: {{token}}
+
+{
+  "imageUrl": "https://storage.googleapis.com/{{bucket}}/profiles/{{profileFileName}}"
+}
 
 > {%
     client.test("내 프로필 이미지 업데이트 - 200", () => {

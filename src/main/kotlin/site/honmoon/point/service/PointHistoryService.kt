@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional
 import site.honmoon.common.ErrorCode
 import site.honmoon.common.exception.EntityNotFoundException
 import site.honmoon.common.exception.InvalidRequestException
+import site.honmoon.point.dto.UsePointsResult
 import site.honmoon.point.dto.PointHistoryResponse
 import site.honmoon.point.entity.PointHistory
 import site.honmoon.point.repository.PointHistoryRepository
@@ -158,6 +159,33 @@ class PointHistoryService(
             description = savedPointHistory.description,
             createdAt = savedPointHistory.createdAt,
             modifiedAt = savedPointHistory.modifiedAt
+        )
+    }
+
+    /**
+     * 포인트 사용 시도 결과를 200으로 반환하기 위한 메서드 (예: 프론트 분기 처리)
+     */
+    @Transactional(readOnly = true)
+    fun tryUsePoints(userId: UUID, requiredPoints: Int): UsePointsResult {
+        val user = usersRepository.findById(userId)
+            .orElseThrow { EntityNotFoundException(ErrorCode.USER_NOT_FOUND, "User ID: $userId") }
+        if (user.totalPoints < requiredPoints) {
+            return UsePointsResult(
+                success = false,
+                requiredPoints = requiredPoints,
+                currentPoints = user.totalPoints,
+                remainingPoints = null,
+                history = null,
+                reasonCode = ErrorCode.INSUFFICIENT_POINTS.name,
+            )
+        }
+        return UsePointsResult(
+            success = true,
+            requiredPoints = requiredPoints,
+            currentPoints = user.totalPoints,
+            remainingPoints = user.totalPoints - requiredPoints,
+            history = null,
+            reasonCode = null,
         )
     }
 } 

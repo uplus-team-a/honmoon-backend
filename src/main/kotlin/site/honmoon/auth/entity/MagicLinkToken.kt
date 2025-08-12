@@ -6,7 +6,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener
 import java.time.Instant
 
 @Entity
-@Table(name = "magic_link_token")
+@jakarta.persistence.Table(name = "magic_link_token")
 @EntityListeners(AuditingEntityListener::class)
 data class MagicLinkToken(
     @Id

@@ -13,18 +13,23 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.provisioning.InMemoryUserDetailsManager
 import org.springframework.security.web.SecurityFilterChain
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
-import site.honmoon.auth.security.TokenAuthenticationFilter
+import org.springframework.security.web.context.SecurityContextHolderFilter
+import org.springframework.security.web.firewall.HttpStatusRequestRejectedHandler
+import org.springframework.security.web.firewall.RequestRejectedHandler
+import org.springframework.web.servlet.HandlerExceptionResolver
+import site.honmoon.auth.security.SecurityExceptionHandlerDelegator
+import site.honmoon.auth.security.SecurityRoles
 import site.honmoon.auth.security.SessionAuthService
+import site.honmoon.auth.security.TokenAuthenticationFilter
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
 class SecurityConfig(
     private val sessionAuthService: SessionAuthService,
+    private val handlerExceptionResolver: HandlerExceptionResolver,
     @Value("\${BASIC_AUTH_USERNAME}") private val basicUsername: String,
     @Value("\${BASIC_AUTH_PASSWORD}") private val basicPassword: String,
-    @Value("\${BASIC_AUTH_ROLE:ADMIN}") private val basicRole: String,
 ) {
 
     @Bean
@@ -32,20 +37,24 @@ class SecurityConfig(
 
     @Bean
     fun userDetailsService(passwordEncoder: PasswordEncoder): UserDetailsService {
-        val roleUpper = basicRole.uppercase()
         val user = User.withUsername(basicUsername)
             .password(passwordEncoder.encode(basicPassword))
-            .roles(roleUpper)
+            .roles(SecurityRoles.ADMIN, SecurityRoles.USER)
             .build()
         return InMemoryUserDetailsManager(user)
     }
 
     @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
-        val roleUpper = basicRole.uppercase()
+        val delegator = SecurityExceptionHandlerDelegator(handlerExceptionResolver)
+
         http
             .csrf { it.disable() }
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
+            .exceptionHandling { eh ->
+                eh.authenticationEntryPoint(delegator)
+                eh.accessDeniedHandler(delegator)
+            }
             .authorizeHttpRequests { auth ->
                 auth
                     .requestMatchers(
@@ -58,14 +67,23 @@ class SecurityConfig(
                         "/swagger-ui/**",
                         "/actuator/health"
                     ).permitAll()
-                    .requestMatchers("/api/auth/test-token").hasRole(roleUpper)
-                    .anyRequest().hasRole("USER")
+                    .requestMatchers("/api/auth/test-token").hasRole(SecurityRoles.ADMIN)
+                    .anyRequest().hasRole(SecurityRoles.USER)
             }
             .httpBasic { }
-            .addFilterBefore(
-                TokenAuthenticationFilter(sessionAuthService),
-                UsernamePasswordAuthenticationFilter::class.java
+            .addFilterAfter(
+                TokenAuthenticationFilter(sessionAuthService, handlerExceptionResolver),
+                SecurityContextHolderFilter::class.java
             )
         return http.build()
+    }
+
+    @Bean
+    fun requestRejectedHandler(): RequestRejectedHandler {
+        /**
+         * 잘못된 URl 문법으로 요청하는 경우 SpringSecurity.StrictHttpFirewall 에서 RequestRejectedException 예외를 던진다.
+         * 이 예외는 SpringMVC exceptionResolver 에 잡히지 않으므로, RequestRejectedHandler() 를 추가하여 400을 반환하게 수정
+         */
+        return HttpStatusRequestRejectedHandler()
     }
 } 
