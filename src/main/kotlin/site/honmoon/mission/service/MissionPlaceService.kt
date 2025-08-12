@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional
 import site.honmoon.common.ErrorCode
 import site.honmoon.common.exception.EntityNotFoundException
 import site.honmoon.mission.dto.MissionPlaceResponse
+import site.honmoon.mission.dto.MissionPlaceWithMissionsResponse
 import site.honmoon.mission.repository.MissionDetailRepository
 import site.honmoon.mission.repository.MissionPlaceRepository
 
@@ -32,9 +33,27 @@ class MissionPlaceService(
         )
     }
 
-    fun getMissionPlaces(): List<MissionPlaceResponse> {
+    fun getMissionPlaces(): List<MissionPlaceWithMissionsResponse> {
         return missionPlaceRepository.findAll().map { missionPlace ->
-            MissionPlaceResponse(
+            val missions = missionDetailRepository.findByPlaceId(missionPlace.id).map { mission ->
+                site.honmoon.mission.dto.MissionDetailResponse(
+                    id = mission.id,
+                    title = mission.title,
+                    description = mission.description,
+                    points = mission.points,
+                    missionType = mission.missionType,
+                    placeId = mission.placeId,
+                    question = mission.question,
+                    answer = mission.answer,
+                    choices = mission.choices,
+                    answerExplanation = mission.answerExplanation,
+                    correctImageUrl = mission.correctImageUrl,
+                    imageUploadInstruction = mission.imageUploadInstruction,
+                    createdAt = mission.createdAt,
+                    modifiedAt = mission.modifiedAt
+                )
+            }
+            MissionPlaceWithMissionsResponse(
                 id = missionPlace.id,
                 name = missionPlace.name,
                 description = missionPlace.description,
@@ -43,14 +62,33 @@ class MissionPlaceService(
                 latitude = missionPlace.latitude,
                 longitude = missionPlace.longitude,
                 createdAt = missionPlace.createdAt,
-                modifiedAt = missionPlace.modifiedAt
+                modifiedAt = missionPlace.modifiedAt,
+                missions = missions
             )
         }
     }
 
-    fun searchMissionPlaces(title: String): List<MissionPlaceResponse> {
+    fun searchMissionPlaces(title: String): List<MissionPlaceWithMissionsResponse> {
         return missionPlaceRepository.findByNameContainingIgnoreCase(title).map { missionPlace ->
-            MissionPlaceResponse(
+            val missions = missionDetailRepository.findByPlaceId(missionPlace.id).map { mission ->
+                site.honmoon.mission.dto.MissionDetailResponse(
+                    id = mission.id,
+                    title = mission.title,
+                    description = mission.description,
+                    points = mission.points,
+                    missionType = mission.missionType,
+                    placeId = mission.placeId,
+                    question = mission.question,
+                    answer = mission.answer,
+                    choices = mission.choices,
+                    answerExplanation = mission.answerExplanation,
+                    correctImageUrl = mission.correctImageUrl,
+                    imageUploadInstruction = mission.imageUploadInstruction,
+                    createdAt = mission.createdAt,
+                    modifiedAt = mission.modifiedAt
+                )
+            }
+            MissionPlaceWithMissionsResponse(
                 id = missionPlace.id,
                 name = missionPlace.name,
                 description = missionPlace.description,
@@ -59,12 +97,13 @@ class MissionPlaceService(
                 latitude = missionPlace.latitude,
                 longitude = missionPlace.longitude,
                 createdAt = missionPlace.createdAt,
-                modifiedAt = missionPlace.modifiedAt
+                modifiedAt = missionPlace.modifiedAt,
+                missions = missions
             )
         }
     }
 
-    fun getNearbyMissionPlaces(lat: Double, lng: Double, radius: Int): List<MissionPlaceResponse> {
+    fun getNearbyMissionPlaces(lat: Double, lng: Double, radius: Int): List<MissionPlaceWithMissionsResponse> {
         val limit = if (radius <= 0) 20 else minOf(radius / 50, 100).coerceAtLeast(1)
         val vectorNearest = try {
             missionPlaceRepository.findNearestByVector(lat, lng, limit)
@@ -74,7 +113,25 @@ class MissionPlaceService(
         val places =
             if (vectorNearest.isNotEmpty()) vectorNearest else missionPlaceRepository.findNearest(lat, lng, limit)
         return places.map { missionPlace ->
-            MissionPlaceResponse(
+            val missions = missionDetailRepository.findByPlaceId(missionPlace.id).map { mission ->
+                site.honmoon.mission.dto.MissionDetailResponse(
+                    id = mission.id,
+                    title = mission.title,
+                    description = mission.description,
+                    points = mission.points,
+                    missionType = mission.missionType,
+                    placeId = mission.placeId,
+                    question = mission.question,
+                    answer = mission.answer,
+                    choices = mission.choices,
+                    answerExplanation = mission.answerExplanation,
+                    correctImageUrl = mission.correctImageUrl,
+                    imageUploadInstruction = mission.imageUploadInstruction,
+                    createdAt = mission.createdAt,
+                    modifiedAt = mission.modifiedAt
+                )
+            }
+            MissionPlaceWithMissionsResponse(
                 id = missionPlace.id,
                 name = missionPlace.name,
                 description = missionPlace.description,
@@ -83,7 +140,8 @@ class MissionPlaceService(
                 latitude = missionPlace.latitude,
                 longitude = missionPlace.longitude,
                 createdAt = missionPlace.createdAt,
-                modifiedAt = missionPlace.modifiedAt
+                modifiedAt = missionPlace.modifiedAt,
+                missions = missions
             )
         }
     }

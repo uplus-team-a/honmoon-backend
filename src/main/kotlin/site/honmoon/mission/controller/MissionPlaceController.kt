@@ -8,6 +8,7 @@ import site.honmoon.auth.security.CurrentUser
 import site.honmoon.auth.security.UserPrincipal
 import site.honmoon.common.Response
 import site.honmoon.mission.dto.MissionPlaceResponse
+import site.honmoon.mission.dto.MissionPlaceWithMissionsResponse
 import site.honmoon.mission.service.MissionPlaceService
 
 @Tag(name = "Mission Place", description = "미션 장소 관련 API")
@@ -37,7 +38,7 @@ class MissionPlaceController(
     @GetMapping
     fun getMissionPlaces(
         @CurrentUser currentUser: UserPrincipal?,
-    ): Response<List<MissionPlaceResponse>> {
+    ): Response<List<MissionPlaceWithMissionsResponse>> {
         return Response.success(missionPlaceService.getMissionPlaces())
     }
 
@@ -50,7 +51,7 @@ class MissionPlaceController(
         @Parameter(description = "검색할 장소명", example = "한강공원")
         @RequestParam title: String,
         @CurrentUser currentUser: UserPrincipal?,
-    ): Response<List<MissionPlaceResponse>> {
+    ): Response<List<MissionPlaceWithMissionsResponse>> {
         return Response.success(missionPlaceService.searchMissionPlaces(title))
     }
 
@@ -67,7 +68,7 @@ class MissionPlaceController(
         @Parameter(description = "검색 반경 (미터)", example = "1000")
         @RequestParam radius: Int = 1000,
         @CurrentUser currentUser: UserPrincipal?,
-    ): Response<List<MissionPlaceResponse>> {
+    ): Response<List<MissionPlaceWithMissionsResponse>> {
         return Response.success(missionPlaceService.getNearbyMissionPlaces(lat, lng, radius))
     }
 
