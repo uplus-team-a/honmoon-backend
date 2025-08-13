@@ -64,9 +64,8 @@ class SecurityConfig(
                 auth
                     .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                     .requestMatchers(
-                        "/api/auth/google/url",
-                        "/api/auth/google/callback",
-                        "/api/auth/google/exchange",
+                        "/api/auth/google/**",
+                        "/auth/google/**",
                         "/api/auth/signup/email",
                         "/api/auth/login/email/by-user",
                         "/api/auth/login/email/password",
