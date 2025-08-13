@@ -1,32 +1,20 @@
-### 0) Basic 인증으로 테스트용 세션 토큰 발급
-POST {{host}}/api/auth/test-token
+### 0) 변수 설정 및 내 user_id 확인
+@userId={{userId}}
+@basicAuth={{basicAuth}}
+
+GET {{host}}/api/users/me
 Accept: application/json
-Authorization: {{basicToken}}
+Authorization: {{basicAuth}}
 
 > {%
-client.test("Basic 테스트 토큰 발급 - 200", () => {
-  client.assert(response.status === 200, "Status must be 200 OK");
-  client.assert(!!response.body.data.token, "token must exist");
-});
-const tok = response.body.data.token;
-client.global.set("token", `Bearer ${tok}`);
-%}
-
-### 현재 사용자 프로필 확인(테스트 토큰)
-GET {{host}}/api/auth/me
-Accept: application/json
-Authorization: {{token}}
-
-> {%
-client.test("현재 사용자 프로필(테스트 토큰) - 200", () => {
-  client.assert(response.status === 200, "Status must be 200 OK");
-});
+  const id = response.body && response.body.data && response.body.data.id;
+  if (id) client.global.set("userId", id);
 %}
 
 ### 미션 상세 정보 조회
 GET {{host}}/api/missions/1
 Accept: application/json
-Authorization: {{token}}
+Authorization: {{basicAuth}}
 
 > {%
 client.test("미션 상세 정보 조회 - 200 또는 404", () => {
@@ -37,7 +25,7 @@ client.test("미션 상세 정보 조회 - 200 또는 404", () => {
 ### 미션 상세 정보 조회 (별칭)
 GET {{host}}/api/missions/1/detail
 Accept: application/json
-Authorization: {{token}}
+Authorization: {{basicAuth}}
 
 > {%
 client.test("미션 상세 정보 조회(별칭) - 200 또는 404", () => {
@@ -48,7 +36,7 @@ client.test("미션 상세 정보 조회(별칭) - 200 또는 404", () => {
 ### 미션 장소 상세 조회
 GET {{host}}/api/mission-places/1
 Accept: application/json
-Authorization: {{token}}
+Authorization: {{basicAuth}}
 
 > {%
 client.test("미션 장소 상세 조회 - 200 또는 404", () => {
@@ -59,7 +47,7 @@ client.test("미션 장소 상세 조회 - 200 또는 404", () => {
 ### 미션 장소 목록 조회 (미션 상세 포함)
 GET {{host}}/api/mission-places
 Accept: application/json
-Authorization: {{token}}
+Authorization: {{basicAuth}}
 
 > {%
 client.test("미션 장소 목록 조회 - 200", () => {
@@ -70,7 +58,7 @@ client.test("미션 장소 목록 조회 - 200", () => {
 ### 미션 장소 검색 (미션 상세 포함)
 GET {{host}}/api/mission-places/search?title=한강
 Accept: application/json
-Authorization: {{token}}
+Authorization: {{basicAuth}}
 
 > {%
 client.test("미션 장소 검색 - 200", () => {
@@ -81,7 +69,7 @@ client.test("미션 장소 검색 - 200", () => {
 ### 근처 미션 장소 조회 (미션 상세 포함)
 GET {{host}}/api/mission-places/nearby?lat=37.5665&lng=126.9780&radius=1000
 Accept: application/json
-Authorization: {{token}}
+Authorization: {{basicAuth}}
 
 > {%
 client.test("근처 미션 장소 조회 - 200", () => {
@@ -92,7 +80,7 @@ client.test("근처 미션 장소 조회 - 200", () => {
 ### 미션 장소별 미션 목록 조회 (상세 포함)
 GET {{host}}/api/mission-places/1/missions
 Accept: application/json
-Authorization: {{token}}
+Authorization: {{basicAuth}}
 
 > {%
 client.test("미션 장소별 미션 목록 조회(상세) - 200", () => {
@@ -104,7 +92,7 @@ client.test("미션 장소별 미션 목록 조회(상세) - 200", () => {
 POST {{host}}/api/missions/1/submit-answer
 Content-Type: application/json
 Accept: application/json
-Authorization: {{token}}
+Authorization: {{basicAuth}}
 
 {
   "answer": "서울"
@@ -123,7 +111,7 @@ client.test("미션 답변 제출 - 200", () => {
 POST {{host}}/api/missions/1/submit-answer
 Content-Type: application/json
 Accept: application/json
-Authorization: {{token}}
+Authorization: {{basicAuth}}
 
 {
   "answer": "부산"
@@ -142,7 +130,7 @@ client.test("미션 답변 제출 오답 - 200", () => {
 POST {{host}}/api/missions/1/submit-image-answer
 Content-Type: application/json
 Accept: application/json
-Authorization: {{token}}
+Authorization: {{basicAuth}}
 
 {
   "imageUrl": "https://storage.googleapis.com/{{bucket}}/missions/{{missionFileName}}"
@@ -160,7 +148,7 @@ client.test("미션 이미지 답변 제출 - 200", () => {
 ### 미션 퀴즈 답변 제출(통합)
 POST {{host}}/api/missions/1/submit-quiz?textAnswer=정답
 Accept: application/json
-Authorization: {{token}}
+Authorization: {{basicAuth}}
 
 > {%
 client.test("미션 퀴즈 답변 제출(통합) - 200", () => {
@@ -172,7 +160,7 @@ client.test("미션 퀴즈 답변 제출(통합) - 200", () => {
 ### PLACE_VISIT 미션 완료 (입력 없이 호출만으로 완료)
 POST {{host}}/api/missions/23/submit-quiz
 Accept: application/json
-Authorization: {{token}}
+Authorization: {{basicAuth}}
 
 > {%
 client.test("PLACE_VISIT 완료 - 200", () => {
@@ -183,7 +171,7 @@ client.test("PLACE_VISIT 완료 - 200", () => {
 ### PHOTO_UPLOAD 미션 완료 (이미지 URL)
 POST {{host}}/api/missions/27/submit-quiz?uploadedImageUrl=https://example.com/sample.jpg
 Accept: application/json
-Authorization: {{token}}
+Authorization: {{basicAuth}}
 
 > {%
 client.test("PHOTO_UPLOAD 완료 - 200", () => {
@@ -194,7 +182,7 @@ client.test("PHOTO_UPLOAD 완료 - 200", () => {
 ### SURVEY 미션 완료 (텍스트 응답)
 POST {{host}}/api/missions/29/submit-quiz?textAnswer=아주%20만족
 Accept: application/json
-Authorization: {{token}}
+Authorization: {{basicAuth}}
 
 > {%
 client.test("SURVEY 완료 - 200", () => {
@@ -205,7 +193,7 @@ client.test("SURVEY 완료 - 200", () => {
 ### 미션 퀴즈 답변 제출(내 계정)
 POST {{host}}/api/missions/1/submit-quiz/me?textAnswer=정답
 Accept: application/json
-Authorization: {{token}}
+Authorization: {{basicAuth}}
 
 > {%
 client.test("미션 퀴즈 답변 제출(내 계정) - 200", () => {
@@ -217,7 +205,7 @@ client.test("미션 퀴즈 답변 제출(내 계정) - 200", () => {
 ### QUIZ_TEXT_INPUT 예시
 POST {{host}}/api/missions/9/submit-quiz?textAnswer=서울
 Accept: application/json
-Authorization: {{token}}
+Authorization: {{basicAuth}}
 
 > {%
 client.test("QUIZ_TEXT_INPUT - 200", () => {
@@ -229,7 +217,7 @@ client.test("QUIZ_TEXT_INPUT - 200", () => {
 ### QUIZ_MULTIPLE_CHOICE 예시 (선택지 인덱스)
 POST {{host}}/api/missions/1/submit-quiz?selectedChoiceIndex=1
 Accept: application/json
-Authorization: {{token}}
+Authorization: {{basicAuth}}
 
 > {%
 client.test("QUIZ_MULTIPLE_CHOICE - 200", () => {
@@ -241,7 +229,7 @@ client.test("QUIZ_MULTIPLE_CHOICE - 200", () => {
 ### QUIZ_IMAGE_UPLOAD 예시 (통합 엔드포인트)
 POST {{host}}/api/missions/15/submit-quiz?uploadedImageUrl=https://storage.googleapis.com/{{bucket}}/missions/sample.jpg
 Accept: application/json
-Authorization: {{token}}
+Authorization: {{basicAuth}}
 
 > {%
 client.test("QUIZ_IMAGE_UPLOAD(통합) - 200", () => {
@@ -253,10 +241,55 @@ client.test("QUIZ_IMAGE_UPLOAD(통합) - 200", () => {
 ### 미션 이미지 업로드 URL 발급
 POST {{host}}/api/missions/1/image/upload-url?fileName=mission.jpg
 Accept: application/json
-Authorization: {{token}}
+Authorization: {{basicAuth}}
 
 > {%
 client.test("미션 이미지 업로드 URL 발급 - 200", () => {
   client.assert(response.status === 200, "Status must be 200 OK");
 });
 %} 
+
+######
+
+GET https://www.honmoon.site/api/mission-places
+Authorization: Basic aml3b25kZXY6aml3b25kZXY=
+accept: */*
+accept-language: ko,ko-KR;q=0.9,en;q=0.8
+authorization: Basic aml3b25kZXY6aml3b25kZXY=
+cache-control: no-cache
+dnt: 1
+pragma: no-cache
+priority: u=1, i
+referer: https://www.honmoon.site/
+sec-ch-ua: "Not;A=Brand";v="99", "Google Chrome";v="139", "Chromium";v="139"
+sec-ch-ua-mobile: ?0
+sec-ch-ua-platform: "macOS"
+sec-fetch-dest: empty
+sec-fetch-mode: cors
+sec-fetch-site: same-origin
+user-agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36
+Content-Type: application/json
+
+###
+
+# curl 'https://www.honmoon-api.site/api/mission-places'
+#  -H 'sec-ch-ua-platform: "macOS"'
+#  -H 'Authorization: Basic aml3b25kZXY6aml3b25kZXY='
+#  -H 'Referer: http://localhost:3000/'
+#  -H 'sec-ch-ua: "Not;A=Brand";v="99", "Google Chrome";v="139", "Chromium";v="139"'
+#  -H 'sec-ch-ua-mobile: ?0'
+#  -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36'
+#  -H 'DNT: 1'
+#  -H 'Content-Type: application/json'
+GET https://www.honmoon-api.site/api/mission-places
+sec-ch-ua-platform: "macOS"
+Authorization: Basic aml3b25kZXY6aml3b25kZXY=
+Referer: http://localhost:3000/
+sec-ch-ua: "Not;A=Brand";v="99", "Google Chrome";v="139", "Chromium";v="139"
+sec-ch-ua-mobile: ?0
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36
+DNT: 1
+Content-Type: application/json
+
+###
+

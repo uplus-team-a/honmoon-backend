@@ -1,54 +1,15 @@
 # Honmoon API 가이드
 
-## 인증
+## 인증 (Basic Auth 전용)
 
-### 1. 테스트 토큰 (개발용)
-
-```bash
-POST /api/auth/test-token
-Authorization: Basic {basicToken}
-```
-
-### 2. 이메일 매직 링크
+- 모든 보호된 API는 Basic 인증을 사용합니다.
+- username: 사용자 UUID (`users.id`), password: `jiwondev`
+- 예시 Authorization 헤더 값 만들기: `echo -n "{userId}:jiwondev" | base64`
 
 ```bash
-# 회원가입 (redirectUrl은 선택사항, 기본값: https://honmoon.site)
-POST /api/auth/signup/email?redirectUrl=https://honmoon.site/auth/success
-Body: {"email": "...", "name": "..."}
-
-# 로그인 (redirectUrl은 선택사항, 기본값: https://honmoon.site)
-POST /api/auth/login/email/by-user?redirectUrl=https://honmoon.site/dashboard
-Body: {"userId": "..."}
-
-# 콜백(옵션 A: 302 리다이렉트)
-GET /api/auth/email/callback?token=...&purpose=signup|login&redirectUrl=...
-
-# 교환(옵션 B: JSON 교환)
-POST /api/auth/email/exchange
-Body: {"token": "...", "purpose": "signup|login"}
-```
-
-### 3. Google OAuth (서버 주도, 프론트 콜백 지정 가능)
-
-```bash
-# 1) 인증 URL 발급: redirectAfter(최종 이동 경로), frontendCallbackUrl(프론트 콜백) 지정
-GET /api/auth/google/url?scope=openid%20email%20profile&redirectAfter=/my-profile&frontendCallbackUrl=https://honmoon.site/auth/google/callback
-
-# 2) 구글 → 서버 콜백 → 프론트 콜백으로 302 리다이렉트 (code/state/redirectAfter 전달)
-GET /api/auth/google/callback?code=...&state=...
-
-# 3) 프론트 콜백에서 code/state를 서버로 교환하여 세션 발급
-POST /api/auth/google/exchange
-Body: {"code": "...", "state": "..."}
-```
-
-### 4. 현재 사용자 확인 & 로그아웃 + 이메일/비밀번호
-
-```bash
-GET /api/auth/me
-POST /api/auth/logout
-POST /api/auth/login/email/password                  # 이메일/비번 로그인 → 세션 토큰 발급
-POST /api/auth/password/set                          # (세션) 비밀번호 설정/변경
+# 내 프로필 조회 (예시)
+curl -H "Authorization: Basic {base64(userId:jiwondev)}" \
+  https://www.honmoon-api.site/api/users/me
 ```
 
 ## 미션
@@ -122,7 +83,7 @@ GET /api/user-activities/{id}                       # 활동 상세
 GET /api/user-activities/me                         # 내 활동 목록
 GET /api/user-activities/place/{placeId}            # 장소별 활동 목록
 GET /api/user-activities/me/recent?limit=10         # 내 최근 활동
-POST /api/user-activities?placeId=...&description=...  # 활동 기록 생성 (세션 사용자 기준)
+POST /api/user-activities?placeId=...&description=...  # 활동 기록 생성 (인증 사용자 기준)
 ```
 
 ## 퀴즈 제출
@@ -177,7 +138,7 @@ POST /api/missions/{missionId}/image/upload-url?fileName=...  # 미션 이미지
 
 ## 공통 사항
 
-- 모든 보호된 API는 `Authorization: Bearer {token}` 헤더 필요
+- 모든 보호된 API는 `Authorization: Basic base64(userId:jiwondev)` 헤더 필요
 - API 응답 형식: `{"success": true/false, "data": {...}}`
 - Swagger UI: `/swagger-ui/index.html`
 - OpenAPI: `/v3/api-docs`

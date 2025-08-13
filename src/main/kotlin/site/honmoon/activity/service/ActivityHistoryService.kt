@@ -320,8 +320,6 @@ class UserActivityService(
                 // 별도 입력 필요 없음
             }
 
-            else -> {
-            }
         }
     }
 
@@ -345,7 +343,8 @@ class UserActivityService(
             QUIZ_IMAGE_UPLOAD -> {
                 val imageUrl = uploadedImageUrl ?: return Pair(false, null)
                 val analysis = fallbackAIService.analyzeImage(imageUrl)
-                val result: AnswerCheckResult = fallbackAIService.checkImageAnswer(missionDetail, analysis.extractedText)
+                val result: AnswerCheckResult =
+                    fallbackAIService.checkImageAnswer(missionDetail, analysis.extractedText)
                 Pair(result.isCorrect && result.confidence >= 0.5, result.copy(extractedText = analysis.extractedText))
             }
 
@@ -364,7 +363,6 @@ class UserActivityService(
                 Pair(true, AnswerCheckResult(true, 1.0, "장소 방문 완료"))
             }
 
-            else -> Pair(false, null)
         }
     }
 } 

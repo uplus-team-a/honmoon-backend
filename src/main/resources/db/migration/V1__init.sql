@@ -171,7 +171,7 @@ create table if not exists users
     is_active         boolean                  default true
 );
 
-
+ 
 create table if not exists app_session
 (
 
@@ -196,4 +196,5 @@ create table if not exists magic_link_token
 );
 
 create index if not exists idx_magic_link_token_expires_at on magic_link_token (expires_at);
+
 

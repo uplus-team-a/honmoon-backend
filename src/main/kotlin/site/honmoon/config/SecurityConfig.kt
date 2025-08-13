@@ -3,37 +3,32 @@ package site.honmoon.config
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.http.HttpMethod
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
-import org.springframework.http.HttpMethod
 import org.springframework.security.core.userdetails.User
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
-import org.springframework.security.provisioning.InMemoryUserDetailsManager
 import org.springframework.security.web.SecurityFilterChain
-import org.springframework.security.web.context.SecurityContextHolderFilter
 import org.springframework.security.web.firewall.HttpStatusRequestRejectedHandler
 import org.springframework.security.web.firewall.RequestRejectedHandler
-import org.springframework.web.servlet.HandlerExceptionResolver
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.CorsConfigurationSource
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
+import org.springframework.web.servlet.HandlerExceptionResolver
 import site.honmoon.auth.security.SecurityExceptionHandlerDelegator
 import site.honmoon.auth.security.SecurityRoles
-import site.honmoon.auth.security.SessionAuthService
-import site.honmoon.auth.security.TokenAuthenticationFilter
+
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
 class SecurityConfig(
-    private val sessionAuthService: SessionAuthService,
     private val handlerExceptionResolver: HandlerExceptionResolver,
-    @Value("\${BASIC_AUTH_USERNAME}") private val basicUsername: String,
-    @Value("\${BASIC_AUTH_PASSWORD}") private val basicPassword: String,
+    @Value("\${BASIC_AUTH_PASSWORD:jiwondev}") private val basicPassword: String,
 ) {
 
     @Bean
@@ -41,11 +36,14 @@ class SecurityConfig(
 
     @Bean
     fun userDetailsService(passwordEncoder: PasswordEncoder): UserDetailsService {
-        val user = User.withUsername(basicUsername)
-            .password(passwordEncoder.encode(basicPassword))
-            .roles(SecurityRoles.ADMIN, SecurityRoles.USER)
-            .build()
-        return InMemoryUserDetailsManager(user)
+        val encoded = passwordEncoder.encode(basicPassword)
+        return UserDetailsService { username: String ->
+            // 모든 username(UUID 예상)을 허용하고 고정 비밀번호로 검증
+            User.withUsername(username)
+                .password(encoded)
+                .roles(SecurityRoles.USER)
+                .build()
+        }
     }
 
     @Bean
@@ -64,27 +62,14 @@ class SecurityConfig(
                 auth
                     .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                     .requestMatchers(
-                        "/api/auth/google/url",
-                        "/api/auth/google/callback",
-                        "/api/auth/google/exchange",
-                        "/api/auth/signup/email",
-                        "/api/auth/login/email/by-user",
-                        "/api/auth/login/email/password",
-                        "/api/auth/email/callback",
-                        "/api/auth/email/exchange",
                         "/v3/api-docs/**",
                         "/swagger-ui/**",
                         "/actuator/health",
                         "/favicon.ico"
                     ).permitAll()
-                    .requestMatchers("/api/auth/test-token").hasRole(SecurityRoles.ADMIN)
                     .anyRequest().hasRole(SecurityRoles.USER)
             }
             .httpBasic { }
-            .addFilterAfter(
-                TokenAuthenticationFilter(sessionAuthService, handlerExceptionResolver),
-                SecurityContextHolderFilter::class.java
-            )
         return http.build()
     }
 

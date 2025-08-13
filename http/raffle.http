@@ -1,7 +1,7 @@
 ### 0) Basic 인증으로 테스트용 세션 토큰 발급
 POST {{host}}/api/auth/test-token
 Accept: application/json
-Authorization: {{basicToken}}
+Authorization: {{basicAuth}}
 
 > {%
 client.test("Basic 테스트 토큰 발급 - 200", () => {
@@ -15,7 +15,7 @@ client.global.set("token", `Bearer ${tok}`);
 ### 현재 사용자 프로필 확인(테스트 토큰)
 GET {{host}}/api/auth/me
 Accept: application/json
-Authorization: {{token}}
+Authorization: {{basicAuth}}
 
 > {%
 client.test("현재 사용자 프로필(테스트 토큰) - 200", () => {
@@ -26,7 +26,7 @@ client.test("현재 사용자 프로필(테스트 토큰) - 200", () => {
 ### 래플 상품 상세 조회
 GET {{host}}/api/raffle-products/1
 Accept: application/json
-Authorization: {{token}}
+Authorization: {{basicAuth}}
 
 > {%
 client.test("래플 상품 상세 조회 - 200 또는 404", () => {
@@ -37,7 +37,7 @@ client.test("래플 상품 상세 조회 - 200 또는 404", () => {
 ### 래플 상품 목록 조회
 GET {{host}}/api/raffle-products
 Accept: application/json
-Authorization: {{token}}
+Authorization: {{basicAuth}}
 
 > {%
 client.test("래플 상품 목록 조회 - 200", () => {
@@ -48,7 +48,7 @@ client.test("래플 상품 목록 조회 - 200", () => {
 ### 래플 상품 검색
 GET {{host}}/api/raffle-products/search?name=아이폰
 Accept: application/json
-Authorization: {{token}}
+Authorization: {{basicAuth}}
 
 > {%
 client.test("래플 상품 검색 - 200", () => {
@@ -59,7 +59,7 @@ client.test("래플 상품 검색 - 200", () => {
 ### 포인트별 래플 상품 조회
 GET {{host}}/api/raffle-products/by-points?minPoints=100&maxPoints=1000
 Accept: application/json
-Authorization: {{token}}
+Authorization: {{basicAuth}}
 
 > {%
 client.test("포인트별 래플 상품 조회 - 200", () => {
@@ -70,7 +70,7 @@ client.test("포인트별 래플 상품 조회 - 200", () => {
 ### 래플 상품 응모자 수 조회
 GET {{host}}/api/raffle-products/1/applicants-count
 Accept: application/json
-Authorization: {{token}}
+Authorization: {{basicAuth}}
 
 > {%
 client.test("래플 상품 응모자 수 조회 - 200", () => {
@@ -81,7 +81,7 @@ client.test("래플 상품 응모자 수 조회 - 200", () => {
 ### 래플 응모 상세 조회
 GET {{host}}/api/raffle-applications/1
 Accept: application/json
-Authorization: {{token}}
+Authorization: {{basicAuth}}
 
 > {%
 client.test("래플 응모 상세 조회 - 200 또는 404", () => {
@@ -92,7 +92,7 @@ client.test("래플 응모 상세 조회 - 200 또는 404", () => {
 ### 내 래플 응모 내역 조회
 GET {{host}}/api/raffle-applications/me
 Accept: application/json
-Authorization: {{token}}
+Authorization: {{basicAuth}}
 
 > {%
 client.test("내 래플 응모 내역 조회 - 200", () => {
@@ -103,7 +103,7 @@ client.test("내 래플 응모 내역 조회 - 200", () => {
 ### 래플 상품별 응모자 목록 조회
 GET {{host}}/api/raffle-applications/product/1
 Accept: application/json
-Authorization: {{token}}
+Authorization: {{basicAuth}}
 
 > {%
 client.test("래플 상품별 응모자 목록 조회 - 200", () => {
@@ -114,7 +114,7 @@ client.test("래플 상품별 응모자 목록 조회 - 200", () => {
 ### 래플 응모 (성공/중복/포인트부족 모두 200)
 POST {{host}}/api/raffle-applications?raffleProductId=1
 Accept: application/json
-Authorization: {{token}}
+Authorization: {{basicAuth}}
 
 > {%
 client.test("래플 응모 - 200", () => {
@@ -125,7 +125,7 @@ client.test("래플 응모 - 200", () => {
 ### 래플 당첨자 선정
 POST {{host}}/api/raffle-applications/1/draw?winnerCount=1
 Accept: application/json
-Authorization: {{token}}
+Authorization: {{basicAuth}}
 
 > {%
 client.test("래플 당첨자 선정 - 200", () => {
@@ -136,7 +136,7 @@ client.test("래플 당첨자 선정 - 200", () => {
 ### 내 응모 상태 조회
 GET {{host}}/api/raffle-applications/me/product/1
 Accept: application/json
-Authorization: {{token}}
+Authorization: {{basicAuth}}
 
 > {%
 client.test("내 응모 상태 조회 - 200", () => {
@@ -147,7 +147,7 @@ client.test("내 응모 상태 조회 - 200", () => {
 ### 내 래플 응모 내역 조회
 GET {{host}}/api/raffle-applications/me
 Accept: application/json
-Authorization: {{token}}
+Authorization: {{basicAuth}}
 
 > {%
 client.test("내 래플 응모 내역 조회 - 200", () => {
@@ -158,7 +158,7 @@ client.test("내 래플 응모 내역 조회 - 200", () => {
 ### 내 래플 응모 (성공/중복/포인트부족 모두 200)
 POST {{host}}/api/raffle-applications/me?raffleProductId=1
 Accept: application/json
-Authorization: {{token}}
+Authorization: {{basicAuth}}
 
 > {%
 client.test("내 래플 응모 - 200", () => {
@@ -169,7 +169,7 @@ client.test("내 래플 응모 - 200", () => {
 ### 내 응모 상태 조회
 GET {{host}}/api/raffle-applications/me/product/1
 Accept: application/json
-Authorization: {{token}}
+Authorization: {{basicAuth}}
 
 > {%
 client.test("내 응모 상태 조회 - 200", () => {

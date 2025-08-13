@@ -1,7 +1,7 @@
 ### 0) Basic 인증으로 테스트용 세션 토큰 발급
 POST {{host}}/api/auth/test-token
 Accept: application/json
-Authorization: {{basicToken}}
+Authorization: {{basicAuth}}
 
 > {%
     client.test("Basic 테스트 토큰 발급 - 200", () => {
@@ -15,7 +15,7 @@ Authorization: {{basicToken}}
 ### 현재 사용자 프로필 확인(테스트 토큰)
 GET {{host}}/api/auth/me
 Accept: application/json
-Authorization: {{token}}
+Authorization: {{basicAuth}}
 
 > {%
     client.test("현재 사용자 프로필(테스트 토큰) - 200", () => {
@@ -27,7 +27,7 @@ Authorization: {{token}}
 ### 활동 내역 상세 조회
 GET {{host}}/api/user-activities/1
 Accept: application/json
-Authorization: {{token}}
+Authorization: {{basicAuth}}
 
 > {%
     client.test("활동 내역 상세 조회 - 200 또는 404", () => {
@@ -38,7 +38,7 @@ Authorization: {{token}}
 ### 장소별 활동 내역 조회
 GET {{host}}/api/user-activities/place/{{placeId}}
 Accept: application/json
-Authorization: {{token}}
+Authorization: {{basicAuth}}
 
 > {%
     client.test("장소별 활동 내역 조회 - 200", () => {
@@ -49,7 +49,7 @@ Authorization: {{token}}
 ### 활동 기록 생성
 POST {{host}}/api/user-activities?placeId={{placeId}}&description=한강공원에서%20산책
 Accept: application/json
-Authorization: {{token}}
+Authorization: {{basicAuth}}
 
 > {%
     client.test("활동 기록 생성 - 200", () => {
@@ -60,7 +60,7 @@ Authorization: {{token}}
 ### 내 활동 내역 조회
 GET {{host}}/api/user-activities/me
 Accept: application/json
-Authorization: {{token}}
+Authorization: {{basicAuth}}
 
 > {%
     client.test("내 활동 내역 조회 - 200", () => {
@@ -71,7 +71,7 @@ Authorization: {{token}}
 ### 내 최근 활동 조회 (프로필 요약으로 대체)
 GET {{host}}/api/users/me/profile/summary
 Accept: application/json
-Authorization: {{token}}
+Authorization: {{basicAuth}}
 
 > {%
     client.test("내 최근 활동 조회 - 200", () => {

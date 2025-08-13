@@ -2,6 +2,7 @@ package site.honmoon.config
 
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.MethodParameter
+import org.springframework.http.HttpStatus
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.context.request.NativeWebRequest
 import org.springframework.web.method.support.HandlerMethodArgumentResolver
@@ -35,7 +36,7 @@ class WebMvcConfig(
 
 /**
  * 컨트롤러 파라미터의 `@CurrentUser UserPrincipal`을 SecurityContext에서 주입한다.
- * Basic 인증의 Principal도 통일된 `UserPrincipal`로 변환한다.
+ * Basic 인증의 username은 `user_id`(UUID) 여야 하며, DB 조회 결과가 없으면 401을 반환한다.
  */
 class CurrentUserArgumentResolver(
     private val usersRepository: UsersRepository,
@@ -60,32 +61,29 @@ class CurrentUserArgumentResolver(
         return when (p) {
             is UserPrincipal -> p
 
-            is org.springframework.security.core.userdetails.User -> {
-                loadPrincipalFromRepository(p.username, roles)
-                    ?: UserPrincipal(
-                        subject = p.username,
-                        email = p.username.takeIf { it.contains("@") },
-                        name = p.username,
-                        picture = null,
-                        provider = "basic",
-                        roles = roles,
-                    )
-            }
+            is org.springframework.security.core.userdetails.User -> requireAndLoadPrincipal(p.username, roles)
 
-            is String -> {
-                loadPrincipalFromRepository(p, roles)
-                    ?: UserPrincipal(
-                        subject = p,
-                        email = p.takeIf { it.contains("@") },
-                        name = p,
-                        picture = null,
-                        provider = "basic",
-                        roles = roles,
-                    )
-            }
+            is String -> requireAndLoadPrincipal(p, roles)
 
             else -> null
         }
+    }
+
+    private fun requireAndLoadPrincipal(subject: String, roles: Set<String>): UserPrincipal {
+        val uuid = runCatching { UUID.fromString(subject) }.getOrNull()
+            ?: throw org.springframework.web.server.ResponseStatusException(HttpStatus.UNAUTHORIZED, "유효한 사용자 토큰이 필요합니다.")
+
+        val user = usersRepository.findById(uuid).orElse(null)
+            ?: throw org.springframework.web.server.ResponseStatusException(HttpStatus.UNAUTHORIZED, "사용자를 찾을 수 없습니다.")
+
+        return UserPrincipal(
+            subject = user.id.toString(),
+            email = user.email,
+            name = user.nickname ?: user.email ?: user.id.toString(),
+            picture = user.profileImageUrl,
+            provider = "basic",
+            roles = roles,
+        )
     }
 
     private fun loadPrincipalFromRepository(subjectOrEmail: String, roles: Set<String>): UserPrincipal? {

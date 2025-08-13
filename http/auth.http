@@ -1,12 +1,12 @@
 ### 0) 변수 설정(필요 시)
 @signupEmail=sylvester7412@gmail.com
 @signupName=지원
-@basicAuth={{basicToken}}
+@basicAuth={{basicAuth}}
 
 ### 1) Basic 인증으로 테스트용 세션 토큰 발급
 POST {{host}}/api/auth/test-token
 Accept: application/json
-Authorization: {{basicToken}}
+Authorization: {{basicAuth}}
 
 > {%
     client.test("Basic 테스트 토큰 발급 - 200", () => {
@@ -20,7 +20,7 @@ Authorization: {{basicToken}}
 ### 1-1) 현재 사용자 프로필 확인(테스트 토큰)
 GET {{host}}/api/auth/me
 Accept: application/json
-Authorization: {{token}}
+Authorization: {{basicAuth}}
 
 > {%
     client.test("현재 사용자 프로필(테스트 토큰) - 200", () => {
@@ -30,7 +30,7 @@ Authorization: {{token}}
 %}
 
 ### 2) 회원가입: 이메일 매직 링크 발급
-POST {{host}}/api/auth/signup/email?redirectUrl=https://honmoon.site/auth/success
+POST {{host}}/api/auth/signup/email?redirectUrl=https://www.honmoon.site/auth/success
 Content-Type: application/json
 
 {
@@ -52,7 +52,7 @@ Content-Type: application/json
 %}
 
 ### 3) 회원가입: 백엔드 콜백 검증 → 세션 토큰 발급(302 Location 해시)
-GET {{host}}/api/auth/email/callback?token={{signupToken}}&purpose=signup&redirectUrl=https://honmoon.site/auth/success
+GET {{host}}/api/auth/email/callback?token={{signupToken}}&purpose=signup&redirectUrl=https://www.honmoon.site/auth/success
 Accept: application/json
 
 > {%
@@ -93,7 +93,7 @@ Content-Type: application/json
 ### 4) 회원가입 직후: 현재 사용자 프로필 확인
 GET {{host}}/api/auth/me
 Accept: application/json
-Authorization: {{token}}
+Authorization: {{basicAuth}}
 
 > {%
     client.test("현재 사용자 프로필 - 200", () => {
@@ -103,7 +103,7 @@ Authorization: {{token}}
 %}
 
 ### 5) 로그인: 사용자ID로 매직 링크 발급(사전 확보된 userId 필요)
-POST {{host}}/api/auth/login/email/by-user?redirectUrl=https://honmoon.site/dashboard
+POST {{host}}/api/auth/login/email/by-user?redirectUrl=https://www.honmoon.site/dashboard
 Content-Type: application/json
 
 {
@@ -124,7 +124,7 @@ Content-Type: application/json
 %}
 
 ### 6) 로그인: 백엔드 콜백 검증 → 새 세션 토큰 발급
-GET {{host}}/api/auth/email/callback?token={{loginToken}}&purpose=login&redirectUrl=https://honmoon.site/dashboard
+GET {{host}}/api/auth/email/callback?token={{loginToken}}&purpose=login&redirectUrl=https://www.honmoon.site/dashboard
 Accept: application/json
 
 > {%
@@ -165,7 +165,7 @@ Content-Type: application/json
 ### 7) 현재 사용자 프로필 확인(로그인 후)
 GET {{host}}/api/auth/me
 Accept: application/json
-Authorization: {{token}}
+Authorization: {{basicAuth}}
 
 > {%
     client.test("현재 사용자 프로필(로그인 후) - 200", () => {
@@ -176,7 +176,7 @@ Authorization: {{token}}
 ### 8) 로그아웃
 POST {{host}}/api/auth/logout
 Accept: application/json
-Authorization: {{token}}
+Authorization: {{basicAuth}}
 
 > {%
     client.test("logout - 200", () => {
@@ -211,7 +211,7 @@ if (response.status === 200) {
 POST {{host}}/api/auth/password/set
 Content-Type: application/json
 Accept: application/json
-Authorization: {{token}}
+Authorization: {{basicAuth}}
 
 {
   "password": "newPassword1234"
@@ -224,7 +224,7 @@ client.test("비밀번호 설정/변경 - 200", () => {
 %}
 
 ### (선택) Google OAuth URL 발급 (프론트 콜백 지정)
-GET {{host}}/api/auth/google/url?scope=openid%20email%20profile&redirectAfter=%2Fmy-profile&frontendCallbackUrl=https%3A%2F%2Fhonmoon.site%2Fauth%2Fgoogle%2Fcallback
+GET {{host}}/api/auth/google/url?scope=openid%20email%20profile&redirectAfter=%2Fmy-profile&frontendCallbackUrl=https%3A%2F%2Fwww.honmoon.site%2Fauth%2Fgoogle%2Fcallback
 Accept: application/json
 
 > {%

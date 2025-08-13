@@ -26,7 +26,7 @@ class UserController(
 
     @Operation(
         summary = "내 정보 조회",
-        description = "현재 로그인한 사용자의 프로필을 조회합니다. Authorization: Bearer 토큰 필요.",
+        description = "현재 로그인한 사용자의 프로필을 조회합니다. Basic 인증 필요 (username: user_id(UUID), password: jiwondev).",
         responses = [ApiResponse(responseCode = "200", description = "성공")]
     )
     @GetMapping("/me")

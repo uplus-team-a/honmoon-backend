@@ -234,48 +234,7 @@ class UserService(
         return savedUser
     }
 
-    /**
-     * Google OAuth 로그인 시 사용자 정보를 기반으로 회원을 조회하거나 새로 생성한다.
-     */
-    @Transactional
-    fun getOrCreateUserFromGoogle(
-        googleSub: String,
-        email: String?,
-        name: String?,
-        pictureUrl: String?,
-    ): Users {
-        val existing = email?.takeIf { it.isNotBlank() }?.let { usersRepository.findByEmail(it) }
-        if (existing != null) {
-            val nickname = name?.takeIf { it.isNotBlank() }
-            if (nickname != null && existing.nickname != nickname) {
-                existing.nickname = nickname
-            }
-            return usersRepository.save(existing)
-        }
-
-        val welcome = Constant.WELCOME_POINTS_DEFAULT
-        val newUser = Users(
-            id = UUID.randomUUID(),
-            email = email,
-            nickname = name,
-            totalPoints = welcome,
-            totalActivities = 0,
-            profileImageUrl = pictureUrl,
-            isActive = true,
-        )
-        val savedUser = usersRepository.save(newUser)
-
-        if (welcome > 0) {
-            val ph = PointHistory(
-                userId = savedUser.id,
-                points = welcome,
-                description = "웰컴 포인트 지급",
-            )
-            pointHistoryRepository.save(ph)
-        }
-        
-        return savedUser
-    }
+    
 
     /**
      * 프로필 이미지를 업데이트한다.
