@@ -293,3 +293,42 @@ Content-Type: application/json
 
 ###
 
+# curl 'https://www.honmoon-api.site/api/mission-places'
+#  -H 'accept: */*'
+#  -H 'accept-language: ko,ko-KR;q=0.9,en;q=0.8'
+#  -H 'authorization: Basic aml3b25kZXY6aml3b25kZXY='
+#  -H 'cache-control: no-cache'
+#  -H 'content-type: application/json'
+#  -H 'dnt: 1'
+#  -H 'origin: http://localhost:3000'
+#  -H 'pragma: no-cache'
+#  -H 'priority: u=1, i'
+#  -H 'referer: http://localhost:3000/'
+#  -H 'sec-ch-ua: "Not;A=Brand";v="99", "Google Chrome";v="139", "Chromium";v="139"'
+#  -H 'sec-ch-ua-mobile: ?0'
+#  -H 'sec-ch-ua-platform: "macOS"'
+#  -H 'sec-fetch-dest: empty'
+#  -H 'sec-fetch-mode: cors'
+#  -H 'sec-fetch-site: cross-site'
+#  -H 'user-agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36'
+GET {{host}}/api/mission-places
+accept: */*
+accept-language: ko,ko-KR;q=0.9,en;q=0.8
+authorization: Basic aml3b25kZXY6aml3b25kZXY=
+cache-control: no-cache
+dnt: 1
+origin: http://localhost:3000
+pragma: no-cache
+priority: u=1, i
+referer: http://localhost:3000/
+sec-ch-ua: "Not;A=Brand";v="99", "Google Chrome";v="139", "Chromium";v="139"
+sec-ch-ua-mobile: ?0
+sec-ch-ua-platform: "macOS"
+sec-fetch-dest: empty
+sec-fetch-mode: cors
+sec-fetch-site: cross-site
+user-agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36
+Content-Type: application/json
+
+###
+

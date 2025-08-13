@@ -61,6 +61,16 @@ class SecurityConfig(
             .authorizeHttpRequests { auth ->
                 auth
                     .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                    .requestMatchers(HttpMethod.GET,
+                        "/api/mission-places",
+                        "/api/mission-places/**",
+                        "/api/missions",
+                        "/api/missions/**",
+                        "/api/raffle-products",
+                        "/api/raffle-products/**",
+                        "/api/user-activities/*",
+                        "/api/user-activities/place/**",
+                    ).permitAll()
                     .requestMatchers(
                         "/v3/api-docs/**",
                         "/swagger-ui/**",

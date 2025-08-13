@@ -39,7 +39,7 @@ Authorization: {{basicAuth}}
 ### 내 프로필(간략)
 GET {{host}}/api/users/me/profile/summary
 Accept: application/json
-Authorization: {{basicAuth}}
+Authorization: Basic YTUxODljMzgtZmJlMi00MzczLWJmNmItZDA0ZWE4ZjJhNjgzOmppd29uZGV2
 
 > {%
     client.test("내 프로필(간략) - 200", () => {
