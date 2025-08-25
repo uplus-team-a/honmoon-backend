@@ -4,12 +4,12 @@ Accept: application/json
 Authorization: {{basicAuth}}
 
 > {%
-client.test("Basic 테스트 토큰 발급 - 200", () => {
-  client.assert(response.status === 200, "Status must be 200 OK");
-  client.assert(!!response.body.data.token, "token must exist");
-});
-const tok = response.body.data.token;
-client.global.set("token", `Bearer ${tok}`);
+    client.test("Basic 테스트 토큰 발급 - 200", () => {
+        client.assert(response.status === 200, "Status must be 200 OK");
+        client.assert(!!response.body.data.token, "token must exist");
+    });
+    const tok = response.body.data.token;
+    client.global.set("token", `Bearer ${tok}`);
 %}
 
 ### 현재 사용자 프로필 확인(테스트 토큰)
@@ -50,7 +50,7 @@ Authorization: Basic YTUxODljMzgtZmJlMi00MzczLWJmNmItZDA0ZWE4ZjJhNjgzOmppd29uZGV
 ### 내 프로필(상세)
 GET {{host}}/api/users/me/profile/detail
 Accept: application/json
-Authorization: {{basicAuth}}
+Authorization: Basic YTUxODljMzgtZmJlMi00MzczLWJmNmItZDA0ZWE4ZjJhNjgzOmppd29uZGV2
 
 > {%
     client.test("내 프로필(상세) - 200", () => {
@@ -102,5 +102,43 @@ Authorization: {{basicAuth}}
     client.test("내 프로필 정보 수정 - 200", () => {
         client.assert(response.status === 200, "Status must be 200 OK");
         client.assert(response.body.data.nickname === "지원", "nickname updated");
+    });
+%}
+
+### 프로필 이미지 업로드 URL 생성
+POST {{host}}/api/images/upload-url?contentType=image/jpeg
+Accept: application/json
+Authorization: {{basicAuth}}
+
+> {%
+    client.test("프로필 이미지 업로드 URL 생성 - 200", () => {
+        client.assert(response.status === 200, "Status must be 200 OK");
+        client.assert(!!response.body.data.uploadUrl, "uploadUrl must exist");
+        client.assert(!!response.body.data.fileName, "fileName must exist");
+        client.assert(!!response.body.data.publicUrl, "publicUrl must exist");
+    });
+    const uploadUrl = response.body.data.uploadUrl;
+    const fileName = response.body.data.fileName;
+    const publicUrl = response.body.data.publicUrl;
+    client.global.set("uploadUrl", uploadUrl);
+    client.global.set("profileFileName", fileName);
+    client.global.set("profileImageUrl", publicUrl);
+%}
+
+### 내 프로필 수정 (새로운 API)
+PUT {{host}}/api/users/me/profile
+Content-Type: application/json
+Accept: application/json
+Authorization: {{basicAuth}}
+
+{
+  "nickname": "지원개발자",
+  "profileImageUrl": "{{profileImageUrl}}"
+}
+
+> {%
+    client.test("내 프로필 수정 - 200", () => {
+        client.assert(response.status === 200, "Status must be 200 OK");
+        client.assert(response.body.data.nickname === "지원개발자", "nickname updated");
     });
 %}

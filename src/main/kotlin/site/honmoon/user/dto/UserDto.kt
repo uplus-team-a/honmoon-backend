@@ -26,6 +26,11 @@ data class UpdateProfileImageRequest(
     val imageUrl: String,
 )
 
+data class UpdateProfileRequest(
+    val nickname: String?,
+    val profileImageUrl: String?,
+)
+
 data class UserProfileSummaryResponse(
     val profile: UserResponse,
     val pointsSummary: Map<String, Int>,

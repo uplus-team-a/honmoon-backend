@@ -13,12 +13,14 @@ import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import org.springframework.security.web.firewall.HttpStatusRequestRejectedHandler
 import org.springframework.security.web.firewall.RequestRejectedHandler
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.CorsConfigurationSource
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 import org.springframework.web.servlet.HandlerExceptionResolver
+import site.honmoon.auth.security.JwtAuthenticationFilter
 import site.honmoon.auth.security.SecurityExceptionHandlerDelegator
 import site.honmoon.auth.security.SecurityRoles
 
@@ -28,6 +30,7 @@ import site.honmoon.auth.security.SecurityRoles
 @EnableMethodSecurity
 class SecurityConfig(
     private val handlerExceptionResolver: HandlerExceptionResolver,
+    private val jwtAuthenticationFilter: JwtAuthenticationFilter,
     @Value("\${BASIC_AUTH_PASSWORD:jiwondev}") private val basicPassword: String,
 ) {
 
@@ -75,11 +78,15 @@ class SecurityConfig(
                         "/v3/api-docs/**",
                         "/swagger-ui/**",
                         "/actuator/health",
-                        "/favicon.ico"
+                        "/favicon.ico",
+                        "/api/auth/signup/**",
+                        "/api/auth/login",
+                        "/api/auth/verify",
                     ).permitAll()
                     .anyRequest().hasRole(SecurityRoles.USER)
             }
             .httpBasic { }
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
         return http.build()
     }
 

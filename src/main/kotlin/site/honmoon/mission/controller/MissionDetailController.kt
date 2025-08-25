@@ -7,6 +7,8 @@ import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.web.bind.annotation.*
+import site.honmoon.activity.dto.UserActivityResponse
+import site.honmoon.activity.service.UserActivityService
 import site.honmoon.auth.security.CurrentUser
 import site.honmoon.auth.security.UserPrincipal
 import site.honmoon.common.Response
@@ -19,8 +21,6 @@ import site.honmoon.mission.service.MissionDetailService
 import site.honmoon.storage.dto.PresignedUrlResponse
 import site.honmoon.storage.service.GcpStorageService
 import java.util.*
-import site.honmoon.activity.dto.UserActivityResponse
-import site.honmoon.activity.service.UserActivityService
 
 @Tag(name = "Mission Detail", description = "미션 상세 정보 관련 API")
 @RestController
@@ -109,13 +109,11 @@ class MissionDetailController(
     @PostMapping("/{id}/image/upload-url")
     fun createMissionImageUploadUrl(
         @PathVariable id: Long,
-        @RequestParam fileName: String,
         @RequestParam(required = false) contentType: String?,
         @CurrentUser currentUser: UserPrincipal,
     ): Response<PresignedUrlResponse> {
-        UUID.fromString(currentUser.subject)
-        val folder = "missions"
-        val result = gcpStorageService.generatePresignedUploadUrl(fileName, folder, contentType)
+        val userId = currentUser.subject
+        val result = gcpStorageService.generatePresignedUploadUrl(userId, contentType)
         return Response.success(result)
     }
 

@@ -19,5 +19,7 @@ data class FileListResponse(
 data class PresignedUrlResponse(
     val uploadUrl: String,
     val fileName: String,
+    val publicUrl: String,
     val expiresAt: LocalDateTime,
+    val maxFileSizeMB: Int = 5,
 ) 

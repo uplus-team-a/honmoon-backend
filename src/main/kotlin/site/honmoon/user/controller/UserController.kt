@@ -1,7 +1,6 @@
 package site.honmoon.user.controller
 
 import io.swagger.v3.oas.annotations.Operation
-import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -9,9 +8,11 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.web.bind.annotation.*
 import site.honmoon.auth.security.CurrentUser
 import site.honmoon.auth.security.UserPrincipal
+
 import site.honmoon.common.Response
-import site.honmoon.user.dto.UpdateUserRequest
 import site.honmoon.user.dto.UpdateProfileImageRequest
+import site.honmoon.user.dto.UpdateProfileRequest
+import site.honmoon.user.dto.UpdateUserRequest
 import site.honmoon.user.dto.UserResponse
 import site.honmoon.user.service.UserService
 import java.util.*
@@ -22,7 +23,7 @@ import java.util.*
 class UserController(
     private val userService: UserService,
 ) {
-    
+
 
     @Operation(
         summary = "내 정보 조회",
@@ -57,17 +58,6 @@ class UserController(
         return Response.success(userService.getUserProfileDetail(userId))
     }
 
-    // 삭제됨: 포인트/활동 개별 조회 엔드포인트
-
-    
-
-    // 삭제됨: 퀴즈/미션 통계 개별 조회 엔드포인트
-
-    
-
-    // 삭제됨: 미션 통계 개별 조회 엔드포인트
-
-    
 
     @Operation(
         summary = "내 프로필 이미지 업데이트",
@@ -88,7 +78,6 @@ class UserController(
         return Response.success(userService.updateProfileImage(userId, body.imageUrl))
     }
 
-    
 
     @Operation(
         summary = "내 프로필 업데이트",
@@ -108,4 +97,24 @@ class UserController(
         val userId = UUID.fromString(currentUser.subject)
         return Response.success(userService.updateProfile(userId, request.nickname, request.profileImageUrl))
     }
+
+    @Operation(
+        summary = "내 프로필 수정",
+        description = "현재 로그인한 사용자의 프로필 정보를 수정합니다. (닉네임, 프로필 이미지 URL)",
+        responses = [ApiResponse(responseCode = "200", description = "성공")]
+    )
+    @PutMapping("/me/profile")
+    fun updateProfile(
+        @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            description = "수정할 프로필 정보",
+            required = true,
+            content = [Content(schema = Schema(implementation = UpdateProfileRequest::class))]
+        )
+        @RequestBody request: UpdateProfileRequest,
+        @CurrentUser currentUser: UserPrincipal,
+    ): Response<UserResponse> {
+        val userId = UUID.fromString(currentUser.subject)
+        return Response.success(userService.updateProfile(userId, request.nickname, request.profileImageUrl))
+    }
+
 }

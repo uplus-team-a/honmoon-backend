@@ -22,12 +22,13 @@ class GcpStorageService(
     companion object {
         private val logger = KotlinLogging.logger {}
         private const val PRESIGNED_URL_EXPIRATION_MINUTES = 15L
+        private const val MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024L // 5MB
     }
 
-    @Value("\${spring.cloud.gcp.storage.bucket}")
+    @Value("\${GCP_BUCKET_NAME:}")
     private lateinit var bucketName: String
 
-    @Value("\${spring.cloud.gcp.storage.project-id}")
+    @Value("\${GCP_PROJECT_ID:}")
     private lateinit var projectId: String
 
     /**
@@ -55,13 +56,13 @@ class GcpStorageService(
      * S3와 유사한 방식으로 GCP에서 직접 업로드 가능한 URL 제공
      */
     fun generatePresignedUploadUrl(
-        originalFileName: String,
-        folder: String = "uploads",
+        userId: String,
         contentType: String? = null,
+        maxSizeBytes: Long = MAX_FILE_SIZE_BYTES,
     ): PresignedUrlResponse {
-        val fileExtension = getFileExtension(originalFileName)
-        val uniqueFileName = generateUniqueFileName(originalFileName, fileExtension)
-        val fullPath = "$folder/$uniqueFileName"
+        val fileExtension = getFileExtensionFromContentType(contentType)
+        val uniqueFileName = generateUniqueFileName(fileExtension)
+        val fullPath = "images/uploaded/$userId/$uniqueFileName"
 
         val blobId = BlobId.of(bucketName, fullPath)
         val blobInfoBuilder = BlobInfo.newBuilder(blobId)
@@ -76,14 +77,20 @@ class GcpStorageService(
             PRESIGNED_URL_EXPIRATION_MINUTES,
             TimeUnit.MINUTES,
             Storage.SignUrlOption.withV4Signature(),
-            Storage.SignUrlOption.httpMethod(HttpMethod.PUT)
+            Storage.SignUrlOption.httpMethod(HttpMethod.PUT),
+            Storage.SignUrlOption.withExtHeaders(mapOf(
+                "Content-Length" to maxSizeBytes.toString()
+            ))
         )
 
-        logger.info { "Presigned URL 생성: $uniqueFileName, 만료시간: $expiresAt" }
+        val publicUrl = getPublicUrl(uniqueFileName, "images/uploaded/$userId")
+
+        logger.info { "Presigned URL 생성: $uniqueFileName, 사용자: $userId, 최대크기: ${maxSizeBytes / 1024 / 1024}MB, 만료시간: $expiresAt" }
 
         return PresignedUrlResponse(
             uploadUrl = url.toString(),
             fileName = uniqueFileName,
+            publicUrl = publicUrl,
             expiresAt = expiresAt
         )
     }
@@ -108,6 +115,14 @@ class GcpStorageService(
         ).toString()
     }
 
+    /**
+     * 공개 URL 생성 (프로필 이미지 등)
+     */
+    fun getPublicUrl(fileName: String, folder: String = "uploads"): String {
+        val fullPath = "$folder/$fileName"
+        return "https://storage.googleapis.com/$bucketName/$fullPath"
+    }
+
     private fun getFileExtension(fileName: String): String {
         return if (fileName.contains(".")) {
             fileName.substringAfterLast(".")
@@ -116,14 +131,24 @@ class GcpStorageService(
         }
     }
 
-    private fun generateUniqueFileName(originalFileName: String, extension: String): String {
-        System.currentTimeMillis()
-        UUID.randomUUID().toString().replace("-", "")
+    private fun generateUniqueFileName(extension: String): String {
+        val timestamp = System.currentTimeMillis()
+        val uuid = UUID.randomUUID().toString().replace("-", "")
 
         return if (extension.isNotEmpty()) {
-            "${'$'}{uuid}_${'$'}{timestamp}.${'$'}{extension}"
+            "${uuid}_${timestamp}.${extension}"
         } else {
-            "${'$'}{uuid}_${'$'}{timestamp}"
+            "${uuid}_${timestamp}"
+        }
+    }
+
+    private fun getFileExtensionFromContentType(contentType: String?): String {
+        return when (contentType) {
+            "image/jpeg" -> "jpg"
+            "image/png" -> "png"
+            "image/gif" -> "gif"
+            "image/webp" -> "webp"
+            else -> "jpg"
         }
     }
 
@@ -135,5 +160,22 @@ class GcpStorageService(
             "webp" -> "image/webp"
             else -> "application/octet-stream"
         }
+    }
+
+    /**
+     * 파일 크기가 제한을 초과하는지 확인
+     */
+    fun isFileSizeValid(fileSizeBytes: Long, maxSizeBytes: Long = MAX_FILE_SIZE_BYTES): Boolean {
+        return fileSizeBytes <= maxSizeBytes
+    }
+
+    /**
+     * 업로드된 파일의 실제 크기 확인
+     */
+    fun getUploadedFileSize(fileName: String, folder: String = "images"): Long? {
+        val fullPath = "$folder/$fileName"
+        val blobId = BlobId.of(bucketName, fullPath)
+        val blob = storage.get(blobId)
+        return blob?.size
     }
 } 

@@ -42,4 +42,12 @@ enum class ErrorCode(
     REQUIRED_FIELD_MISSING(1428, ErrorStatus.BAD_REQUEST, "필수 입력이 누락되었습니다: %s"),
     USER_EMAIL_NOT_FOUND(1429, ErrorStatus.BAD_REQUEST, "해당 사용자에 등록된 이메일이 없습니다."),
 
+    // 이메일 인증 관련 에러
+    EMAIL_ALREADY_EXISTS(1432, ErrorStatus.BAD_REQUEST, "이미 가입된 이메일입니다."),
+    EMAIL_NOT_REGISTERED(1433, ErrorStatus.NOT_FOUND, "등록되지 않은 이메일입니다."),
+    ACCOUNT_DEACTIVATED(1434, ErrorStatus.BAD_REQUEST, "비활성화된 계정입니다."),
+    PASSWORD_NOT_SET(1435, ErrorStatus.BAD_REQUEST, "비밀번호가 설정되지 않은 계정입니다. 이메일 인증으로만 로그인 가능합니다."),
+    INVALID_EMAIL_OR_PASSWORD(1436, ErrorStatus.BAD_REQUEST, "이메일 또는 비밀번호가 일치하지 않습니다."),
+    EMAIL_AUTH_TOKEN_INVALID(1437, ErrorStatus.NOT_FOUND, "유효하지 않거나 이미 사용된 토큰이거나 만료된 토큰입니다."),
+
 }

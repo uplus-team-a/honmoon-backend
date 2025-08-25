@@ -36,6 +36,10 @@ spring:
   docker:
     compose:
       enabled: false
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 5MB
   flyway:
     enabled: true
     locations: classpath:db/migration
@@ -57,8 +61,8 @@ spring:
   cloud:
     gcp:
       storage:
-        project-id: ${GCP_PROJECT_ID}
-        bucket: ${GCP_BUCKET_NAME}
+        project-id: ${GCP_PROJECT_ID:}
+        bucket: ${GCP_BUCKET_NAME:}
 
   mail:
     host: ${MAIL_HOST:}
@@ -74,8 +78,6 @@ spring:
           writetimeout: 4000
           starttls:
             enable: true
-
-  security:
 
   jpa:
     open-in-view: false

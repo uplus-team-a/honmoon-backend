@@ -171,7 +171,7 @@ create table if not exists users
     is_active         boolean                  default true
 );
 
- 
+
 create table if not exists app_session
 (
 

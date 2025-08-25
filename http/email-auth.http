@@ -1,0 +1,38 @@
+### 회원가입 이메일 발송 (커스텀 callbackUrl)
+POST {{host}}/api/auth/signup/email?callbackUrl=https://localhost:3000/auth/verify
+Content-Type: application/json
+
+{
+  "email": "aekuya_@naver.com"
+}
+
+### 로그인 (이메일 + 비밀번호)
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "aekuya_@naver.com",
+  "password": "mypassword123"
+}
+
+### 토큰 검증 (회원가입 완료)
+POST {{host}}/api/auth/verify
+Content-Type: application/json
+
+{
+  "token": "JGzKs4Dt0C7TZ9Uh4YHAH71vm6UKYTDVWbBRG_B9YXE",
+  "nickname": "지원",
+  "password": "mypassword123"
+}
+
+### 실제 이메일 테스트 (회원가입) - 기본 URL
+POST {{host}}/api/auth/signup/email
+Content-Type: application/json
+
+{
+  "email": "aekuya_@naver.com"
+}
+
+### JWT 토큰으로 내 정보 조회 (로그인 후 토큰 사용)
+GET {{host}}/api/users/me
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJmZjU1MTdjYS05YmVkLTRhNzktOGI1MC1mZTQ3NWM0YTQzNDUiLCJlbWFpbCI6ImFla3V5YV9AbmF2ZXIuY29tIiwiaWF0IjoxNzU2MTM3ODE3LCJleHAiOjE3NTYyMjQyMTd9.uUn7PSwZbiw3LXEi5f615cEw1ln23uXI1LmcgrfVa_lwfgWcwpbK6r_S82JLBQSC
