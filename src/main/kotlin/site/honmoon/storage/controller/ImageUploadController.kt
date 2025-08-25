@@ -35,4 +35,17 @@ class ImageUploadController(
         )
         return Response.success(uploadResponse)
     }
+
+    @Operation(
+        summary = "GCP Storage CORS 설정 적용",
+        description = "GCP Storage 버킷에 CORS 설정을 적용하여 프론트엔드에서 presigned URL 사용 시 CORS 오류를 해결합니다. 관리자용 엔드포인트입니다.",
+        responses = [ApiResponse(responseCode = "200", description = "성공")]
+    )
+    @PostMapping("/configure-cors")
+    fun configureCors(
+        @CurrentUser currentUser: UserPrincipal,
+    ): Response<String> {
+        val result = gcpStorageService.applyCorsConfiguration()
+        return Response.success(result)
+    }
 }

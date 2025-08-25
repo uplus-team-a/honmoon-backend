@@ -1,9 +1,7 @@
 package site.honmoon.storage.service
 
-import com.google.cloud.storage.BlobId
-import com.google.cloud.storage.BlobInfo
-import com.google.cloud.storage.HttpMethod
-import com.google.cloud.storage.Storage
+import com.google.cloud.storage.*
+import com.google.common.collect.ImmutableList
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
@@ -13,6 +11,7 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 import site.honmoon.common.ErrorCode
 import site.honmoon.common.exception.EntityNotFoundException
+import jakarta.annotation.PostConstruct
 
 @Service
 class GcpStorageService(
@@ -30,6 +29,16 @@ class GcpStorageService(
 
     @Value("\${GCP_PROJECT_ID:}")
     private lateinit var projectId: String
+
+    @PostConstruct
+    fun initializeBucketCors() {
+        try {
+            configureBucketCors()
+            logger.info { "GCP Storage 버킷 CORS 설정 완료" }
+        } catch (e: Exception) {
+            logger.warn { "GCP Storage 버킷 CORS 설정 실패: ${e.message}" }
+        }
+    }
 
     /**
      * 파일 다운로드
@@ -191,5 +200,83 @@ class GcpStorageService(
         val blobId = BlobId.of(bucketName, fullPath)
         val blob = storage.get(blobId)
         return blob?.size
+    }
+
+    /**
+     * GCP Storage 버킷 CORS 설정
+     * 프론트엔드에서 presigned URL 사용 시 CORS 오류 해결
+     */
+    private fun configureBucketCors() {
+        val bucket = storage.get(bucketName) ?: run {
+            logger.error { "버킷을 찾을 수 없습니다: $bucketName" }
+            return
+        }
+
+        // CORS 설정 생성 - 포괄적인 오리진 허용
+        val cors = Cors.newBuilder()
+            .setOrigins(ImmutableList.of(
+                Cors.Origin.of("*"), // 모든 오리진 허용 (가장 포괄적)
+                // 로컬 개발 환경
+                Cors.Origin.of("http://localhost:3000"),
+                Cors.Origin.of("http://localhost:3001"), 
+                Cors.Origin.of("http://localhost:30022"),
+                Cors.Origin.of("http://localhost:8080"),
+                Cors.Origin.of("http://127.0.0.1:3000"),
+                Cors.Origin.of("http://127.0.0.1:3001"),
+                Cors.Origin.of("http://127.0.0.1:30022"),
+                // 실제 도메인 - HTTP/HTTPS 모두
+                Cors.Origin.of("http://honmoon.site"),
+                Cors.Origin.of("https://honmoon.site"),
+                Cors.Origin.of("http://www.honmoon.site"),
+                Cors.Origin.of("https://www.honmoon.site"),
+                // 추가 개발 환경
+                Cors.Origin.of("http://localhost"),
+                Cors.Origin.of("https://localhost")
+            ))
+            .setMethods(ImmutableList.of(
+                HttpMethod.GET,
+                HttpMethod.POST,
+                HttpMethod.PUT,
+                HttpMethod.DELETE,
+                HttpMethod.HEAD,
+                HttpMethod.OPTIONS
+            ))
+            .setResponseHeaders(ImmutableList.of(
+                "*", // 모든 응답 헤더 허용
+                "Content-Type",
+                "Content-Length",
+                "Content-Range",
+                "Content-Disposition",
+                "Authorization",
+                "x-goog-resumable",
+                "x-goog-meta-*",
+                "ETag",
+                "Last-Modified",
+                "Cache-Control",
+                "Expires"
+            ))
+            .setMaxAgeSeconds(3600) // 1시간
+            .build()
+
+        // 버킷에 CORS 설정 적용
+        bucket.toBuilder()
+            .setCors(ImmutableList.of(cors))
+            .build()
+            .update()
+
+        logger.info { "버킷 $bucketName 에 포괄적인 CORS 설정이 적용되었습니다 (honmoon.site, localhost:3000/3001/30022 등 모든 오리진 허용)" }
+    }
+
+    /**
+     * 수동으로 CORS 설정 적용 (관리자용)
+     */
+    fun applyCorsConfiguration(): String {
+        return try {
+            configureBucketCors()
+            "CORS 설정이 성공적으로 적용되었습니다"
+        } catch (e: Exception) {
+            logger.error { "CORS 설정 적용 실패: ${e.message}" }
+            "CORS 설정 적용 실패: ${e.message}"
+        }
     }
 } 
