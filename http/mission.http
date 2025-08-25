@@ -332,3 +332,22 @@ Content-Type: application/json
 
 ###
 
+
+### 미션 상세 조회 및 완료처리
+POST {{host}}/api/missions/1/complete
+Accept: application/json
+Authorization: {{authToken}}
+
+> {%
+client.test("미션 자동 완료 - 200", () => {
+    client.assert(response.status === 200, "Status must be 200 OK");
+    if (response.status === 200) {
+        client.assert(!!response.body.data.missionDetail, "missionDetail must exist");
+        client.assert(!!response.body.data.userActivity, "userActivity must exist");
+        client.assert(response.body.data.userActivity.isCorrect === true, "Must be marked as correct");
+        client.assert(response.body.data.userActivity.pointsEarned > 0, "Must earn points");
+        client.assert(!!response.body.data.message, "Message must exist");
+    }
+});
+%}
+

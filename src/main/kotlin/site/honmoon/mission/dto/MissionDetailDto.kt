@@ -19,4 +19,10 @@ data class MissionDetailResponse(
     val imageUploadInstruction: String?,
     val createdAt: Instant,
     val modifiedAt: Instant,
+)
+
+data class MissionCompletionResponse(
+    val missionDetail: MissionDetailResponse,
+    val userActivity: site.honmoon.activity.dto.UserActivityResponse,
+    val message: String = "미션이 성공적으로 완료되었습니다!",
 ) 

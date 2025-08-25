@@ -191,6 +191,7 @@ class UserActivityService(
         textAnswer: String? = null,
         selectedChoiceIndex: Int? = null,
         uploadedImageUrl: String? = null,
+        forceCorrect: Boolean = false,
     ): UserActivityResponse {
         val missionDetail = missionDetailRepository.findByIdOrNull(missionId)
             ?: throw EntityNotFoundException(ErrorCode.MISSION_NOT_FOUND, "Mission ID: $missionId")
@@ -217,13 +218,17 @@ class UserActivityService(
             )
         }
 
-        validateQuizAnswer(missionDetail, textAnswer, selectedChoiceIndex, uploadedImageUrl)
-        val (isCorrect, aiResult) = checkAnswerWithAi(
-            missionDetail,
-            textAnswer,
-            selectedChoiceIndex,
-            uploadedImageUrl
-        )
+        val (isCorrect, aiResult) = if (forceCorrect) {
+            Pair(true, null)
+        } else {
+            validateQuizAnswer(missionDetail, textAnswer, selectedChoiceIndex, uploadedImageUrl)
+            checkAnswerWithAi(
+                missionDetail,
+                textAnswer,
+                selectedChoiceIndex,
+                uploadedImageUrl
+            )
+        }
 
         val pointsToGrant = if (isCorrect) missionDetail.points else 0
         val userActivity = UserActivity(
@@ -245,6 +250,9 @@ class UserActivityService(
         val user = usersRepository.findById(userId).orElse(null)
         user?.let {
             it.totalActivities += 1
+            if (pointsToGrant > 0) {
+                it.totalPoints += pointsToGrant
+            }
             usersRepository.save(it)
         }
 

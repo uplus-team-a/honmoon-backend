@@ -14,6 +14,7 @@ import site.honmoon.auth.security.UserPrincipal
 import site.honmoon.common.Response
 import site.honmoon.mission.dto.MissionAnswerRequest
 import site.honmoon.mission.dto.MissionAnswerResponse
+import site.honmoon.mission.dto.MissionCompletionResponse
 import site.honmoon.mission.dto.MissionDetailResponse
 import site.honmoon.mission.dto.MissionImageAnswerRequest
 import site.honmoon.mission.service.MissionAnswerService
@@ -164,6 +165,22 @@ class MissionDetailController(
             selectedChoiceIndex = selectedChoiceIndex,
             uploadedImageUrl = uploadedImageUrl
         )
+        return Response.success(result)
+    }
+
+    @Operation(
+        summary = "미션 자동 완료",
+        description = "미션 ID를 입력하면 무조건 정답으로 처리하고 미션 상세정보와 함께 반환합니다.",
+        responses = [ApiResponse(responseCode = "200", description = "성공")]
+    )
+    @PostMapping("/{id}/complete")
+    fun completeMission(
+        @Parameter(description = "미션 ID", example = "1")
+        @PathVariable id: Long,
+        @CurrentUser currentUser: UserPrincipal,
+    ): Response<MissionCompletionResponse> {
+        val userId = UUID.fromString(currentUser.subject)
+        val result = missionDetailService.completeMissionDirectly(id, userId)
         return Response.success(result)
     }
 } 
