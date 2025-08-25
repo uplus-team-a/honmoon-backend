@@ -20,7 +20,7 @@ POST {{host}}/api/auth/verify
 Content-Type: application/json
 
 {
-  "token": "JGzKs4Dt0C7TZ9Uh4YHAH71vm6UKYTDVWbBRG_B9YXE",
+  "token": "abHeknjYibUsS5TMuUNHvVxXwsFyRSlHP2QCuJmH8lE",
   "nickname": "지원",
   "password": "mypassword123"
 }
@@ -33,6 +33,24 @@ Content-Type: application/json
   "email": "aekuya_@naver.com"
 }
 
-### JWT 토큰으로 내 정보 조회 (로그인 후 토큰 사용)
-GET {{host}}/api/users/me
-Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJmZjU1MTdjYS05YmVkLTRhNzktOGI1MC1mZTQ3NWM0YTQzNDUiLCJlbWFpbCI6ImFla3V5YV9AbmF2ZXIuY29tIiwiaWF0IjoxNzU2MTM3ODE3LCJleHAiOjE3NTYyMjQyMTd9.uUn7PSwZbiw3LXEi5f615cEw1ln23uXI1LmcgrfVa_lwfgWcwpbK6r_S82JLBQSC
+### 내 프로필(간략)
+GET {{host}}/api/users/me/profile/summary
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiI5NzQ2YWM4ZS1iNzAzLTQ2NzMtYWI1NC00NmVhZmFmMjQyNDYiLCJlbWFpbCI6ImFla3V5YV9AbmF2ZXIuY29tIiwiaWF0IjoxNzU2MTQwNTU5LCJleHAiOjE3NTYyMjY5NTl9.Ca-xKHcrl73DrSD9J7qxhdcGrYBKNnmBEO8ALcQSAQfeYibjzE7vqOtDhYU49CLb
+
+> {%
+    client.test("내 프로필(간략) - 200", () => {
+        client.assert(response.status === 200, "Status must be 200 OK");
+    });
+%}
+
+### 내 프로필(상세)
+GET {{host}}/api/users/me/profile/detail
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiI5NzQ2YWM4ZS1iNzAzLTQ2NzMtYWI1NC00NmVhZmFmMjQyNDYiLCJlbWFpbCI6ImFla3V5YV9AbmF2ZXIuY29tIiwiaWF0IjoxNzU2MTQwNTU5LCJleHAiOjE3NTYyMjY5NTl9.Ca-xKHcrl73DrSD9J7qxhdcGrYBKNnmBEO8ALcQSAQfeYibjzE7vqOtDhYU49CLb
+
+> {%
+    client.test("내 프로필(상세) - 200", () => {
+        client.assert(response.status === 200, "Status must be 200 OK");
+    });
+%}

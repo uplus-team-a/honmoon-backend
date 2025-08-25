@@ -1,52 +1,3 @@
-### 0) Basic 인증으로 테스트용 세션 토큰 발급
-POST {{host}}/api/auth/test-token
-Accept: application/json
-Authorization: {{basicAuth}}
-
-> {%
-    client.test("Basic 테스트 토큰 발급 - 200", () => {
-        client.assert(response.status === 200, "Status must be 200 OK");
-        client.assert(!!response.body.data.token, "token must exist");
-    });
-    const tok = response.body.data.token;
-    client.global.set("token", `Bearer ${tok}`);
-%}
-
-### 현재 사용자 프로필 확인(테스트 토큰)
-GET {{host}}/api/auth/me
-Accept: application/json
-Authorization: {{basicAuth}}
-
-> {%
-    client.test("현재 사용자 프로필(테스트 토큰) - 200", () => {
-        client.assert(response.status === 200, "Status must be 200 OK");
-        client.assert(!!response.body.data.sub, "sub must exist");
-    });
-%}
-
-
-### 내 프로필 조회
-GET {{host}}/api/users/me
-Accept: application/json
-Authorization: {{basicAuth}}
-
-> {%
-    client.test("내 요약 정보 조회 - 200", () => {
-        client.assert(response.status === 200, "Status must be 200 OK");
-    });
-%}
-
-### 내 프로필(간략)
-GET {{host}}/api/users/me/profile/summary
-Accept: application/json
-Authorization: Basic YTUxODljMzgtZmJlMi00MzczLWJmNmItZDA0ZWE4ZjJhNjgzOmppd29uZGV2
-
-> {%
-    client.test("내 프로필(간략) - 200", () => {
-        client.assert(response.status === 200, "Status must be 200 OK");
-    });
-%}
-
 ### 내 프로필(상세)
 GET {{host}}/api/users/me/profile/detail
 Accept: application/json
@@ -54,35 +5,6 @@ Authorization: Basic YTUxODljMzgtZmJlMi00MzczLWJmNmItZDA0ZWE4ZjJhNjgzOmppd29uZGV
 
 > {%
     client.test("내 프로필(상세) - 200", () => {
-        client.assert(response.status === 200, "Status must be 200 OK");
-    });
-%}
-
-
-### 내 프로필 조회 (간략)
-GET {{host}}/api/users/me
-Accept: application/json
-Authorization: {{basicAuth}}
-
-> {%
-    client.test("내 요약 정보 조회 - 200", () => {
-        client.assert(response.status === 200, "Status must be 200 OK");
-    });
-%}
-
-
-### 내 프로필 이미지 업데이트
-PUT {{host}}/api/users/me/profile-image
-Content-Type: application/json
-Accept: application/json
-Authorization: {{basicAuth}}
-
-{
-  "imageUrl": "https://storage.googleapis.com/{{bucket}}/profiles/{{profileFileName}}"
-}
-
-> {%
-    client.test("내 프로필 이미지 업데이트 - 200", () => {
         client.assert(response.status === 200, "Status must be 200 OK");
     });
 %}

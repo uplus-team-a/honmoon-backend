@@ -1,6 +1,4 @@
-### 범용 이미지 업로드 API 테스트
-
-### 0) 이메일/패스워드 로그인으로 세션 토큰 발급
+### 1) 이메일/패스워드 로그인으로 세션 토큰 발급
 POST {{host}}/api/auth/login
 Content-Type: application/json
 Accept: application/json
@@ -17,27 +15,6 @@ Accept: application/json
     });
     const token = response.body.data.token;
     client.global.set("authToken", `Bearer ${token}`);
-%}
-
-### 1) JPEG 이미지 업로드 URL 생성
-POST {{host}}/api/images/upload-url?contentType=image/jpeg
-Accept: application/json
-Authorization: {{authToken}}
-
-> {%
-    client.test("JPEG 이미지 업로드 URL 생성 - 200", () => {
-        client.assert(response.status === 200, "Status must be 200 OK");
-        client.assert(!!response.body.data.uploadUrl, "uploadUrl must exist");
-        client.assert(!!response.body.data.fileName, "fileName must exist");
-        client.assert(!!response.body.data.publicUrl, "publicUrl must exist");
-        client.assert(response.body.data.publicUrl.includes("images/uploaded"), "URL should contain user folder");
-    });
-    const uploadUrl = response.body.data.uploadUrl;
-    const fileName = response.body.data.fileName;
-    const publicUrl = response.body.data.publicUrl;
-    client.global.set("uploadUrl", uploadUrl);
-    client.global.set("fileName", fileName);
-    client.global.set("publicUrl", publicUrl);
 %}
 
 ### 2) PNG 이미지 업로드 URL 생성
