@@ -19,17 +19,19 @@ class ImageUploadController(
 
     @Operation(
         summary = "이미지 업로드 URL 생성",
-        description = "이미지 업로드를 위한 Presigned URL과 공개 URL을 함께 생성합니다. 파일명은 서버에서 자동 생성되며, 사용자별 폴더에 저장됩니다.",
+        description = "이미지 업로드를 위한 Presigned URL과 공개 URL을 함께 생성합니다. 파일명은 서버에서 자동 생성되며, 사용자별 폴더에 저장됩니다. 생성된 URL로 PUT 메서드를 사용해 직접 업로드할 수 있습니다.",
         responses = [ApiResponse(responseCode = "200", description = "성공")]
     )
     @PostMapping("/upload-url")
     fun generateImageUploadUrl(
         @RequestParam(required = false) contentType: String?,
+        @RequestParam(required = false, defaultValue = "10") maxSizeMB: Int,
         @CurrentUser currentUser: UserPrincipal,
     ): Response<PresignedUrlResponse> {
         val uploadResponse = gcpStorageService.generatePresignedUploadUrl(
             userId = currentUser.subject,
-            contentType = contentType
+            contentType = contentType,
+            maxSizeBytes = maxSizeMB * 1024L * 1024L
         )
         return Response.success(uploadResponse)
     }

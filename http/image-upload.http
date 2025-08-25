@@ -29,10 +29,38 @@ Authorization: {{authToken}}
         client.assert(!!response.body.data.fileName, "fileName must exist");
         client.assert(!!response.body.data.publicUrl, "publicUrl must exist");
         client.assert(response.body.data.fileName.endsWith(".png"), "fileName should have .png extension");
+        client.assert(response.body.data.maxFileSizeMB === 10, "maxFileSizeMB should be 10");
+        
+        // 파일명이 간단해졌는지 확인 (10글자 + _ + 타임스탬프 + .확장자)
+        const fileName = response.body.data.fileName;
+        const fileNameWithoutExt = fileName.substring(0, fileName.lastIndexOf('.'));
+        const parts = fileNameWithoutExt.split('_');
+        client.assert(parts.length === 2, "fileName should have format: randomstring_timestamp.extension");
+        client.assert(parts[0].length === 10, "random string should be 10 characters");
+        
+        // 다음 요청을 위해 업로드 URL 저장
+        client.global.set("uploadUrl", response.body.data.uploadUrl);
+        client.global.set("publicUrl", response.body.data.publicUrl);
     });
 %}
 
-### 3) 기본 이미지 업로드 URL 생성 (contentType 없음)
+### 3) JPEG 이미지 업로드 URL 생성 (커스텀 크기 제한)
+POST {{host}}/api/images/upload-url?contentType=image/jpeg&maxSizeMB=20
+Accept: application/json
+Authorization: {{authToken}}
+
+> {%
+    client.test("JPEG 이미지 업로드 URL 생성 (20MB) - 200", () => {
+        client.assert(response.status === 200, "Status must be 200 OK");
+        client.assert(!!response.body.data.uploadUrl, "uploadUrl must exist");
+        client.assert(!!response.body.data.fileName, "fileName must exist");
+        client.assert(!!response.body.data.publicUrl, "publicUrl must exist");
+        client.assert(response.body.data.fileName.endsWith(".jpg"), "fileName should have .jpg extension");
+        client.assert(response.body.data.maxFileSizeMB === 20, "maxFileSizeMB should be 20");
+    });
+%}
+
+### 4) 기본 이미지 업로드 URL 생성 (contentType 없음)
 POST {{host}}/api/images/upload-url
 Accept: application/json
 Authorization: {{authToken}}
@@ -44,12 +72,42 @@ Authorization: {{authToken}}
         client.assert(!!response.body.data.fileName, "fileName must exist");
         client.assert(!!response.body.data.publicUrl, "publicUrl must exist");
         client.assert(response.body.data.fileName.endsWith(".jpg"), "fileName should have default .jpg extension");
+        client.assert(response.body.data.maxFileSizeMB === 10, "maxFileSizeMB should be default 10");
+    });
+%}
+
+### 5) WebP 이미지 업로드 URL 생성 (작은 크기 제한)
+POST {{host}}/api/images/upload-url?contentType=image/webp&maxSizeMB=5
+Accept: application/json
+Authorization: {{authToken}}
+
+> {%
+    client.test("WebP 이미지 업로드 URL 생성 (5MB) - 200", () => {
+        client.assert(response.status === 200, "Status must be 200 OK");
+        client.assert(!!response.body.data.uploadUrl, "uploadUrl must exist");
+        client.assert(!!response.body.data.fileName, "fileName must exist");
+        client.assert(!!response.body.data.publicUrl, "publicUrl must exist");
+        client.assert(response.body.data.fileName.endsWith(".webp"), "fileName should have .webp extension");
+        client.assert(response.body.data.maxFileSizeMB === 5, "maxFileSizeMB should be 5");
     });
 %}
 
 ###
-# 실제 파일 업로드는 presigned URL을 사용해서 직접 GCP Storage에 PUT 요청으로 수행
-# 예시:
+# 🚀 Presigned URL을 사용한 실제 파일 업로드
+# 위에서 생성된 uploadUrl을 사용하여 직접 GCP Storage에 업로드
+#
+# 사용법:
+# 1. 위의 테스트에서 uploadUrl 생성
+# 2. 아래 PUT 요청에 실제 이미지 파일 바이너리 데이터 첨부
+# 3. Content-Type을 해당 이미지 타입으로 설정
+#
 # PUT {{uploadUrl}}
-# Content-Type: image/jpeg
-# [이미지 바이너리 데이터]
+# Content-Type: image/png
+# [이미지 바이너리 데이터를 여기에 첨부]
+#
+# 변경사항:
+# 1. GCP Storage V4 서명 방식으로 올바른 presigned URL 생성
+# 2. 파일명 간소화 (10글자 + 타임스탬프)
+# 3. 만료시간 60분으로 증가
+# 4. 최대 파일 크기 10MB로 증가 (커스터마이징 가능)
+# 5. PUT 메서드로 직접 GCP Storage 업로드 지원

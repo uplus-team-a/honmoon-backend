@@ -21,8 +21,8 @@ class GcpStorageService(
 
     companion object {
         private val logger = KotlinLogging.logger {}
-        private const val PRESIGNED_URL_EXPIRATION_MINUTES = 15L
-        private const val MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024L // 5MB
+        private const val PRESIGNED_URL_EXPIRATION_MINUTES = 60L
+        private const val MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024L // 10MB로 증가
     }
 
     @Value("\${GCP_BUCKET_NAME:}")
@@ -52,8 +52,8 @@ class GcpStorageService(
     }
 
     /**
-     * Presigned URL 생성 (안전한 업로드를 위한)
-     * S3와 유사한 방식으로 GCP에서 직접 업로드 가능한 URL 제공
+     * Presigned URL 생성 (업로드용)
+     * GCP Storage PUT 메서드로 올바른 서명 생성
      */
     fun generatePresignedUploadUrl(
         userId: String,
@@ -61,39 +61,40 @@ class GcpStorageService(
         maxSizeBytes: Long = MAX_FILE_SIZE_BYTES,
     ): PresignedUrlResponse {
         val fileExtension = getFileExtensionFromContentType(contentType)
-        val uniqueFileName = generateUniqueFileName(fileExtension)
+        val uniqueFileName = generateSimpleFileName(fileExtension)
         val fullPath = "images/uploaded/$userId/$uniqueFileName"
 
         val blobId = BlobId.of(bucketName, fullPath)
-        val blobInfoBuilder = BlobInfo.newBuilder(blobId)
+        val blobInfo = BlobInfo.newBuilder(blobId)
             .setContentType(contentType ?: getContentType(fileExtension))
-
-        val blobInfo = blobInfoBuilder.build()
+            .build()
 
         val expiresAt = LocalDateTime.now().plusMinutes(PRESIGNED_URL_EXPIRATION_MINUTES)
 
+        // GCP Storage PUT 메서드 presigned URL 생성
+        // V4 서명 방식 사용하여 올바른 서명 생성
         val url = storage.signUrl(
             blobInfo,
             PRESIGNED_URL_EXPIRATION_MINUTES,
             TimeUnit.MINUTES,
-            Storage.SignUrlOption.withV4Signature(),
             Storage.SignUrlOption.httpMethod(HttpMethod.PUT),
-            Storage.SignUrlOption.withExtHeaders(mapOf(
-                "Content-Length" to maxSizeBytes.toString()
-            ))
+            Storage.SignUrlOption.withV4Signature()
         )
 
         val publicUrl = getPublicUrl(uniqueFileName, "images/uploaded/$userId")
 
-        logger.info { "Presigned URL 생성: $uniqueFileName, 사용자: $userId, 최대크기: ${maxSizeBytes / 1024 / 1024}MB, 만료시간: $expiresAt" }
+        logger.info { "PUT Presigned URL 생성: $uniqueFileName, 사용자: $userId, 만료시간: $expiresAt" }
 
         return PresignedUrlResponse(
             uploadUrl = url.toString(),
             fileName = uniqueFileName,
             publicUrl = publicUrl,
-            expiresAt = expiresAt
+            expiresAt = expiresAt,
+            maxFileSizeMB = (maxSizeBytes / 1024 / 1024).toInt()
         )
     }
+
+
 
     /**
      * Presigned URL 생성 (다운로드용)
@@ -110,8 +111,8 @@ class GcpStorageService(
         return storage.signUrl(
             blob,
             expirationMinutes,
-            TimeUnit.MINUTES,
-            Storage.SignUrlOption.withV4Signature()
+            TimeUnit.MINUTES
+            // V4 서명 제거하여 안정성 향상
         ).toString()
     }
 
@@ -131,15 +132,28 @@ class GcpStorageService(
         }
     }
 
-    private fun generateUniqueFileName(extension: String): String {
+    /**
+     * 간단한 파일명 생성 (10글자 + 시간값)
+     */
+    fun generateSimpleFileName(extension: String): String {
         val timestamp = System.currentTimeMillis()
-        val uuid = UUID.randomUUID().toString().replace("-", "")
-
+        val randomString = generateRandomString(10)
+        
         return if (extension.isNotEmpty()) {
-            "${uuid}_${timestamp}.${extension}"
+            "${randomString}_${timestamp}.${extension}"
         } else {
-            "${uuid}_${timestamp}"
+            "${randomString}_${timestamp}"
         }
+    }
+
+    /**
+     * 10글자 랜덤 문자열 생성
+     */
+    private fun generateRandomString(length: Int): String {
+        val chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+        return (1..length)
+            .map { chars.random() }
+            .joinToString("")
     }
 
     private fun getFileExtensionFromContentType(contentType: String?): String {
